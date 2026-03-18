@@ -163,14 +163,14 @@ export function PedidosPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Pedidos</h1>
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar pedido..." className="w-64" />
-          <p className="text-muted-foreground">Gestiona los pedidos registrados</p>
+          <h1 className="text-3xl font-bold text-foreground">Servicios</h1>
+  
+          <p className="text-muted-foreground">Gestiona los servicios registrados</p>
         </div>
         <div className="flex items-center gap-2">
           <SearchInput value={q} onChange={setQ} placeholder="Buscar venta, servicio, marco, fecha..." className="w-72" />
           <Button onClick={openCreate} className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
-            <Plus className="mr-2 h-4 w-4" />Registrar Pedido
+            <Plus className="mr-2 h-4 w-4" />Registrar Servicio
           </Button>
         </div>
       </div>
@@ -200,9 +200,9 @@ export function PedidosPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-muted-foreground">ID</TableHead>
+           
                 <TableHead className="text-muted-foreground">Venta</TableHead>
-                <TableHead className="text-muted-foreground">Servicio</TableHead>
+                <TableHead className="text-muted-foreground">Tipo de Servicio</TableHead>
                 <TableHead className="text-muted-foreground">Marco</TableHead>
                 <TableHead className="text-muted-foreground">Fecha</TableHead>
                 <TableHead className="text-muted-foreground">Precio</TableHead>
@@ -219,7 +219,7 @@ export function PedidosPage() {
                   : '—'
                 return (
                   <TableRow key={p.id_detalle}>
-                    <TableCell className="text-foreground">{p.id_detalle}</TableCell>
+              
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
                     <TableCell className="text-foreground">{servicioLabel}</TableCell>
                     <TableCell className="text-foreground">{marcoLabel}</TableCell>
@@ -270,9 +270,7 @@ export function PedidosPage() {
                             </AlertDialogFooter>
                           </AlertDialogContent>
                         </AlertDialog>
-                        <Button variant="ghost" size="sm" onClick={() => navigate(`/admin/pagos?id_venta=${p.id_venta}`)} className="text-foreground">
-                          Pagos<ArrowRight className="ml-1 h-4 w-4" />
-                        </Button>
+                   
                       </div>
                     </TableCell>
                   </TableRow>

@@ -120,7 +120,7 @@ export function CalculadoraPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-muted-foreground">ID</TableHead>
+    
                 <TableHead className="text-muted-foreground">Código</TableHead>
                 <TableHead className="text-muted-foreground text-right">Colilla</TableHead>
                 <TableHead className="text-muted-foreground text-right">Precio Ensamblado</TableHead>
@@ -131,7 +131,7 @@ export function CalculadoraPage() {
             <TableBody>
               {paginated.map((m) => (
                 <TableRow key={m.id_marco}>
-                  <TableCell className="text-foreground">{m.id_marco}</TableCell>
+      
                   <TableCell className="text-foreground font-medium">{m.codigo}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.colilla)}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.precio_ensamblado)}</TableCell>

@@ -10,7 +10,7 @@ import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar } from '@/src/shared/components/FilterBar'
 import { withToast } from '@/src/shared/lib/withToast'   
 import { formatFecha } from '@/src/shared/lib/formatFecha'
-import { Plus, Pencil, Trash2, Eye, CreditCard } from 'lucide-react'
+import { Plus, Pencil, Trash2, Eye, CreditCard, CheckCircle2, CircleDashed } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Input } from '@/src/shared/components/ui/input'
 import { Label } from '@/src/shared/components/ui/label'
@@ -24,7 +24,7 @@ import { ViewDialog, EstadoBadge } from '@/src/shared/components/ViewDialog'
 import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
 
-type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null }
+type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
 
 const fmt = formatCOP
 
@@ -34,7 +34,8 @@ export function VentasPage() {
   // ── Modal de abonos ───────────────────────────────────────────────────────
   const [abonoModalVenta, setAbonoModalVenta] = useState<{ id: number; label: string } | null>(null)
   const { options: clientesOpts } = useClientesOptions()
-  const { options: citasOpts } = useCitasOptions()
+  const { options: citasOpts, rawCitas } = useCitasOptions()
+
   // ── Búsqueda y filtros ─────────────────────────────────────────────────
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
@@ -62,6 +63,15 @@ export function VentasPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [idCliente, setIdCliente] = useState('')
   const [idCita, setIdCita] = useState('')
+
+  // Citas filtradas por el cliente seleccionado en el formulario
+  const citasFormOpts = useMemo(() =>
+    idCliente
+      ? citasOpts.filter(opt =>
+          rawCitas.find(c => String(c.id_cita) === opt.value)?.cliente?.id_cliente === Number(idCliente)
+        )
+      : [],
+  [idCliente, citasOpts, rawCitas])
   const [fecha, setFecha] = useState('')
   const [total, setTotal] = useState('')
   const [observacion, setObservacion] = useState('')
@@ -100,7 +110,6 @@ export function VentasPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Ventas</h1>
-        <SearchInput value={q} onChange={setQ} placeholder="Buscar venta..." className="w-64" />
           <p className="text-muted-foreground">Gestiona las ventas registradas</p>
         </div>
         <div className="flex items-center gap-2">
@@ -130,7 +139,7 @@ export function VentasPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-muted-foreground">ID</TableHead>
+           
                 <TableHead className="text-muted-foreground">Cliente</TableHead>
                 <TableHead className="text-muted-foreground">Cita</TableHead>
                 <TableHead className="text-muted-foreground">Fecha</TableHead>
@@ -143,14 +152,21 @@ export function VentasPage() {
               {paginated.map(v => {
                 const clienteLabel = clientesOpts.find(o => o.value === String(v.id_cliente))?.label ?? `#${v.id_cliente}`
                 const citaLabel = v.id_cita ? (citasOpts.find(o => o.value === String(v.id_cita))?.label ?? `#${v.id_cita}`) : '—'
+                const pagada = v.pagos_realizados >= v.num_abonos
                 return (
-                  <TableRow key={v.id_venta}>
-                    <TableCell className="text-foreground">{v.id_venta}</TableCell>
+                  <TableRow key={v.id_venta} className={pagada ? 'bg-emerald-50 dark:bg-emerald-950/30' : ''}>
+
                     <TableCell className="text-foreground">{clienteLabel}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">{citaLabel}</TableCell>
                     <TableCell className="text-foreground">{formatFecha(v.fecha)}</TableCell>
-                    <TableCell className="text-foreground text-right font-medium tabular-nums">
-                      {fmt(v.total)}
+                    <TableCell className="text-right">
+                      <div className="flex flex-col items-end gap-0.5">
+                        <span className="font-medium tabular-nums text-foreground">{fmt(v.total)}</span>
+                        {pagada
+                          ? <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-medium"><CheckCircle2 className="h-3 w-3" />Pagada</span>
+                          : <span className="flex items-center gap-1 text-[11px] text-muted-foreground"><CircleDashed className="h-3 w-3" />{v.pagos_realizados}/{v.num_abonos} abonos</span>
+                        }
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Switch checked={v.estado} onCheckedChange={async () => { await withToast(onToggleEstado(v.id_venta), 'Estado actualizado') }} />
@@ -234,14 +250,15 @@ export function VentasPage() {
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Cliente <span className="text-red-500">*</span></Label>
               <Combobox options={clientesOpts} value={idCliente}
-                onValueChange={v => { setIdCliente(v); if (errors.idCliente) setErrors(p => ({...p, idCliente:''})) }}
+                onValueChange={v => { setIdCliente(v); setIdCita(''); if (errors.idCliente) setErrors(p => ({...p, idCliente:''})) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..." />
               {errors.idCliente && <p className="text-sm text-destructive">{errors.idCliente}</p>}
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Cita (opcional)</Label>
-              <Combobox options={citasOpts} value={idCita} onValueChange={setIdCita}
-                placeholder="Vincular a una cita..." searchPlaceholder="Buscar cita..." />
+              <Combobox options={citasFormOpts} value={idCita} onValueChange={setIdCita}
+                placeholder={idCliente ? 'Vincular a una cita...' : 'Selecciona un cliente primero'}
+                searchPlaceholder="Buscar cita..." />
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>

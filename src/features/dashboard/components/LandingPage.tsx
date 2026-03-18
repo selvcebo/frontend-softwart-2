@@ -1,8 +1,10 @@
 // src/features/dashboard/components/LandingPage.tsx
+import { useState } from 'react'
 import { useLanding } from '../hooks/useLanding'
 import { Link, useNavigate } from 'react-router-dom'
-import { CalendarPlus, Frame, Sparkles } from 'lucide-react'
+import { CalendarPlus, Frame, Sparkles, LogOut } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
+import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 
 function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
 function getRol()   { return localStorage.getItem('rol')   ?? sessionStorage.getItem('rol') }
@@ -11,14 +13,19 @@ export function LandingPage() {
   const { servicios } = useLanding()
   const navigate = useNavigate()
 
-  const token = getToken()
-  const rol   = getRol()
+  const [token, setToken] = useState(getToken)
+  const rol         = getRol()
   const isCliente   = token && rol === 'Cliente'
   const isAdminEmpl = token && (rol === 'Admin' || rol === 'Empleado')
 
   const handleAgendarCita = () => {
-    if (isCliente)   navigate('/mi-cuenta?nueva-cita=true')
+    if (isCliente)        navigate('/mi-cuenta?nueva-cita=true')
     else if (isAdminEmpl) navigate('/admin/dashboard')
+  }
+
+  const handleLogout = () => {
+    clearAuth()
+    setToken(null)
   }
 
   return (
@@ -45,18 +52,30 @@ export function LandingPage() {
               </>
             )}
             {isCliente && (
-              <Link to="/mi-cuenta">
-                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Mi cuenta
+              <>
+                <Link to="/mi-cuenta">
+                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Mi cuenta
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="sm" onClick={handleLogout}
+                  className="text-secondary-foreground/70 hover:text-secondary-foreground hover:bg-secondary-foreground/10 gap-1.5">
+                  <LogOut className="h-4 w-4" />Salir
                 </Button>
-              </Link>
+              </>
             )}
             {isAdminEmpl && (
-              <Link to="/admin/dashboard">
-                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  Panel admin
+              <>
+                <Link to="/admin/dashboard">
+                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Panel admin
+                  </Button>
+                </Link>
+                <Button variant="ghost" size="sm" onClick={handleLogout}
+                  className="text-secondary-foreground/70 hover:text-secondary-foreground hover:bg-secondary-foreground/10 gap-1.5">
+                  <LogOut className="h-4 w-4" />Salir
                 </Button>
-              </Link>
+              </>
             )}
           </div>
         </div>
@@ -75,23 +94,14 @@ export function LandingPage() {
             Enmarcamos tus momentos más especiales con materiales de calidad y atención personalizada.
           </p>
 
-        
-          {!token && (
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link to="/registro">
-                <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
-                  <CalendarPlus className="h-5 w-5" />
-                  Agenda tu cita
-                </Button>
-              </Link>
-              <Link to="/login">
-                <Button size="lg" variant="outline"
-                  className="border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/10">
-                  Ya tengo cuenta
-                </Button>
-              </Link>
-            </div>
+          {(isCliente || isAdminEmpl) && (
+            <Button size="lg" onClick={handleAgendarCita}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+              <CalendarPlus className="h-5 w-5" />
+              Agenda tu cita
+            </Button>
           )}
+
         </div>
       </section>
 
@@ -105,34 +115,34 @@ export function LandingPage() {
                 Cada pieza es única. Trabajamos con los mejores materiales para que tu obra luzca perfecta.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-10">
               {servicios.map((s) => (
-                <div key={s.id_servicio}
-                  className="group relative bg-card border border-border rounded-xl overflow-hidden cursor-default h-28 w-full sm:w-72 flex items-center justify-center transition-all duration-300 hover:border-primary/40 hover:shadow-md">
-                  {/* Nombre — visible por defecto, se oculta en hover */}
-                  <div className="flex items-center gap-3 px-6 transition-opacity duration-300 group-hover:opacity-0">
-                    <Frame className="w-5 h-5 text-primary shrink-0" />
-                    <h3 className="font-semibold text-card-foreground text-center">{s.nombre}</h3>
-                  </div>
-                  {/* Descripción — oculta por defecto, aparece en hover */}
-                  <div className="absolute inset-0 flex items-center justify-center px-6 bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                    <p className="text-sm text-foreground text-center leading-relaxed line-clamp-3">
-                      {s.descripcion ?? s.nombre}
-                    </p>
+                /* Contenedor: mantiene el espacio en el layout */
+                <div key={s.id_servicio} className="relative h-28 w-full sm:w-72">
+                  {/* Card: flota por encima al expandirse */}
+                  <div className="group absolute inset-x-0 top-0 z-10 bg-card border border-border rounded-xl overflow-hidden cursor-default transition-all duration-300 hover:z-20 hover:shadow-xl hover:border-primary/40">
+
+                    {/* Nombre — absolute para no afectar la altura, se desvanece en hover */}
+                    <div className="absolute inset-0 min-h-28 flex items-center justify-center gap-3 px-6 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                      <Frame className="w-5 h-5 text-primary shrink-0" />
+                      <h3 className="font-semibold text-card-foreground text-center">{s.nombre}</h3>
+                    </div>
+
+                    {/* Descripción — en flujo normal, controla la altura real de la card */}
+                    <div className="min-h-28 flex items-center justify-center px-6 py-5 bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <p className="text-sm text-foreground text-center leading-relaxed">
+                        {s.descripcion ?? s.nombre}
+                      </p>
+                    </div>
+
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* CTA bajo servicios */}
-            <div className="text-center mt-12">
-              {isCliente ? (
-                <Button size="lg" onClick={handleAgendarCita}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
-                  <CalendarPlus className="h-5 w-5" />
-                  Agenda tu cita
-                </Button>
-              ) : !token ? (
+            {/* CTA bajo servicios — solo para no logueados */}
+            {!token && (
+              <div className="text-center mt-16">
                 <div className="flex flex-col items-center gap-2">
                   <Link to="/registro">
                     <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
@@ -145,8 +155,8 @@ export function LandingPage() {
                     <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
                   </p>
                 </div>
-              ) : null}
-            </div>
+              </div>
+            )}
           </div>
         </section>
       )}

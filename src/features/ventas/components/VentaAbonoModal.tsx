@@ -10,6 +10,7 @@ import { Label }   from '@/src/shared/components/ui/label'
 import { Badge }   from '@/src/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { CheckCircle2, CreditCard, Settings2, ChevronRight } from 'lucide-react'
+import { formatFecha } from '@/src/shared/lib/formatFecha'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type AbonoEsperado = { numero: number; monto: number; porcentaje: number }
@@ -178,7 +179,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     <div className="text-right">
                       <span className="font-semibold text-foreground">{fmt(ab.monto)}</span>
                       {pagado && (
-                        <span className="ml-2 text-xs text-emerald-600">{pagado.fecha}</span>
+                        <span className="ml-2 text-xs text-emerald-600">{formatFecha(pagado.fecha)}</span>
                       )}
                     </div>
                   </div>
@@ -247,12 +248,6 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                         </SelectContent>
                       </Select>
                     </div>
-
-                    {pagoMsg && (
-                      <div className={`rounded-lg border px-3 py-2 text-sm ${pagoMsg.tipo === 'ok' ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-destructive/40 bg-destructive/10 text-destructive'}`}>
-                        {pagoMsg.texto}
-                      </div>
-                    )}
 
                     <Button
                       onClick={handlePagar}
@@ -343,6 +338,13 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                   </div>
                 )}
               </>
+            )}
+
+            {/* Feedback del último pago — fuera del bloque siguiente_abono para que persista aunque se complete */}
+            {pagoMsg && tab === 'pagar' && (
+              <div className={`rounded-lg border px-3 py-2 text-sm ${pagoMsg.tipo === 'ok' ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-destructive/40 bg-destructive/10 text-destructive'}`}>
+                {pagoMsg.texto}
+              </div>
             )}
 
             {/* Completado */}

@@ -173,16 +173,19 @@ export function AppointmentsPage() {
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold text-foreground">Citas</h1>
             <p className="text-muted-foreground">Gestiona las citas programadas</p>
           </div>
-          <SearchInput value={q} onChange={setQ} placeholder="Buscar por fecha, hora o #cita..." className="w-64" />
+          <div className="flex items-center gap-2">  
+            <SearchInput value={q} onChange={setQ} placeholder="Buscar por fecha, hora o #cita..." className="w-64" />
           <Button onClick={openCreate} className="bg-primary text-primary-foreground hover:bg-primary/90">
             <Plus className="mr-2 h-4 w-4" />Registrar Cita
           </Button>
+          </div>
+        
         </div>
 
         <FilterBar
@@ -205,7 +208,7 @@ export function AppointmentsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-muted-foreground">ID</TableHead>
+               
                   <TableHead className="text-muted-foreground">Cliente</TableHead>
                   <TableHead className="text-muted-foreground">Fecha</TableHead>
                   <TableHead className="text-muted-foreground">Hora</TableHead>
@@ -218,7 +221,7 @@ export function AppointmentsPage() {
                   const clienteLabel = clientesOpts.find(o => o.value === String(c.id_cliente))?.label ?? `#${c.id_cliente}`
                   return (
                     <TableRow key={c.id_cita}>
-                      <TableCell className="text-foreground">{c.id_cita}</TableCell>
+                    
                       <TableCell className="text-foreground">{clienteLabel}</TableCell>
                       <TableCell className="text-foreground">{formatFecha(c.fecha)}</TableCell>
                       <TableCell className="text-foreground">{formatHora(c.hora)}</TableCell>
@@ -402,7 +405,7 @@ export function AppointmentsPage() {
               {ventaLineas.map((linea, i) => (
                 <div key={linea.id} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-border bg-background">
                   <div className="col-span-4 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Servicio <span className="text-red-500">*</span></Label>
+                    <Label className="text-xs text-muted-foreground">Tipo de Servicio <span className="text-red-500">*</span></Label>
                     <select
                       value={linea.id_servicio}
                       onChange={e => updateLinea(linea.id, 'id_servicio', e.target.value)}

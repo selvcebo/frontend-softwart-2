@@ -141,7 +141,7 @@ export function ClientesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-muted-foreground">ID</TableHead>
+               
                   <TableHead className="text-muted-foreground">Nombre</TableHead>
                   <TableHead className="text-muted-foreground">Documento</TableHead>
                   <TableHead className="text-muted-foreground">Correo</TableHead>
@@ -153,7 +153,7 @@ export function ClientesPage() {
               <TableBody>
                 {paginated.map((c) => (
                   <TableRow key={c.id_cliente}>
-                    <TableCell className="text-foreground">{c.id_cliente}</TableCell>
+  
                     <TableCell className="text-foreground font-medium">{c.nombre}</TableCell>
                     <TableCell className="text-foreground">
                       <span className="text-xs text-muted-foreground mr-1">{c.tipoDocumento}</span>{c.documento}

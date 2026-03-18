@@ -100,7 +100,7 @@ export function RolesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-muted-foreground">ID</TableHead>
+            
                   <TableHead className="text-muted-foreground">Nombre</TableHead>
                   <TableHead className="text-muted-foreground">Descripción</TableHead>
                   <TableHead className="text-muted-foreground">Estado</TableHead>
@@ -110,7 +110,7 @@ export function RolesPage() {
               <TableBody>
                 {paginated.map((r) => (
                   <TableRow key={r.id_rol}>
-                    <TableCell className="text-foreground">{r.id_rol}</TableCell>
+          
                     <TableCell className="text-foreground font-medium">{r.nombre}</TableCell>
                     <TableCell className="text-muted-foreground">{r.descripcion ?? '—'}</TableCell>
                     <TableCell><Switch checked={r.estado} onCheckedChange={async () => { await withToast(onToggleEstado(r.id_rol), 'Estado actualizado') }} /></TableCell>

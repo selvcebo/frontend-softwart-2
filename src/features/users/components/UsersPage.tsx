@@ -128,7 +128,7 @@ export function UsersPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-muted-foreground">ID</TableHead>
+     
                 <TableHead className="text-muted-foreground">Correo</TableHead>
                 <TableHead className="text-muted-foreground">Rol</TableHead>
                 <TableHead className="text-muted-foreground">Estado</TableHead>
@@ -138,7 +138,7 @@ export function UsersPage() {
             <TableBody>
               {paginated.map((u) => (
                 <TableRow key={u.id_usuario}>
-                  <TableCell className="text-foreground">{u.id_usuario}</TableCell>
+            
                   <TableCell className="text-foreground">{u.correo}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={getRolBadgeClass(u.id_rol)}>
