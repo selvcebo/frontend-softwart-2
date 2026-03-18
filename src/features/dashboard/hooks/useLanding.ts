@@ -1,10 +1,17 @@
-// ================================================================
 // src/features/dashboard/hooks/useLanding.ts
-// Sin cambios — el landing es solo informativo
-// ================================================================
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { apiRequest } from '@/src/shared/lib/apiClient'
+
+type Servicio = { id_servicio: number; nombre: string; descripcion?: string | null }
 
 export function useLanding() {
-  const [ctaClicked, setCtaClicked] = useState(false)
-  return { ctaClicked, setCtaClicked }
+  const [servicios, setServicios] = useState<Servicio[]>([])
+
+  useEffect(() => {
+    apiRequest<{ data: Servicio[] }>('/api/servicios?limit=6')
+      .then(r => setServicios(r.data ?? []))
+      .catch(() => {})
+  }, [])
+
+  return { servicios }
 }
