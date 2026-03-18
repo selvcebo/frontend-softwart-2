@@ -17,7 +17,6 @@ export function useRecuperar() {
       await apiRequest('/api/auth/recuperar', {
         method: 'POST',
         body: JSON.stringify({ correo }),
-        skipAuth: true,
       })
       setSuccess(true)
     } catch (err) {

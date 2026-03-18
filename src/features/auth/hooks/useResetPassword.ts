@@ -23,7 +23,6 @@ export function useResetPassword() {
       await apiRequest('/api/auth/reset-password', {
         method: 'POST',
         body: JSON.stringify({ token, nueva_clave }),
-        skipAuth: true,
       })
       setSuccess(true)
       setTimeout(() => navigate('/login'), 2000)

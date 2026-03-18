@@ -5,3 +5,7 @@ node_modules/
 bin/
 
 CLAUDE.md
+
+.env
+
+.env.example

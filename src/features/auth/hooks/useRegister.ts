@@ -26,7 +26,6 @@ export function useRegister(loginRedirect?: string) {
       await apiRequest('/api/auth/registro', {
         method: 'POST',
         body: JSON.stringify(data),
-        skipAuth: true,
       })
       navigate(loginRedirect ? `/login?redirect=${loginRedirect}` : '/login')
     } catch (err) {
