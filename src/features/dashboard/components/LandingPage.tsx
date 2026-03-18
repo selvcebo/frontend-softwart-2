@@ -115,24 +115,28 @@ export function LandingPage() {
                 Cada pieza es única. Trabajamos con los mejores materiales para que tu obra luzca perfecta.
               </p>
             </div>
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-10">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-4">
               {servicios.map((s) => (
-                /* Contenedor: mantiene el espacio en el layout */
+                /* Contenedor: reserva el espacio base en el layout */
                 <div key={s.id_servicio} className="relative h-28 w-full sm:w-72">
-                  {/* Card: flota por encima al expandirse */}
-                  <div className="group absolute inset-x-0 top-0 z-10 bg-card border border-border rounded-xl overflow-hidden cursor-default transition-all duration-300 hover:z-20 hover:shadow-xl hover:border-primary/40">
+                  {/* Card: posición absoluta para flotar sobre vecinas al expandirse */}
+                  <div className="group absolute inset-x-0 top-0 z-10 bg-card border border-border rounded-xl cursor-default transition-all duration-300 hover:z-20 hover:shadow-xl hover:border-primary/40">
 
-                    {/* Nombre — absolute para no afectar la altura, se desvanece en hover */}
-                    <div className="absolute inset-0 min-h-28 flex items-center justify-center gap-3 px-6 pointer-events-none transition-opacity duration-300 group-hover:opacity-0">
+                    {/* Nombre — siempre visible, da la altura base */}
+                    <div className="h-28 flex items-center justify-center gap-3 px-6">
                       <Frame className="w-5 h-5 text-primary shrink-0" />
                       <h3 className="font-semibold text-card-foreground text-center">{s.nombre}</h3>
                     </div>
 
-                    {/* Descripción — en flujo normal, controla la altura real de la card */}
-                    <div className="min-h-28 flex items-center justify-center px-6 py-5 bg-primary/5 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <p className="text-sm text-foreground text-center leading-relaxed">
-                        {s.descripcion ?? s.nombre}
-                      </p>
+                    {/* Descripción — colapsa a 0 por defecto, se expande en hover */}
+                    <div className="grid grid-rows-[0fr] group-hover:grid-rows-[1fr] transition-all duration-300">
+                      <div className="overflow-hidden">
+                        <div className="px-6 py-4 border-t border-border/50 bg-primary/5">
+                          <p className="text-sm text-foreground/80 text-center leading-relaxed">
+                            {s.descripcion ?? s.nombre}
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
                   </div>
