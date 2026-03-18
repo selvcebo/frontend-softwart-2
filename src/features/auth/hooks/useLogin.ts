@@ -80,7 +80,7 @@ export function useLogin(redirectCita = false) {
         // Venía desde "Agenda tu cita" → abrir formulario directo
         navigate('/mi-cuenta?nueva-cita=true', { replace: true })
       } else {
-        navigate('/mi-cuenta', { replace: true })
+        navigate('/', { replace: true })
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al iniciar sesión')

@@ -72,7 +72,7 @@ export function RegisterPage() {
     passwordsMatch
 
   return (
-    <div className="w-full max-w-md flex flex-col gap-6">
+    <div className="w-full max-w-xl flex flex-col gap-6">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-foreground">Crear cuenta</h1>
           <p className="text-muted-foreground mt-1">Completa tus datos para registrarte</p>

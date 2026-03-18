@@ -8,6 +8,7 @@ import { Input }    from '@/src/shared/components/ui/input'
 import { Label }    from '@/src/shared/components/ui/label'
 import { Checkbox } from '@/src/shared/components/ui/checkbox'
 import { CalendarPlus } from 'lucide-react'
+import { SplashScreen } from '@/src/shared/components/SplashScreen'
 
 export function LoginPage() {
   const [searchParams]  = useSearchParams()
@@ -22,6 +23,8 @@ export function LoginPage() {
     e.preventDefault()
     await login(correo, password, remember)
   }
+
+  if (isLoading) return <SplashScreen />
 
   return (
     <div className="w-full max-w-sm flex flex-col gap-6">
@@ -77,9 +80,9 @@ export function LoginPage() {
 
           {error && <p className="text-sm text-destructive text-center">{error}</p>}
 
-          <Button type="submit" disabled={isLoading}
+          <Button type="submit"
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-            {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            Iniciar sesión
           </Button>
         </form>
 

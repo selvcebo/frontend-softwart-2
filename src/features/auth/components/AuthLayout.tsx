@@ -6,10 +6,12 @@ import { AuthHeader } from './AuthHeader'
  
 export function AuthLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-secondary">
       <AuthHeader />
       <main className="flex-1 flex items-center justify-center px-4 py-8">
-        <Outlet />
+        <div className="w-full max-w-sm bg-card rounded-xl shadow-lg p-8">
+          <Outlet />
+        </div>
       </main>
     </div>
   )

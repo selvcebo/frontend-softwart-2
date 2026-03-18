@@ -1,6 +1,6 @@
 // src/features/cuenta/components/MiCuentaPage.tsx
 import { useEffect, useState, useRef, useMemo } from 'react'
-import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useCuenta } from '../hooks/useCuenta'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 import { apiRequest } from '@/src/shared/lib/apiClient'
@@ -10,7 +10,7 @@ import { Label }    from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Textarea } from '@/src/shared/components/ui/textarea'
-import { CalendarPlus, LogOut, User, CalendarClock, ShieldAlert } from 'lucide-react'
+import { CalendarPlus, LogOut, User, CalendarClock, ShieldAlert, Home } from 'lucide-react'
 import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
 
 // ── Helpers storage ───────────────────────────────────────────────────────────
@@ -39,9 +39,10 @@ function estadoBadge(nombre?: string) {
 }
 
 // ── Sección con título ────────────────────────────────────────────────────────
-function Section({ icon: Icon, title, children }: {
+function Section({ icon: Icon, title, action, children }: {
   icon: React.ComponentType<{ className?: string }>
   title: string
+  action?: React.ReactNode
   children: React.ReactNode
 }) {
   return (
@@ -49,6 +50,7 @@ function Section({ icon: Icon, title, children }: {
       <div className="flex items-center gap-2">
         <Icon className="h-5 w-5 text-primary" />
         <h2 className="text-xl font-semibold text-card-foreground">{title}</h2>
+        {action && <div className="ml-auto">{action}</div>}
       </div>
       {children}
     </section>
@@ -203,19 +205,30 @@ export function MiCuentaPage() {
 
   return (
     <div className="min-h-screen bg-background">
+
+      {/* Navbar */}
+      <nav className="sticky top-0 z-50 w-full bg-secondary/95 backdrop-blur border-b border-secondary-foreground/10">
+        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-1.5 text-secondary-foreground/70 hover:text-secondary-foreground transition-colors text-sm">
+            <Home className="h-4 w-4" />
+            Inicio
+          </Link>
+          <span className="text-sm font-semibold text-secondary-foreground">Mi cuenta</span>
+          <Button variant="ghost" size="sm" onClick={handleLogout}
+            className="gap-1.5 text-secondary-foreground/70 hover:text-secondary-foreground hover:bg-secondary-foreground/10">
+            <LogOut className="h-4 w-4" />Salir
+          </Button>
+        </div>
+      </nav>
+
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
 
         {/* Header */}
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Mi cuenta</h1>
-            <p className="text-muted-foreground">
-              {perfil?.nombre ? `Hola, ${perfil.nombre.split(' ')[0]} 👋` : 'Bienvenido'}
-            </p>
-          </div>
-          <Button variant="outline" onClick={handleLogout} className="gap-2 text-muted-foreground">
-            <LogOut className="h-4 w-4" />Cerrar sesión
-          </Button>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Mi cuenta</h1>
+          <p className="text-muted-foreground">
+            {perfil?.nombre ? `Hola, ${perfil.nombre.split(' ')[0]} 👋` : 'Bienvenido'}
+          </p>
         </div>
 
         {error && (
@@ -225,7 +238,14 @@ export function MiCuentaPage() {
         )}
 
         {/* ── Mis citas ─────────────────────────────────────────────────────── */}
-        <Section icon={CalendarClock} title="Mis citas">
+        <Section icon={CalendarClock} title="Mis citas"
+          action={!showCitaForm && (
+            <Button size="sm" onClick={() => { setShowCitaForm(true); setTimeout(() => citaFormRef.current?.scrollIntoView({ behavior: 'smooth' }), 100) }}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 gap-1.5">
+              <CalendarPlus className="h-4 w-4" />Nueva cita
+            </Button>
+          )}
+        >
           {/* Mensaje de cita agendada exitosamente */}
           {citaMsg && !showCitaForm && (
             <div className={`rounded-lg border px-4 py-3 text-sm ${citaMsgType === 'ok' ? 'border-emerald-300 bg-emerald-50 text-emerald-800' : 'border-destructive/40 bg-destructive/10 text-destructive'}`}>
@@ -290,16 +310,6 @@ export function MiCuentaPage() {
             </div>
           )}
 
-          {/* Botón agendar nueva (si ya tiene citas) */}
-          {citas.length > 0 && !showCitaForm && (
-            <Button
-              variant="outline"
-              onClick={() => { setShowCitaForm(true); setTimeout(() => citaFormRef.current?.scrollIntoView({ behavior: 'smooth' }), 100) }}
-              className="gap-2 self-start"
-            >
-              <CalendarPlus className="h-4 w-4" />Nueva cita
-            </Button>
-          )}
 
           {/* ── Formulario nueva cita ──────────────────────────────────────── */}
           {showCitaForm && (
@@ -467,8 +477,8 @@ export function MiCuentaPage() {
         </Section>
 
         {/* ── Eliminar cuenta ───────────────────────────────────────────────── */}
-        <section className="border border-destructive/30 bg-destructive/5 rounded-xl p-6">
-          <h2 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2">
+        <section className="border border-destructive/30 bg-background rounded-xl p-6 ">
+          <h2 className="text-xl font-semibold text-foreground mb-2 flex items-center gap-2 ">
             <ShieldAlert className="h-5 w-5 text-destructive" />Eliminar cuenta
           </h2>
           <p className="text-muted-foreground text-sm mb-4">
