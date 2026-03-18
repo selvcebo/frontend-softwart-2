@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null }
-type CreateVentaDto = Omit<Venta, 'id_venta'>
+export type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
+type CreateVentaDto = Omit<Venta, 'id_venta' | 'num_abonos' | 'pagos_realizados'>
 type UpdateVentaDto = Partial<CreateVentaDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
-type BackendVenta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; cliente?: { id_cliente: number } | null; cita?: { id_cita: number } | null }
+type BackendVenta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; num_abonos?: number; cliente?: { id_cliente: number } | null; cita?: { id_cita: number } | null; pagos?: any[] | null }
 
 export function useVentas() {
   const [ventas, setVentas] = useState<Venta[]>([])
@@ -22,6 +22,8 @@ export function useVentas() {
         observacion: item.observacion, estado: item.estado,
         id_cliente: item.cliente?.id_cliente ?? 0,
         id_cita: item.cita?.id_cita ?? null,
+        num_abonos: item.num_abonos ?? 2,
+        pagos_realizados: item.pagos?.length ?? 0,
       })))
     } catch (e) { setError(e instanceof Error ? e.message : 'Error') }
     finally { setIsLoading(false) }

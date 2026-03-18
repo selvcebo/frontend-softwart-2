@@ -29,14 +29,14 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { label: 'Clientes',    href: '/admin/clientes',    icon: UserCircle },
       { label: 'Citas',       href: '/admin/citas',       icon: Calendar },
       { label: 'Ventas',      href: '/admin/ventas',      icon: ShoppingBag },
-      { label: 'Pedidos',     href: '/admin/pedidos',     icon: ClipboardList },
+      { label: 'Servicios',     href: '/admin/pedidos',     icon: ClipboardList },
       { label: 'Pagos',       href: '/admin/pagos',       icon: CreditCard },
     ],
   },
   {
     label: 'Configuración',
     items: [
-      { label: 'Servicios',   href: '/admin/servicios',   icon: Wrench },
+      { label: 'Tipos de Servicio',   href: '/admin/servicios',   icon: Wrench },
       { label: 'Calculadora', href: '/admin/calculadora', icon: Calculator },
       { label: 'Usuarios',    href: '/admin/usuarios',    icon: Users },
       { label: 'Roles',       href: '/admin/roles',       icon: Shield },

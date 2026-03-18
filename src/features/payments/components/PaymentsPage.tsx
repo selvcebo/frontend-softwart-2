@@ -144,7 +144,7 @@ export function PaymentsPage() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-muted-foreground">ID</TableHead>
+     
                 <TableHead className="text-muted-foreground">Venta</TableHead>
                 <TableHead className="text-muted-foreground text-right">Monto</TableHead>
                 <TableHead className="text-muted-foreground">Fecha</TableHead>
@@ -159,7 +159,7 @@ export function PaymentsPage() {
                 const estadoNombre = getEstadoLabel(p.id_estado_pago)
                 return (
                   <TableRow key={p.id_pago}>
-                    <TableCell className="text-foreground">{p.id_pago}</TableCell>
+     
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
                     <TableCell className="text-foreground text-right font-medium tabular-nums">{fmt(p.monto)}</TableCell>
                     <TableCell className="text-foreground">{formatFecha(p.fecha)}</TableCell>

@@ -143,7 +143,7 @@ export function ServicesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-muted-foreground">ID</TableHead>
+                
                   <TableHead className="text-muted-foreground">Nombre</TableHead>
                   <TableHead className="text-muted-foreground">Duración</TableHead>
                   <TableHead className="text-muted-foreground">Descripción</TableHead>
@@ -154,7 +154,7 @@ export function ServicesPage() {
               <TableBody>
                 {paginated.map(s => (
                   <TableRow key={s.id_servicio}>
-                    <TableCell className="text-foreground">{s.id_servicio}</TableCell>
+             
                     <TableCell className="text-foreground font-medium">{s.nombre}</TableCell>
                     <TableCell className="text-foreground">
                       <span className="flex items-center gap-1.5">

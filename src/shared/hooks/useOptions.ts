@@ -60,17 +60,20 @@ export function useVentasOptions() {
 }
 
 // ── Citas ─────────────────────────────────────────────────────
-type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
+export type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
 
 export function useCitasOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
+  const [rawCitas,  setRawCitas]  = useState<CitaOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     apiRequest<ApiResponse<CitaOption[]>>('/api/citas?limit=100')
       .then((res) => {
+        const data = res.data ?? []
+        setRawCitas(data)
         setOptions(
-          (res.data ?? []).map((c) => ({
+          data.map((c) => ({
             value:    String(c.id_cita),
             label:    `Cita #${c.id_cita} — ${new Date(c.fecha).toLocaleDateString('es-CO')}`,
             sublabel: c.hora,
@@ -81,7 +84,7 @@ export function useCitasOptions() {
       .finally(() => setIsLoading(false))
   }, [])
 
-  return { options, isLoading }
+  return { options, rawCitas, isLoading }
 }
 
 // ── Servicios ─────────────────────────────────────────────────
