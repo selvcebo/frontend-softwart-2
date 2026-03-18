@@ -109,7 +109,7 @@ export function ResetPasswordPage() {
             {/* Campo: código de recuperación */}
             <div className="flex flex-col gap-2">
               <Label htmlFor="token" className="text-foreground">
-                Código de recuperación
+                Código de recuperación <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="token"
@@ -131,7 +131,7 @@ export function ResetPasswordPage() {
             {/* Campo: nueva contraseña */}
             <div className="flex flex-col gap-2">
               <Label htmlFor="nueva-clave" className="text-foreground">
-                Nueva contraseña
+                Nueva contraseña <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="nueva-clave"
@@ -152,7 +152,7 @@ export function ResetPasswordPage() {
             {/* Campo: confirmar contraseña */}
             <div className="flex flex-col gap-2">
               <Label htmlFor="confirmar-clave" className="text-foreground">
-                Confirmar contraseña
+                Confirmar contraseña <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="confirmar-clave"

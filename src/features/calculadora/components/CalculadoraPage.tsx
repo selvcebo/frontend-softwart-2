@@ -190,11 +190,11 @@ export function CalculadoraPage() {
             <div className="flex flex-col gap-4 mt-2">
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-2">
-                  <Label className="text-foreground">Largo (cm)</Label>
+                  <Label className="text-foreground">Largo (cm) <span className="text-red-500">*</span></Label>
                   <Input type="number" value={largo} onChange={(e) => setLargo(e.target.value)} className="bg-card text-foreground border-border" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Label className="text-foreground">Ancho (cm)</Label>
+                  <Label className="text-foreground">Ancho (cm) <span className="text-red-500">*</span></Label>
                   <Input type="number" value={ancho} onChange={(e) => setAncho(e.target.value)} className="bg-card text-foreground border-border" />
                 </div>
               </div>
@@ -219,17 +219,17 @@ export function CalculadoraPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Código</Label>
+              <Label className="text-foreground">Código <span className="text-red-500">*</span></Label>
               <Input value={codigo} onChange={(e) => { setCodigo(e.target.value); if (errors.codigo) setErrors({}) }} className="bg-card text-foreground border-border" />
               {errors.codigo && <p className="text-sm text-destructive">{errors.codigo}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Colilla</Label>
+              <Label className="text-foreground">Colilla <span className="text-red-500">*</span></Label>
               <Input type="number" step="0.01" value={colillaStr} onChange={(e) => { setColillaStr(e.target.value); if (errors.colilla) setErrors({}) }} className="bg-card text-foreground border-border" />
               {errors.colilla && <p className="text-sm text-destructive">{errors.colilla}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Precio Ensamblado</Label>
+              <Label className="text-foreground">Precio Ensamblado <span className="text-red-500">*</span></Label>
               <Input type="number" step="0.01" value={precioStr} onChange={(e) => { setPrecioStr(e.target.value); if (errors.precio) setErrors({}) }} className="bg-card text-foreground border-border" />
               {errors.precio && <p className="text-sm text-destructive">{errors.precio}</p>}
             </div>

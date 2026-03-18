@@ -310,7 +310,7 @@ export function AppointmentsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Cliente</Label>
+              <Label className="text-foreground">Cliente <span className="text-red-500">*</span></Label>
               <Combobox
                 options={clientesOpts} value={idCliente}
                 onValueChange={(v) => { setIdCliente(v); if (errors.idCliente) setErrors({...errors, idCliente: ''}) }}
@@ -319,7 +319,7 @@ export function AppointmentsPage() {
               {errors.idCliente && <p className="text-sm text-destructive">{errors.idCliente}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha</Label>
+              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
               <Input
                 type="date" min={new Date().toISOString().slice(0,10)} value={fecha}
                 onChange={(e) => { setFecha(e.target.value); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
@@ -340,7 +340,7 @@ export function AppointmentsPage() {
               }
             />
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado</Label>
+              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
               <Select value={idEstado} onValueChange={(v) => { setIdEstado(v); if (errors.idEstado) setErrors({...errors, idEstado: ''}) }}>
                 <SelectTrigger className="bg-card text-foreground border-border">
                   <SelectValue placeholder="Seleccionar estado" />
@@ -402,7 +402,7 @@ export function AppointmentsPage() {
               {ventaLineas.map((linea, i) => (
                 <div key={linea.id} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-border bg-background">
                   <div className="col-span-4 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Servicio</Label>
+                    <Label className="text-xs text-muted-foreground">Servicio <span className="text-red-500">*</span></Label>
                     <select
                       value={linea.id_servicio}
                       onChange={e => updateLinea(linea.id, 'id_servicio', e.target.value)}
@@ -425,7 +425,7 @@ export function AppointmentsPage() {
                     </select>
                   </div>
                   <div className="col-span-3 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Precio (COP)</Label>
+                    <Label className="text-xs text-muted-foreground">Precio (COP) <span className="text-red-500">*</span></Label>
                     <Input
                       type="number" min="0" placeholder="0"
                       value={linea.precio}

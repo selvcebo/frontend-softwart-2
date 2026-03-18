@@ -233,7 +233,7 @@ export function ServicesPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             {errors._global && <p className="text-sm text-destructive">{errors._global}</p>}
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Nombre</Label>
+              <Label className="text-foreground">Nombre <span className="text-red-500">*</span></Label>
               <Input value={nombre}
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors(p => ({...p, nombre:''})) }}
                 className="bg-card text-foreground border-border" />
@@ -241,7 +241,7 @@ export function ServicesPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground flex items-center gap-1.5">
-                <CalendarDays className="h-4 w-4" /> Duración estimada (días)
+                <CalendarDays className="h-4 w-4" /> Duración estimada (días) <span className="text-red-500">*</span>
               </Label>
               <Input type="number" min="1" step="1" value={duracionStr}
                 onChange={e => { setDuracionStr(e.target.value); if (errors.duracion) setErrors(p => ({...p, duracion:''})) }}

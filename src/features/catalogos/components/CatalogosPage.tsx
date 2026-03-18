@@ -143,7 +143,7 @@ function CatalogTab({ items, isLoading, onToggle, onCreate, onEdit, onDelete, si
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Nombre</Label>
+              <Label className="text-foreground">Nombre <span className="text-red-500">*</span></Label>
               <Input value={nombre} onChange={e => { setNombre(e.target.value); setFieldError('') }}
                 className="bg-card text-foreground border-border" autoFocus />
               {fieldError && <p className="text-sm text-destructive">{fieldError}</p>}

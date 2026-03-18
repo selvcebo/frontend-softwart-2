@@ -62,7 +62,7 @@ export function RecuperarPage() {
             )}
             <div className="flex flex-col gap-2">
               <Label htmlFor="correo" className="text-foreground">
-                Correo electrónico
+                Correo electrónico <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="correo"

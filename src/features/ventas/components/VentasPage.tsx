@@ -232,7 +232,7 @@ export function VentasPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Cliente</Label>
+              <Label className="text-foreground">Cliente <span className="text-red-500">*</span></Label>
               <Combobox options={clientesOpts} value={idCliente}
                 onValueChange={v => { setIdCliente(v); if (errors.idCliente) setErrors(p => ({...p, idCliente:''})) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..." />
@@ -244,14 +244,14 @@ export function VentasPage() {
                 placeholder="Vincular a una cita..." searchPlaceholder="Buscar cita..." />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha</Label>
+              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
               <Input type="date" value={fecha}
                 onChange={e => { setFecha(e.target.value); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
                 className="bg-card text-foreground border-border" />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Total</Label>
+              <Label className="text-foreground">Total <span className="text-red-500">*</span></Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
                 <Input type="number" step="1" min="0" value={total}

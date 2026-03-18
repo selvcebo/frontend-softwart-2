@@ -83,7 +83,7 @@ export function RegisterPage() {
   {/* Columna 1: Tipo de documento */}
   <div className="flex flex-col gap-2">
     <Label htmlFor="tipoDocumento" className="text-foreground">
-      Tipo de documento
+      Tipo de documento <span className="text-red-500">*</span>
     </Label>
     <Select value={tipoDocumento} onValueChange={setTipoDocumento}>
       <SelectTrigger className="bg-card text-foreground border-border">
@@ -102,7 +102,7 @@ export function RegisterPage() {
   {/* Columna 2: Número de documento */}
   <div className="flex flex-col gap-2">
     <Label htmlFor="documento" className="text-foreground">
-      Número de documento
+      Número de documento <span className="text-red-500">*</span>
     </Label>
     <Input
       id="documento"
@@ -118,7 +118,7 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="nombre" className="text-foreground">
-              Nombre completo
+              Nombre completo <span className="text-red-500">*</span>
             </Label>
             <Input
               id="nombre"
@@ -133,7 +133,7 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="correo" className="text-foreground">
-              Correo electrónico
+              Correo electrónico <span className="text-red-500">*</span>
             </Label>
             <Input
               id="correo"
@@ -148,7 +148,7 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="telefono" className="text-foreground">
-              Teléfono
+              Teléfono <span className="text-red-500">*</span>
             </Label>
             <Input
               id="telefono"
@@ -163,7 +163,7 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="clave" className="text-foreground">
-              Contraseña
+              Contraseña <span className="text-red-500">*</span>
             </Label>
             <Input
               id="clave"
@@ -178,7 +178,7 @@ export function RegisterPage() {
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="confirmarClave" className="text-foreground">
-              Confirmar contraseña
+              Confirmar contraseña <span className="text-red-500">*</span>
             </Label>
             <Input
               id="confirmarClave"

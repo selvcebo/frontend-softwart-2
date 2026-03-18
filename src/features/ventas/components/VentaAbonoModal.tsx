@@ -216,7 +216,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Monto ($)</Label>
+                        <Label className="text-foreground text-xs">Monto ($) <span className="text-red-500">*</span></Label>
                         <Input
                           type="number" min="0" value={monto}
                           onChange={e => setMonto(e.target.value)}
@@ -225,7 +225,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                         {monto && <p className="text-xs text-muted-foreground">{fmt(Number(monto))}</p>}
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Fecha</Label>
+                        <Label className="text-foreground text-xs">Fecha <span className="text-red-500">*</span></Label>
                         <Input
                           type="date" value={fechaPago}
                           onChange={e => setFechaPago(e.target.value)}
@@ -235,7 +235,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     </div>
 
                     <div className="flex flex-col gap-1.5">
-                      <Label className="text-foreground text-xs">Método de pago</Label>
+                      <Label className="text-foreground text-xs">Método de pago <span className="text-red-500">*</span></Label>
                       <Select value={idMetodo} onValueChange={setIdMetodo}>
                         <SelectTrigger className="bg-card border-border h-9 text-sm">
                           <SelectValue placeholder="Seleccionar..." />
@@ -276,7 +276,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Número de abonos</Label>
+                        <Label className="text-foreground text-xs">Número de abonos <span className="text-red-500">*</span></Label>
                         <Input
                           type="number" min="1" max="12"
                           value={numAbonos}
@@ -287,7 +287,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                         <p className="text-[10px] text-muted-foreground">Máximo 12</p>
                       </div>
                       <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">% primer abono</Label>
+                        <Label className="text-foreground text-xs">% primer abono <span className="text-red-500">*</span></Label>
                         <Input
                           type="number" min="1" max="99"
                           value={pctPrimero}

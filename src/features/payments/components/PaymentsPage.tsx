@@ -227,12 +227,12 @@ export function PaymentsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Venta</Label>
+              <Label className="text-foreground">Venta <span className="text-red-500">*</span></Label>
               <Combobox options={ventasOpts} value={idVenta} onValueChange={v => { setIdVenta(v); if (errors.idVenta) setErrors(p => ({...p, idVenta:''})) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
               {errors.idVenta && <p className="text-sm text-destructive">{errors.idVenta}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Monto</Label>
+              <Label className="text-foreground">Monto <span className="text-red-500">*</span></Label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
                 <Input type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className="bg-card text-foreground border-border pl-7" placeholder="0" />
@@ -241,12 +241,12 @@ export function PaymentsPage() {
               {errors.monto && <p className="text-sm text-destructive">{errors.monto}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha</Label>
+              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
               <Input type="date" value={fecha} onChange={e => { setFecha(e.target.value); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }} className="bg-card text-foreground border-border" />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Método de pago</Label>
+              <Label className="text-foreground">Método de pago <span className="text-red-500">*</span></Label>
               <Select value={idMetodo} onValueChange={v => { setIdMetodo(v); if (errors.idMetodo) setErrors(p => ({...p, idMetodo:''})) }}>
                 <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar método" /></SelectTrigger>
                 <SelectContent>{metodosPago.map(m => <SelectItem key={m.id_metodo_pago} value={String(m.id_metodo_pago)}>{m.nombre}</SelectItem>)}</SelectContent>
@@ -254,7 +254,7 @@ export function PaymentsPage() {
               {errors.idMetodo && <p className="text-sm text-destructive">{errors.idMetodo}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado</Label>
+              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
               <Select value={idEstado} onValueChange={v => { setIdEstado(v); if (errors.idEstado) setErrors(p => ({...p, idEstado:''})) }}>
                 <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar estado" /></SelectTrigger>
                 <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>

@@ -320,7 +320,7 @@ export function MiCuentaPage() {
                 <div className="flex flex-col gap-4">
                   {/* Fecha */}
                   <div className="flex flex-col gap-2">
-                    <Label className="text-foreground">Fecha</Label>
+                    <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
                     <Input
                       type="date"
                       min={todayString()}
@@ -396,7 +396,7 @@ export function MiCuentaPage() {
           ) : (
             <form onSubmit={submitPerfil} className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
-                <Label htmlFor="nombre">Nombre completo</Label>
+                <Label htmlFor="nombre">Nombre completo <span className="text-red-500">*</span></Label>
                 <Input id="nombre" value={nombre} onChange={e => setNombre(e.target.value)}
                   className="bg-card text-foreground border-border" required />
               </div>
@@ -406,7 +406,7 @@ export function MiCuentaPage() {
                   className="bg-card text-foreground border-border" />
               </div>
               <div className="flex flex-col gap-2 md:col-span-2">
-                <Label htmlFor="correo">Correo</Label>
+                <Label htmlFor="correo">Correo <span className="text-red-500">*</span></Label>
                 <Input id="correo" type="email" value={correo} onChange={e => setCorreo(e.target.value)}
                   className="bg-card text-foreground border-border" required />
               </div>
@@ -432,21 +432,21 @@ export function MiCuentaPage() {
           </p>
           <form onSubmit={submitClave} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-2 md:col-span-2">
-              <Label htmlFor="claveActual">Contraseña actual</Label>
+              <Label htmlFor="claveActual">Contraseña actual <span className="text-red-500">*</span></Label>
               <Input id="claveActual" type="password" value={claveActual}
                 onChange={e => setClaveActual(e.target.value)}
                 placeholder="••••••••"
                 className="bg-card text-foreground border-border max-w-sm" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="claveNueva">Nueva contraseña</Label>
+              <Label htmlFor="claveNueva">Nueva contraseña <span className="text-red-500">*</span></Label>
               <Input id="claveNueva" type="password" value={claveNueva}
                 onChange={e => setClaveNueva(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
                 className="bg-card text-foreground border-border" />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="claveConfirm">Confirmar nueva contraseña</Label>
+              <Label htmlFor="claveConfirm">Confirmar nueva contraseña <span className="text-red-500">*</span></Label>
               <Input id="claveConfirm" type="password" value={claveConfirm}
                 onChange={e => setClaveConfirm(e.target.value)}
                 placeholder="Repite la nueva contraseña"

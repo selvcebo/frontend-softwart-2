@@ -240,7 +240,7 @@ export function ClientesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Tipo de documento</Label>
+              <Label className="text-foreground">Tipo de documento <span className="text-red-500">*</span></Label>
               <Select value={tipoDocumento} onValueChange={(v) => { setTipoDocumento(v); if (errors.tipoDocumento) setErrors({...errors, tipoDocumento: ''}) }}>
                 <SelectTrigger className="bg-card text-foreground border-border">
                   <SelectValue placeholder="Seleccionar tipo" />
@@ -252,14 +252,14 @@ export function ClientesPage() {
               {errors.tipoDocumento && <p className="text-sm text-destructive">{errors.tipoDocumento}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="doc" className="text-foreground">Número de documento</Label>
+              <Label htmlFor="doc" className="text-foreground">Número de documento <span className="text-red-500">*</span></Label>
               <Input id="doc" value={documento}
                 onChange={e => { setDocumento(e.target.value); if (errors.documento) setErrors({...errors, documento: ''}) }}
                 className="bg-card text-foreground border-border" />
               {errors.documento && <p className="text-sm text-destructive">{errors.documento}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="nom" className="text-foreground">Nombre completo</Label>
+              <Label htmlFor="nom" className="text-foreground">Nombre completo <span className="text-red-500">*</span></Label>
               <Input id="nom" value={nombre}
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({...errors, nombre: ''}) }}
                 className="bg-card text-foreground border-border" />
@@ -267,7 +267,7 @@ export function ClientesPage() {
             </div>
             {!editingId && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="cor" className="text-foreground">Correo electrónico</Label>
+                <Label htmlFor="cor" className="text-foreground">Correo electrónico <span className="text-red-500">*</span></Label>
                 <Input id="cor" type="email" value={correo}
                   onChange={e => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo: ''}) }}
                   className="bg-card text-foreground border-border" />

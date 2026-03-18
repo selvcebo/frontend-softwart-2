@@ -194,19 +194,19 @@ export function UsersPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="correo" className="text-foreground">Correo</Label>
+              <Label htmlFor="correo" className="text-foreground">Correo <span className="text-red-500">*</span></Label>
               <Input id="correo" type="email" value={correo} onChange={(e) => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo:''}) }} className="bg-card text-foreground border-border" />
               {errors.correo && <p className="text-sm text-destructive">{errors.correo}</p>}
             </div>
             {!editingId && (
               <div className="flex flex-col gap-2">
-                <Label htmlFor="clave" className="text-foreground">Contraseña</Label>
+                <Label htmlFor="clave" className="text-foreground">Contraseña <span className="text-red-500">*</span></Label>
                 <Input id="clave" type="password" value={clave} onChange={(e) => { setClave(e.target.value); if (errors.clave) setErrors({...errors, clave:''}) }} className="bg-card text-foreground border-border" />
                 {errors.clave && <p className="text-sm text-destructive">{errors.clave}</p>}
               </div>
             )}
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Rol</Label>
+              <Label className="text-foreground">Rol <span className="text-red-500">*</span></Label>
               <Select value={idRol} onValueChange={(v) => { setIdRol(v); if (errors.idRol) setErrors({...errors, idRol:''}) }}>
                 <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar rol" /></SelectTrigger>
                 <SelectContent>

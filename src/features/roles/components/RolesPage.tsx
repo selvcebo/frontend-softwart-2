@@ -167,7 +167,7 @@ export function RolesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Nombre</Label>
+              <Label className="text-foreground">Nombre <span className="text-red-500">*</span></Label>
               <Input value={nombre} onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({}) }}
                 className="bg-card text-foreground border-border" />
               {errors.nombre && <p className="text-sm text-destructive">{errors.nombre}</p>}

@@ -316,12 +316,12 @@ export function PedidosPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Venta</Label>
+              <Label className="text-foreground">Venta <span className="text-red-500">*</span></Label>
               <Combobox options={ventasOpts} value={idVenta} onValueChange={(v) => { setIdVenta(v); if (errors.idVenta) setErrors({...errors, idVenta: ''}) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
               {errors.idVenta && <p className="text-sm text-destructive">{errors.idVenta}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Tipo de Servicio</Label>
+              <Label className="text-foreground">Tipo de Servicio <span className="text-red-500">*</span></Label>
               <Combobox options={serviciosOpts} value={idServicio} onValueChange={(v) => { setIdServicio(v); if (errors.idServicio) setErrors({...errors, idServicio: ''}) }} placeholder="Buscar servicio..." searchPlaceholder="Nombre del servicio..." />
               {errors.idServicio && <p className="text-sm text-destructive">{errors.idServicio}</p>}
             </div>
@@ -330,7 +330,7 @@ export function PedidosPage() {
               <Combobox options={marcosOpts} value={idMarco} onValueChange={setIdMarco} placeholder="Seleccionar marco..." searchPlaceholder="Código del marco..." />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado</Label>
+              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
               <Select value={idEstado} onValueChange={(v) => { setIdEstado(v); if (errors.idEstado) setErrors({...errors, idEstado: ''}) }}>
                 <SelectTrigger className="bg-card text-foreground border-border">
                   <SelectValue placeholder="Seleccionar estado" />
@@ -347,12 +347,12 @@ export function PedidosPage() {
               {errors.idEstado && <p className="text-sm text-destructive">{errors.idEstado}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha</Label>
+              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
               <Input type="date" value={fecha} onChange={(e) => { setFecha(e.target.value); if (errors.fecha) setErrors({...errors, fecha: ''}) }} className="bg-card text-foreground border-border" />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Precio</Label>
+              <Label className="text-foreground">Precio <span className="text-red-500">*</span></Label>
               <Input type="number" step="0.01" value={precio} onChange={(e) => { setPrecio(e.target.value); if (errors.precio) setErrors({...errors, precio: ''}) }} className="bg-card text-foreground border-border" />
               {errors.precio && <p className="text-sm text-destructive">{errors.precio}</p>}
             </div>

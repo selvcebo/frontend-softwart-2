@@ -44,7 +44,7 @@ export function LoginPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="correo" className="text-foreground">Correo</Label>
+            <Label htmlFor="correo" className="text-foreground">Correo <span className="text-red-500">*</span></Label>
             <Input
               id="correo" type="email" autoComplete="email"
               value={correo} onChange={e => setCorreo(e.target.value)}
@@ -55,7 +55,7 @@ export function LoginPage() {
 
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-foreground">Contraseña</Label>
+              <Label htmlFor="password" className="text-foreground">Contraseña <span className="text-red-500">*</span></Label>
               <Link to="/recuperar" className="text-xs text-primary hover:underline">
                 ¿Olvidaste tu contraseña?
               </Link>
