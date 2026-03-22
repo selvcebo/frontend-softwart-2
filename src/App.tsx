@@ -2,6 +2,8 @@
 // src/App.tsx
 // ============================================================
 import { lazy, Suspense }   from 'react'
+import { useBackendWakeup } from '@/src/shared/hooks/useBackendWakeup'
+import { SplashScreen }     from '@/src/shared/components/SplashScreen'
 import { ClientesPage }     from '@/src/features/clientes/components/ClientesPage'
 import { DashboardPage }    from '@/src/features/dashboard/components/DashboardPage'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
@@ -130,6 +132,9 @@ function AdminLayout() {
 }
 
 export default function App() {
+  const showSplash = useBackendWakeup()
+  if (showSplash) return <SplashScreen />
+
   return (
     <>
       <Routes>

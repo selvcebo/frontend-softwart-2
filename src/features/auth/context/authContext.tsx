@@ -6,9 +6,9 @@
 //         pero useLogin nunca guarda esa key. Se corrigió para leer
 //         las claves individuales que sí guarda useLogin.
 // ============================================================
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useState, ReactNode } from 'react'
 
-export interface AuthUser {
+interface AuthUser {
   id_usuario: number
   correo: string
   rol: string            // 'Admin' | 'Empleado' | 'Cliente'
@@ -86,11 +86,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     </AuthContext.Provider>
   )
 }
-
-export function useAuthContext() {
-  const ctx = useContext(AuthContext)
-  if (!ctx) throw new Error('useAuthContext debe estar dentro de AuthProvider')
-  return ctx
-}
-
 

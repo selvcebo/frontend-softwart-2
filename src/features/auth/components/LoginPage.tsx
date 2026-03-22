@@ -4,7 +4,6 @@ import { useLogin } from '../hooks/useLogin'
 import { Button }      from '@/src/shared/components/ui/button'
 import { Input }       from '@/src/shared/components/ui/input'
 import { Checkbox }    from '@/src/shared/components/ui/checkbox'
-import { SplashScreen } from '@/src/shared/components/SplashScreen'
 import { ArrowLeft, CalendarPlus, Eye, EyeOff, Lock, Mail, UserPlus } from 'lucide-react'
 
 const labelCls =
@@ -17,7 +16,7 @@ const fieldCls =
 export function LoginPage() {
   const [searchParams] = useSearchParams()
   const redirectCita   = searchParams.get('redirect') === 'cita'
-  const { login, isLoading, error } = useLogin(redirectCita)
+  const { login, error } = useLogin(redirectCita)
 
   const [correo,   setCorreo]   = useState('')
   const [password, setPassword] = useState('')
@@ -28,8 +27,6 @@ export function LoginPage() {
     e.preventDefault()
     await login(correo, password, remember)
   }
-
-  if (isLoading) return <SplashScreen />
 
   return (
     <div className="min-h-screen flex flex-col bg-[#002926] selection:bg-[#805533]/30">

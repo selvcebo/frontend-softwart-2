@@ -1,34 +1,30 @@
 // src/shared/hooks/useBackendWakeup.ts
 // Pinga el backend al cargar para despertar el servidor (Render cold start).
-// Muestra el splash al menos MIN_MS ms, máximo MAX_MS antes de rendirse.
+// Solo muestra el splash si el backend no responde en SHOW_AFTER_MS.
+// Si el backend ya está caliente (responde rápido), la app carga sin interrupciones.
 import { useEffect, useState } from 'react'
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
-const MIN_MS  = 3000   // tiempo mínimo que muestra el splash (siempre)
-const MAX_MS  = 30000  // tiempo máximo de espera antes de continuar igual
+const API_URL      = import.meta.env.VITE_API_URL ?? 'http://localhost:3001'
+const SHOW_AFTER_MS = 800    // solo muestra splash si el backend tarda más de esto
+const MAX_MS        = 30000  // tiempo máximo de espera antes de continuar igual
 
 export function useBackendWakeup() {
-  const [ready, setReady] = useState(false)
+  const [showSplash, setShowSplash] = useState(false)
 
   useEffect(() => {
-    const startedAt = Date.now()
+    const controller  = new AbortController()
+    const splashTimer = setTimeout(() => setShowSplash(true), SHOW_AFTER_MS)
+    const giveUp      = setTimeout(() => { controller.abort(); setShowSplash(false) }, MAX_MS)
 
-    const markReady = () => {
-      const elapsed  = Date.now() - startedAt
-      const remaining = Math.max(0, MIN_MS - elapsed)
-      setTimeout(() => setReady(true), remaining)
-    }
-
-    const controller = new AbortController()
-    const giveUp = setTimeout(() => { controller.abort(); markReady() }, MAX_MS)
+    const dismiss = () => { clearTimeout(splashTimer); setShowSplash(false) }
 
     fetch(`${API_URL}/api/servicios`, { signal: controller.signal })
-      .then(markReady)
-      .catch(markReady)
+      .then(dismiss)
+      .catch(dismiss)
       .finally(() => clearTimeout(giveUp))
 
-    return () => { clearTimeout(giveUp); controller.abort() }
+    return () => { clearTimeout(splashTimer); clearTimeout(giveUp); controller.abort() }
   }, [])
 
-  return ready
+  return showSplash
 }
