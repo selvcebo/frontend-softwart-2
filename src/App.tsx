@@ -1,7 +1,7 @@
 // ============================================================
 // src/App.tsx
 // ============================================================
-import { lazy, Suspense }   from 'react'
+
 import { useBackendWakeup } from '@/src/shared/hooks/useBackendWakeup'
 import { SplashScreen }     from '@/src/shared/components/SplashScreen'
 import { ClientesPage }     from '@/src/features/clientes/components/ClientesPage'
@@ -28,56 +28,6 @@ import { RegisterPage }     from '@/src/features/auth/components/RegisterPage'
 import { LandingPage }      from '@/src/features/dashboard/components/LandingPage'
 import { MiCuentaPage }     from '@/src/features/cuenta/components/MiCuentaPage'
 
-// ── Dev-only pages (src/dev/ está en .gitignore — no van a producción) ───────
-// @vite-ignore evita que Vite intente resolver el import en el build de prod
-const SkeletonDemoPage = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/SkeletonDemoPage') as Promise<any>)
-      .then((m: any) => ({ default: m.SkeletonDemoPage }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const StitchLandingDemo = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/StitchLandingDemo') as Promise<any>)
-      .then((m: any) => ({ default: m.StitchLandingDemo }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const LandingPageV2 = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/LandingPageV2') as Promise<any>)
-      .then((m: any) => ({ default: m.LandingPageV2 }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const LoginPageV2 = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/LoginPageV2') as Promise<any>)
-      .then((m: any) => ({ default: m.LoginPageV2 }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const RegisterPageV2 = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/RegisterPageV2') as Promise<any>)
-      .then((m: any) => ({ default: m.RegisterPageV2 }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const RecuperarPageV2 = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/RecuperarPageV2') as Promise<any>)
-      .then((m: any) => ({ default: m.RecuperarPageV2 }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
-
-const ResetPasswordPageV2 = import.meta.env.DEV
-  ? lazy(() => (import(/* @vite-ignore */ '@/src/dev/ResetPasswordPageV2') as Promise<any>)
-      .then((m: any) => ({ default: m.ResetPasswordPageV2 }))
-      .catch(() => ({ default: () => null }))
-    )
-  : null
 
 // Lee token de localStorage (recordarme) o sessionStorage (sesión temporal)
 function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
@@ -166,46 +116,8 @@ export default function App() {
           <Route path="ventas"      element={<VentasPage />} />
           <Route path="pedidos"     element={<PedidosPage />} />
           <Route path="permisos"    element={<PermisosPage />} />
-          {/* Dev-only routes — solo disponibles en localhost */}
-          {import.meta.env.DEV && SkeletonDemoPage && (
-            <Route path="dev/skeleton" element={
-              <Suspense fallback={null}><SkeletonDemoPage /></Suspense>
-            } />
-          )}
           <Route path="*"           element={<Navigate to="dashboard" replace />} />
         </Route>
-
-        {/* Dev-only — vistas sin admin layout */}
-        {import.meta.env.DEV && StitchLandingDemo && (
-          <Route path="/dev/landing" element={
-            <Suspense fallback={null}><StitchLandingDemo /></Suspense>
-          } />
-        )}
-        {import.meta.env.DEV && LandingPageV2 && (
-          <Route path="/dev/landing-v2" element={
-            <Suspense fallback={null}><LandingPageV2 /></Suspense>
-          } />
-        )}
-        {import.meta.env.DEV && LoginPageV2 && (
-          <Route path="/dev/login" element={
-            <Suspense fallback={null}><LoginPageV2 /></Suspense>
-          } />
-        )}
-        {import.meta.env.DEV && RegisterPageV2 && (
-          <Route path="/dev/register" element={
-            <Suspense fallback={null}><RegisterPageV2 /></Suspense>
-          } />
-        )}
-        {import.meta.env.DEV && RecuperarPageV2 && (
-          <Route path="/dev/recuperar" element={
-            <Suspense fallback={null}><RecuperarPageV2 /></Suspense>
-          } />
-        )}
-        {import.meta.env.DEV && ResetPasswordPageV2 && (
-          <Route path="/dev/reset" element={
-            <Suspense fallback={null}><ResetPasswordPageV2 /></Suspense>
-          } />
-        )}
 
         {/* Catch-all global → 404 */}
         <Route path="*" element={<NotFoundPage />} />
