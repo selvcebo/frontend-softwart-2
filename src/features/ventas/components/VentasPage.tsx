@@ -29,7 +29,7 @@ type Venta = { id_venta: number; fecha: string; total: number; observacion?: str
 const fmt = formatCOP
 
 export function VentasPage() {
-  const { ventas, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useVentas()
+  const { ventas, isLoading, onCrear, onEditar, onEliminar, onToggleEstado, refetch } = useVentas()
 
   // ── Modal de abonos ───────────────────────────────────────────────────────
   const [abonoModalVenta, setAbonoModalVenta] = useState<{ id: number; label: string } | null>(null)
@@ -78,7 +78,7 @@ export function VentasPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   const resetForm = () => { setIdCliente(''); setIdCita(''); setFecha(''); setTotal(''); setObservacion(''); setErrors({}); setEditingId(null) }
-  const openCreate = () => { resetForm(); setIsFormOpen(true) }
+  const openCreate = () => { resetForm(); setFecha(new Date().toISOString().slice(0, 10)); setIsFormOpen(true) }
   const openEdit = (v: Venta) => {
     setEditingId(v.id_venta); setIdCliente(String(v.id_cliente))
     setIdCita(v.id_cita ? String(v.id_cita) : ''); setFecha(v.fecha)
@@ -140,12 +140,12 @@ export function VentasPage() {
             <TableHeader>
               <TableRow>
            
-                <TableHead className="text-muted-foreground">Cliente</TableHead>
-                <TableHead className="text-muted-foreground">Cita</TableHead>
-                <TableHead className="text-muted-foreground">Fecha</TableHead>
-                <TableHead className="text-muted-foreground text-right">Total</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                <TableHead className="text-muted-foreground w-[24%]">Cliente</TableHead>
+                <TableHead className="text-muted-foreground w-[15%]">Cita</TableHead>
+                <TableHead className="text-muted-foreground w-[12%]">Fecha</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[17%]">Total</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[18%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -169,7 +169,9 @@ export function VentasPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Switch checked={v.estado} onCheckedChange={async () => { await withToast(onToggleEstado(v.id_venta), 'Estado actualizado') }} />
+                      <div className="flex justify-end">
+                        <Switch checked={v.estado} onCheckedChange={async () => { await withToast(onToggleEstado(v.id_venta), 'Estado actualizado') }} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -256,7 +258,12 @@ export function VentasPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Cita (opcional)</Label>
-              <Combobox options={citasFormOpts} value={idCita} onValueChange={setIdCita}
+              <Combobox options={citasFormOpts} value={idCita}
+                onValueChange={v => {
+                  setIdCita(v)
+                  const citaFecha = rawCitas.find(c => String(c.id_cita) === v)?.fecha
+                  if (citaFecha) setFecha(citaFecha)
+                }}
                 placeholder={idCliente ? 'Vincular a una cita...' : 'Selecciona un cliente primero'}
                 searchPlaceholder="Buscar cita..." />
             </div>
@@ -302,7 +309,7 @@ export function VentasPage() {
           onClose={() => setAbonoModalVenta(null)}
           idVenta={abonoModalVenta.id}
           labelVenta={abonoModalVenta.label}
-          onSuccess={() => {}}
+          onSuccess={refetch}
         />
       )}
     </div>

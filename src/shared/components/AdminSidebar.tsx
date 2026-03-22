@@ -5,7 +5,7 @@ import { useState } from 'react'
 import {
   Users, Shield, Wrench, Calendar, UserCircle, CreditCard,
   Calculator, ShoppingBag, ClipboardList, ShieldCheck,
-  ChevronLeft, ChevronRight, LayoutDashboard, LogOut,
+  ChevronLeft, ChevronRight, ChevronDown, LayoutDashboard, LogOut,
 } from 'lucide-react'
 import { cn } from '@/src/shared/lib/utils'
 
@@ -53,6 +53,12 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
   const { pathname } = useLocation()
   const navigate     = useNavigate()
   const [collapsed, setCollapsed] = useState(false)
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(
+    () => Object.fromEntries(NAV_GROUPS.map(g => [g.label, true]))
+  )
+
+  const toggleGroup = (label: string) =>
+    setOpenGroups(prev => ({ ...prev, [label]: !prev[label] }))
 
   const handleLogout = () => {
     clearAuth()
@@ -74,7 +80,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       )}>
         {!collapsed && (
           <h2 className="text-base font-bold text-sidebar-foreground truncate">
-            Admin Panel
+            SoftwArt Panel
           </h2>
         )}
         <button
@@ -89,48 +95,58 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
       </div>
 
       {/* Nav por grupos */}
-      <nav className="flex-1 min-h-0 overflow-y-auto py-2 px-1.5">
+      <nav className="flex-1 min-h-0 overflow-y-auto py-2 px-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <ul className="flex flex-col gap-0.5">
           {NAV_GROUPS.map((group, gi) => (
             <li key={group.label}>
-              {/* Separador de grupo — solo visible expandido */}
-              {gi > 0 && (
-                <div className={cn(
-                  'transition-all duration-300',
-                  collapsed ? 'my-1 border-t border-sidebar-border mx-1' : 'mt-3 mb-1 px-2'
-                )}>
-                  {!collapsed && (
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40">
-                      {group.label}
-                    </span>
+              {/* Separador / cabecera de grupo */}
+              {collapsed ? (
+                gi > 0 && <div className="my-1 border-t border-sidebar-border mx-1" />
+              ) : (
+                <button
+                  onClick={() => toggleGroup(group.label)}
+                  className={cn(
+                    'w-full flex items-center justify-between px-2 py-1 rounded-md',
+                    'text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/40',
+                    'hover:text-sidebar-foreground/70 transition-colors',
+                    gi > 0 ? 'mt-3' : 'mt-1'
                   )}
-                </div>
+                >
+                  <span>{group.label}</span>
+                  <ChevronDown className={cn(
+                    'h-3 w-3 shrink-0 transition-transform duration-200',
+                    openGroups[group.label] ? '' : '-rotate-90'
+                  )} />
+                </button>
               )}
 
-              <ul className="flex flex-col gap-0.5">
-                {group.items.map((item) => {
-                  const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
-                  const Icon     = item.icon
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        to={item.href}
-                        title={collapsed ? item.label : undefined}
-                        className={cn(
-                          'flex items-center gap-3 rounded-md text-sm transition-colors px-2 py-2',
-                          collapsed ? 'justify-center' : '',
-                          isActive
-                            ? 'bg-primary/10 text-primary font-medium'
-                            : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                        )}
-                      >
-                        <Icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span className="truncate">{item.label}</span>}
-                      </Link>
-                    </li>
-                  )
-                })}
-              </ul>
+              {/* Items del grupo — colapsables en sidebar expandido */}
+              {(collapsed || openGroups[group.label]) && (
+                <ul className="flex flex-col gap-0.5 mt-0.5">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`)
+                    const Icon     = item.icon
+                    return (
+                      <li key={item.href}>
+                        <Link
+                          to={item.href}
+                          title={collapsed ? item.label : undefined}
+                          className={cn(
+                            'flex items-center gap-3 rounded-md text-sm transition-colors px-2 py-2',
+                            collapsed ? 'justify-center' : '',
+                            isActive
+                              ? 'bg-primary/10 text-primary font-medium'
+                              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                          )}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" />
+                          {!collapsed && <span className="truncate">{item.label}</span>}
+                        </Link>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
             </li>
           ))}
         </ul>

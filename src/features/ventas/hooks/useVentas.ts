@@ -49,5 +49,5 @@ export function useVentas() {
     catch { setVentas(prev => prev.map(v => v.id_venta === id ? { ...v, estado: !v.estado } : v)) }
   }
 
-  return { ventas, isLoading, error, onCrear, onEditar, onEliminar, onToggleEstado }
+  return { ventas, isLoading, error, onCrear, onEditar, onEliminar, onToggleEstado, refetch: fetchAll }
 }

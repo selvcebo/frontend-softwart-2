@@ -72,6 +72,7 @@ export function PaymentsPage() {
   const openCreate = (preIdVenta = '') => {
     resetForm()
     if (preIdVenta) setIdVenta(preIdVenta)
+    setFecha(new Date().toISOString().slice(0, 10))
     setIsFormOpen(true)
   }
 
@@ -145,12 +146,12 @@ export function PaymentsPage() {
             <TableHeader>
               <TableRow>
      
-                <TableHead className="text-muted-foreground">Venta</TableHead>
-                <TableHead className="text-muted-foreground text-right">Monto</TableHead>
-                <TableHead className="text-muted-foreground">Fecha</TableHead>
-                <TableHead className="text-muted-foreground">Método</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                <TableHead className="text-muted-foreground w-[28%]">Venta</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[11%]">Monto</TableHead>
+                <TableHead className="text-muted-foreground w-[13%]">Fecha</TableHead>
+                <TableHead className="text-muted-foreground w-[16%]">Método</TableHead>
+                <TableHead className="text-muted-foreground w-[18%]">Estado</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[14%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

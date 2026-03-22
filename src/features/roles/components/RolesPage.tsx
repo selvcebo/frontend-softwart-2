@@ -101,10 +101,10 @@ export function RolesPage() {
               <TableHeader>
                 <TableRow>
             
-                  <TableHead className="text-muted-foreground">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground">Descripción</TableHead>
-                  <TableHead className="text-muted-foreground">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                  <TableHead className="text-muted-foreground w-[22%]">Nombre</TableHead>
+                  <TableHead className="text-muted-foreground w-[42%]">Descripción</TableHead>
+                  <TableHead className="text-muted-foreground w-[14%]">Estado</TableHead>
+                  <TableHead className="text-right text-muted-foreground w-[22%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

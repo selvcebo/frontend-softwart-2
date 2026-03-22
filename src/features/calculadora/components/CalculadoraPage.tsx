@@ -124,7 +124,7 @@ export function CalculadoraPage() {
                 <TableHead className="text-muted-foreground">Código</TableHead>
                 <TableHead className="text-muted-foreground text-right">Colilla</TableHead>
                 <TableHead className="text-muted-foreground text-right">Precio Ensamblado</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
+                <TableHead className="text-right text-muted-foreground">Estado</TableHead>
                 <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -135,7 +135,10 @@ export function CalculadoraPage() {
                   <TableCell className="text-foreground font-medium">{m.codigo}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.colilla)}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.precio_ensamblado)}</TableCell>
-                  <TableCell><Switch checked={m.estado} onCheckedChange={async () => { await withToast(onToggleEstado(m.id_marco), 'Estado actualizado') }} /></TableCell>
+                  <TableCell className='text-right'>
+                    
+                    <Switch checked={m.estado} onCheckedChange={async () => { await withToast(onToggleEstado(m.id_marco), 'Estado actualizado') }} /></TableCell>
+                 
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" onClick={() => openCalc(m)}><Calculator className="h-4 w-4 text-muted-foreground" /></Button>

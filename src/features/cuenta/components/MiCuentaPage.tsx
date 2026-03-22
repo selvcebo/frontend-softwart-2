@@ -20,9 +20,11 @@ function getIdCliente() {
   return Number(localStorage.getItem('id_cliente') ?? sessionStorage.getItem('id_cliente') ?? 0)
 }
 
-// ── Fecha mínima = hoy ────────────────────────────────────────────────────────
-function todayString() {
-  return new Date().toISOString().slice(0, 10)
+// ── Fecha mínima ──────────────────────────────────────────────────────────────
+function tomorrowString() {
+  const d = new Date()
+  d.setDate(d.getDate() + 1)
+  return d.toISOString().slice(0, 10)
 }
 
 // ── Color badge estado cita ───────────────────────────────────────────────────
@@ -159,7 +161,7 @@ export function MiCuentaPage() {
     const errs: Record<string, string> = {}
     if (!citaFecha)          errs.fecha = 'Selecciona una fecha'
     if (!citaHora)           errs.hora  = 'Selecciona una hora'
-    if (citaFecha < todayString()) errs.fecha = 'No puedes agendar en fechas pasadas'
+    if (citaFecha < tomorrowString()) errs.fecha = 'Solo puedes agendar desde mañana'
     if (Object.keys(errs).length) { setCitaErrors(errs); return }
 
     setIsAgendando(true); setCitaMsg(null); setCitaErrors({})
@@ -333,7 +335,7 @@ export function MiCuentaPage() {
                     <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
                     <Input
                       type="date"
-                      min={todayString()}
+                      min={tomorrowString()}
                       value={citaFecha}
                       onChange={async e => {
                       const f = e.target.value

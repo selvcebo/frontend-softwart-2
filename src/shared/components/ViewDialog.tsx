@@ -41,7 +41,7 @@ export function ViewDialog({ open, onOpenChange, title, description, fields }: V
               key={i}
               className={field.fullWidth ? 'col-span-2' : 'col-span-1'}
             >
-              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
+              <p className="text-xs font-medium text-muted-foreground capitalize tracking-wide mb-1">
                 {field.label}
               </p>
               <div className="text-sm text-foreground break-words">

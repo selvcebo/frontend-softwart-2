@@ -137,8 +137,9 @@ export function AppointmentsPage() {
   }
 
   // ── Form helpers ───────────────────────────────────────────────────────────
+  const todayStr   = () => new Date().toISOString().slice(0, 10)
   const resetForm  = () => { setIdCliente(''); setFecha(''); setHora(''); setIdEstado(''); setErrors({}); setEditingId(null) }
-  const openCreate = () => { resetForm(); setIsFormOpen(true) }
+  const openCreate = () => { resetForm(); setIdEstado('1'); setFecha(todayStr()); setIsFormOpen(true) }
   const openEdit   = (c: Cita) => { setEditingId(c.id_cita); setIdCliente(String(c.id_cliente)); setFecha(c.fecha); setHora(c.hora); setIdEstado(String(c.id_estado_cita)); setErrors({}); setIsFormOpen(true) }
   const openView   = (c: Cita) => { setViewingItem(c); setIsViewOpen(true) }
 
@@ -209,11 +210,11 @@ export function AppointmentsPage() {
               <TableHeader>
                 <TableRow>
                
-                  <TableHead className="text-muted-foreground">Cliente</TableHead>
-                  <TableHead className="text-muted-foreground">Fecha</TableHead>
-                  <TableHead className="text-muted-foreground">Hora</TableHead>
-                  <TableHead className="text-muted-foreground">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                  <TableHead className="text-muted-foreground w-[34%]">Cliente</TableHead>
+                  <TableHead className="text-muted-foreground w-[14%]">Fecha</TableHead>
+                  <TableHead className="text-muted-foreground w-[12%]">Hora</TableHead>
+                  <TableHead className="text-muted-foreground w-[20%]">Estado</TableHead>
+                  <TableHead className="text-right text-muted-foreground w-[20%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

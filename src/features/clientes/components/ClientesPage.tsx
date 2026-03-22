@@ -142,12 +142,12 @@ export function ClientesPage() {
               <TableHeader>
                 <TableRow>
                
-                  <TableHead className="text-muted-foreground">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground">Documento</TableHead>
-                  <TableHead className="text-muted-foreground">Correo</TableHead>
-                  <TableHead className="text-muted-foreground">Teléfono</TableHead>
-                  <TableHead className="text-muted-foreground">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                  <TableHead className="text-muted-foreground w-[22%]">Nombre</TableHead>
+                  <TableHead className="text-muted-foreground w-[14%]">Documento</TableHead>
+                  <TableHead className="text-muted-foreground w-[24%]">Correo</TableHead>
+                  <TableHead className="text-muted-foreground w-[14%]">Teléfono</TableHead>
+                  <TableHead className="text-muted-foreground w-[12%]">Estado</TableHead>
+                  <TableHead className="text-right text-muted-foreground w-[14%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

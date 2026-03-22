@@ -144,11 +144,11 @@ export function ServicesPage() {
               <TableHeader>
                 <TableRow>
                 
-                  <TableHead className="text-muted-foreground">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground">Duración</TableHead>
-                  <TableHead className="text-muted-foreground">Descripción</TableHead>
-                  <TableHead className="text-muted-foreground">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                  <TableHead className="text-muted-foreground w-[18%]">Nombre</TableHead>
+                  <TableHead className="text-muted-foreground w-[10%]">Duración</TableHead>
+                  <TableHead className="text-muted-foreground w-[36%]">Descripción</TableHead>
+                  <TableHead className="text-right text-muted-foreground w-[12%]">Estado</TableHead>
+                  <TableHead className="text-right text-muted-foreground w-[24%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -164,7 +164,9 @@ export function ServicesPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground max-w-xs truncate">{s.descripcion ?? '—'}</TableCell>
                     <TableCell>
+                      <div className='flex justify-end'>
                       <Switch checked={s.estado === true} onCheckedChange={async () => { await withToast(onToggleEstado(s.id_servicio), 'Estado actualizado') }} />
+                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">

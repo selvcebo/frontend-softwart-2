@@ -249,14 +249,24 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                       </Select>
                     </div>
 
-                    <Button
-                      onClick={handlePagar}
-                      disabled={isPagando || !monto || !idMetodo}
-                      className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2 self-end"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                      {isPagando ? 'Registrando...' : `Registrar abono ${estado.siguiente_abono.numero}`}
-                    </Button>
+                    <div className="flex gap-2 self-end">
+                      <Button
+                        type="button" variant="outline"
+                        onClick={onClose}
+                        disabled={isPagando}
+                        className="border-border text-foreground"
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        onClick={handlePagar}
+                        disabled={isPagando || !monto || !idMetodo}
+                        className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                        {isPagando ? 'Registrando...' : `Registrar abono ${estado.siguiente_abono.numero}`}
+                      </Button>
+                    </div>
                   </div>
                 )}
 
