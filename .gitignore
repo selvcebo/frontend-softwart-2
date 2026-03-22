@@ -10,3 +10,6 @@ CLAUDE.md
 
 .env.example
 
+# Carpeta de features en desarrollo / pruebas — no va a producción
+src/dev/
+

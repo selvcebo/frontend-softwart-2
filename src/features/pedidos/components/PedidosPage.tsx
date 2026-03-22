@@ -120,7 +120,7 @@ export function PedidosPage() {
     setIdVenta(''); setIdServicio(''); setIdMarco(''); setIdEstado('')
     setFecha(''); setPrecio(''); setObservacion(''); setErrors({}); setEditingId(null)
   }
-  const openCreate = () => { resetForm(); setIsFormOpen(true) }
+  const openCreate = () => { resetForm(); setFecha(new Date().toISOString().slice(0, 10)); setIsFormOpen(true) }
   const openEdit   = (p: Pedido) => {
     setEditingId(p.id_detalle); setIdVenta(String(p.id_venta))
     setIdServicio(String(p.id_servicio)); setIdMarco(p.id_marco ? String(p.id_marco) : '')
@@ -201,13 +201,13 @@ export function PedidosPage() {
             <TableHeader>
               <TableRow>
            
-                <TableHead className="text-muted-foreground">Venta</TableHead>
-                <TableHead className="text-muted-foreground">Tipo de Servicio</TableHead>
-                <TableHead className="text-muted-foreground">Marco</TableHead>
-                <TableHead className="text-muted-foreground">Fecha</TableHead>
-                <TableHead className="text-muted-foreground">Precio</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                <TableHead className="text-muted-foreground w-[18%]">Venta</TableHead>
+                <TableHead className="text-muted-foreground w-[14%]">Tipo de Servicio</TableHead>
+                <TableHead className="text-muted-foreground w-[13%]">Marco</TableHead>
+                <TableHead className="text-muted-foreground w-[11%]">Fecha</TableHead>
+                <TableHead className="text-muted-foreground w-[10%]">Precio</TableHead>
+                <TableHead className="text-muted-foreground w-[18%]">Estado</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[16%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

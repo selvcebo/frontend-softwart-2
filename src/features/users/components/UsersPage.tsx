@@ -129,10 +129,10 @@ export function UsersPage() {
             <TableHeader>
               <TableRow>
      
-                <TableHead className="text-muted-foreground">Correo</TableHead>
-                <TableHead className="text-muted-foreground">Rol</TableHead>
-                <TableHead className="text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                <TableHead className="text-muted-foreground w-[50%]">Correo</TableHead>
+                <TableHead className="text-muted-foreground w-[18%]">Rol</TableHead>
+                <TableHead className="text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-right text-muted-foreground w-[18%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
