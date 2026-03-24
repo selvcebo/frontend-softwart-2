@@ -351,9 +351,9 @@ export function LandingPage() {
                         <img
                           src={CARD_IMGS[i % CARD_IMGS.length]}
                           alt={s.nombre}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 ${isActive ? 'scale-105 blur-sm' : ''}`}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent z-10" />
+                        <div className={`absolute inset-0 z-10 transition-all duration-500 ${isActive ? 'bg-black/70' : 'bg-gradient-to-t from-black/75 via-black/20 to-transparent'}`} />
                         <div className="absolute bottom-0 p-4 z-20 w-full">
                           <h3 className="text-white font-semibold text-base leading-tight">
                             {s.nombre}

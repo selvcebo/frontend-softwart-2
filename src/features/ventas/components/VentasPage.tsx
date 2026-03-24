@@ -23,6 +23,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ViewDialog, EstadoBadge } from '@/src/shared/components/ViewDialog'
 import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
+import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
 
@@ -269,9 +270,11 @@ export function VentasPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
-              <Input type="date" value={fecha}
-                onChange={e => { setFecha(e.target.value); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
-                className="bg-card text-foreground border-border" />
+              <DatePicker
+                value={fecha}
+                onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
+                error={errors.fecha}
+              />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
             <div className="flex flex-col gap-2">

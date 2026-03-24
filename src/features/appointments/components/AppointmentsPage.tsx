@@ -25,6 +25,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
 import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
+import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Cita = { id_cita: number; fecha: string; hora: string; id_estado_cita: number; id_cliente: number }
 
@@ -324,10 +325,11 @@ export function AppointmentsPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
-              <Input
-                type="date" min={new Date().toISOString().slice(0,10)} value={fecha}
-                onChange={(e) => { setFecha(e.target.value); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
-                className="bg-card text-foreground border-border"
+              <DatePicker
+                value={fecha}
+                min={new Date().toISOString().slice(0, 10)}
+                onChange={(v) => { setFecha(v); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
+                error={errors.fecha}
               />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
