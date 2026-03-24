@@ -3,11 +3,8 @@ import { useServices } from '../hooks/useServices'
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye, AlertCircle, CalendarDays } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
-import { Textarea } from '@/src/shared/components/ui/textarea'
 import { Alert, AlertDescription } from '@/src/shared/components/ui/alert'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
@@ -21,6 +18,9 @@ import { usePagination } from '@/src/shared/hooks/usePagination'
 import { withToast }     from '@/src/shared/lib/withToast'
 
 type Servicio = { id_servicio: number; nombre: string; descripcion?: string; duracion: number; estado: boolean }
+
+const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
 
 // duracion ahora es en días
 const fmtDuracion = (dias: number) => {
@@ -104,7 +104,7 @@ export function ServicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Tipos de Servicio</h1>
+          <h1 className="font-serif text-3xl text-secondary">Tipos de Servicio</h1>
           <p className="text-muted-foreground">Gestiona los tipos de servicio disponibles</p>
         </div>
         <div className="flex items-center gap-2">
@@ -144,16 +144,16 @@ export function ServicesPage() {
               <TableHeader>
                 <TableRow>
                 
-                  <TableHead className="text-muted-foreground w-[18%]">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground w-[10%]">Duración</TableHead>
-                  <TableHead className="text-muted-foreground w-[36%]">Descripción</TableHead>
-                  <TableHead className="text-right text-muted-foreground w-[12%]">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground w-[24%]">Acciones</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Nombre</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[10%]">Duración</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[36%]">Descripción</TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Estado</TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginated.map(s => (
-                  <TableRow key={s.id_servicio}>
+                  <TableRow key={s.id_servicio} className="hover:bg-muted/40 transition-colors border-border">
              
                     <TableCell className="text-foreground font-medium">{s.nombre}</TableCell>
                     <TableCell className="text-foreground">
@@ -182,7 +182,7 @@ export function ServicesPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Eliminar "{s.nombre}"?</AlertDialogTitle>
+                              <AlertDialogTitle className="font-serif text-secondary">¿Eliminar "{s.nombre}"?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Si este servicio está vinculado a pedidos existentes
                                 <strong className="text-destructive"> no podrá eliminarse</strong>.
@@ -225,48 +225,48 @@ export function ServicesPage() {
       <Dialog open={isFormOpen} onOpenChange={v => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">
+            <DialogTitle className="font-serif text-xl text-secondary">
               {editingId ? 'Editar Tipo de Servicio' : 'Registrar Tipo de Servicio'}
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               La duración estimada ayuda a planificar la entrega del pedido.
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            {errors._global && <p className="text-sm text-destructive">{errors._global}</p>}
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Nombre <span className="text-red-500">*</span></Label>
-              <Input value={nombre}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            {errors._global && <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">{errors._global}</p>}
+            <div>
+              <label className={labelCls}>Nombre <span className="text-destructive">*</span></label>
+              <input value={nombre} placeholder="Ej: Enmarcado simple"
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors(p => ({...p, nombre:''})) }}
-                className="bg-card text-foreground border-border" />
-              {errors.nombre && <p className="text-sm text-destructive">{errors.nombre}</p>}
+                className={inputCls} />
+              {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground flex items-center gap-1.5">
-                <CalendarDays className="h-4 w-4" /> Duración estimada (días) <span className="text-red-500">*</span>
-              </Label>
-              <Input type="number" min="1" step="1" value={duracionStr}
+            <div>
+              <label className={labelCls}>
+                Duración estimada (días) <span className="text-destructive">*</span>
+              </label>
+              <input type="number" min="1" step="1" value={duracionStr}
                 onChange={e => { setDuracionStr(e.target.value); if (errors.duracion) setErrors(p => ({...p, duracion:''})) }}
-                className="bg-card text-foreground border-border"
+                className={inputCls}
                 placeholder="Ej: 7 (= 1 semana)" />
               {duracionStr && Number(duracionStr) > 0 && (
-                <p className="text-xs text-muted-foreground">{fmtDuracion(Number(duracionStr))}</p>
+                <p className="text-xs text-muted-foreground mt-1">{fmtDuracion(Number(duracionStr))}</p>
               )}
-              {errors.duracion && <p className="text-sm text-destructive">{errors.duracion}</p>}
+              {errors.duracion && <p className="mt-1 text-xs text-destructive">{errors.duracion}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Descripción (opcional)</Label>
-              <Textarea value={descripcion} onChange={e => setDescripcion(e.target.value)}
-                className="bg-card text-foreground border-border" rows={3} />
+            <div>
+              <label className={labelCls}>Descripción (opcional)</label>
+              <textarea value={descripcion} placeholder="Descripción del servicio..." onChange={e => setDescripcion(e.target.value)}
+                className={`${inputCls} resize-none`} rows={3} />
             </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }}
-                className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }}
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting}
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
-            </DialogFooter>
+              </button>
+            </div>
           </form>
         </DialogContent>
       </Dialog>

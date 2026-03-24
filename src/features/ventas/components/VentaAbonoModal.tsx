@@ -5,16 +5,19 @@ import { apiRequest } from '@/src/shared/lib/apiClient'
 import { formatCOP }  from '@/src/shared/lib/formatCOP'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Button }  from '@/src/shared/components/ui/button'
-import { Input }   from '@/src/shared/components/ui/input'
-import { Label }   from '@/src/shared/components/ui/label'
 import { Badge }   from '@/src/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { CheckCircle2, CreditCard, Settings2, ChevronRight } from 'lucide-react'
 import { formatFecha } from '@/src/shared/lib/formatFecha'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
+const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
+
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type AbonoEsperado = { numero: number; monto: number; porcentaje: number }
+type EstadoPago = { id_estado_pago: number; nombre: string }
 
 type EstadoPagos = {
   id_venta:               number
@@ -42,10 +45,11 @@ interface Props {
 
 // ── Componente ────────────────────────────────────────────────────────────────
 export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess }: Props) {
-  const [estado,       setEstado]       = useState<EstadoPagos | null>(null)
-  const [metodos,      setMetodos]      = useState<MetodoPago[]>([])
-  const [isLoading,    setIsLoading]    = useState(false)
-  const [tab,          setTab]          = useState<'pagar' | 'configurar'>('pagar')
+  const [estado,            setEstado]            = useState<EstadoPagos | null>(null)
+  const [metodos,           setMetodos]           = useState<MetodoPago[]>([])
+  const [idEstadoValidado,  setIdEstadoValidado]  = useState<number | null>(null)
+  const [isLoading,         setIsLoading]         = useState(false)
+  const [tab,               setTab]               = useState<'pagar' | 'configurar'>('pagar')
 
   // Form pago
   const [monto,        setMonto]        = useState('')
@@ -71,10 +75,13 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
     Promise.all([
       apiRequest<{ success: boolean; data: EstadoPagos }>(`/api/ventas/${idVenta}/estado-pagos`),
       apiRequest<{ success: boolean; data: MetodoPago[] }>('/api/metodo-pago?limit=50'),
+      apiRequest<{ success: boolean; data: EstadoPago[] }>('/api/estado-pago?limit=50'),
     ])
-      .then(([estadoRes, metodosRes]) => {
+      .then(([estadoRes, metodosRes, estadosPagoRes]) => {
         setEstado(estadoRes.data)
         setMetodos(metodosRes.data ?? [])
+        const validado = (estadosPagoRes.data ?? []).find(e => e.nombre === 'Validado')
+        setIdEstadoValidado(validado?.id_estado_pago ?? null)
         // Pre-llenar monto con el siguiente abono esperado
         if (estadoRes.data.siguiente_abono) {
           setMonto(String(estadoRes.data.siguiente_abono.montoEsperado))
@@ -90,9 +97,11 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
     if (!idMetodo) { setPagoMsg({ tipo: 'err', texto: 'Selecciona el método de pago' }); return }
     setIsPagando(true); setPagoMsg(null)
     try {
+      const body: Record<string, unknown> = { monto: Number(monto), id_metodo_pago: Number(idMetodo), fecha: fechaPago }
+      if (idEstadoValidado != null) body.id_estado_pago = idEstadoValidado
       const res = await apiRequest<{ success: boolean; message: string; data: any }>(
         `/api/ventas/${idVenta}/abono`,
-        { method: 'POST', body: JSON.stringify({ monto: Number(monto), id_metodo_pago: Number(idMetodo), fecha: fechaPago }) }
+        { method: 'POST', body: JSON.stringify(body) }
       )
       setPagoMsg({ tipo: 'ok', texto: res.message })
       onSuccess()
@@ -217,17 +226,17 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Monto ($) <span className="text-red-500">*</span></Label>
-                        <Input
-                          type="number" min="0" value={monto}
+                      <div>
+                        <label className={labelCls}>Monto ($) <span className="text-destructive">*</span></label>
+                        <input
+                          type="number" min="0" value={monto} placeholder="0"
                           onChange={e => setMonto(e.target.value)}
-                          className="bg-card border-border h-9 text-sm"
+                          className={inputCls}
                         />
-                        {monto && <p className="text-xs text-muted-foreground">{fmt(Number(monto))}</p>}
+                        {monto && <p className="text-xs text-muted-foreground mt-1">{fmt(Number(monto))}</p>}
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Fecha <span className="text-red-500">*</span></Label>
+                      <div>
+                        <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
                         <DatePicker
                           value={fechaPago}
                           onChange={v => setFechaPago(v)}
@@ -235,10 +244,10 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                       </div>
                     </div>
 
-                    <div className="flex flex-col gap-1.5">
-                      <Label className="text-foreground text-xs">Método de pago <span className="text-red-500">*</span></Label>
+                    <div>
+                      <label className={labelCls}>Método de pago <span className="text-destructive">*</span></label>
                       <Select value={idMetodo} onValueChange={setIdMetodo}>
-                        <SelectTrigger className="bg-card border-border h-9 text-sm">
+                        <SelectTrigger className={selectCls}>
                           <SelectValue placeholder="Seleccionar..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -250,22 +259,23 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     </div>
 
                     <div className="flex gap-2 self-end">
-                      <Button
-                        type="button" variant="outline"
+                      <button
+                        type="button"
                         onClick={onClose}
                         disabled={isPagando}
-                        className="border-border text-foreground"
+                        className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors disabled:opacity-50"
                       >
                         Cancelar
-                      </Button>
-                      <Button
+                      </button>
+                      <button
+                        type="button"
                         onClick={handlePagar}
                         disabled={isPagando || !monto || !idMetodo}
-                        className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
+                        className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
                       >
                         <ChevronRight className="h-4 w-4" />
                         {isPagando ? 'Registrando...' : `Registrar abono ${estado.siguiente_abono.numero}`}
-                      </Button>
+                      </button>
                     </div>
                   </div>
                 )}
@@ -280,27 +290,27 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     )}
 
                     <div className="grid grid-cols-2 gap-3">
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">Número de abonos <span className="text-red-500">*</span></Label>
-                        <Input
+                      <div>
+                        <label className={labelCls}>Número de abonos <span className="text-destructive">*</span></label>
+                        <input
                           type="number" min="1" max="12"
-                          value={numAbonos}
+                          value={numAbonos} placeholder="Ej: 2"
                           onChange={e => setNumAbonos(e.target.value)}
                           disabled={estado.pagos_realizados > 0}
-                          className="bg-card border-border h-9 text-sm"
+                          className={inputCls}
                         />
-                        <p className="text-[10px] text-muted-foreground">Máximo 12</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Máximo 12</p>
                       </div>
-                      <div className="flex flex-col gap-1.5">
-                        <Label className="text-foreground text-xs">% primer abono <span className="text-red-500">*</span></Label>
-                        <Input
+                      <div>
+                        <label className={labelCls}>% primer abono <span className="text-destructive">*</span></label>
+                        <input
                           type="number" min="1" max="99"
-                          value={pctPrimero}
+                          value={pctPrimero} placeholder="Ej: 70"
                           onChange={e => setPctPrimero(e.target.value)}
                           disabled={estado.pagos_realizados > 0}
-                          className="bg-card border-border h-9 text-sm"
+                          className={inputCls}
                         />
-                        <p className="text-[10px] text-muted-foreground">Entre 1 y 99</p>
+                        <p className="text-[10px] text-muted-foreground mt-1">Entre 1 y 99</p>
                       </div>
                     </div>
 

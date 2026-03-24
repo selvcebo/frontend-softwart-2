@@ -213,7 +213,7 @@ export function PermisosPage() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Permisos por Rol</h1>
+        <h1 className="font-serif text-3xl text-secondary">Permisos por Rol</h1>
         <p className="text-muted-foreground">Selecciona un rol para gestionar sus permisos por módulo</p>
       </div>
 

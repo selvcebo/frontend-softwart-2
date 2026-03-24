@@ -3,8 +3,6 @@ import { useClientes } from '../hooks/useClientes'
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
@@ -23,6 +21,10 @@ type Cliente = {
   id_cliente: number; tipoDocumento: string; documento: string
   nombre: string; correo: string; telefono?: string; estado: boolean
 }
+
+const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 const DOCUMENT_TYPES = [
   { value: 'CC', label: 'Cédula de Ciudadanía (CC)' },
@@ -105,7 +107,7 @@ export function ClientesPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
+          <h1 className="font-serif text-3xl text-secondary">Clientes</h1>
           <p className="text-muted-foreground">Gestiona los clientes registrados</p>
         </div>
         <div className="flex items-center gap-2">
@@ -142,17 +144,17 @@ export function ClientesPage() {
               <TableHeader>
                 <TableRow>
                
-                  <TableHead className="text-muted-foreground w-[22%]">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground w-[14%]">Documento</TableHead>
-                  <TableHead className="text-muted-foreground w-[24%]">Correo</TableHead>
-                  <TableHead className="text-muted-foreground w-[14%]">Teléfono</TableHead>
-                  <TableHead className="text-muted-foreground w-[12%]">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground w-[14%]">Acciones</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[22%]">Nombre</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Documento</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Correo</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Teléfono</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Estado</TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginated.map((c) => (
-                  <TableRow key={c.id_cliente}>
+                  <TableRow key={c.id_cliente} className="hover:bg-muted/40 transition-colors border-border">
   
                     <TableCell className="text-foreground font-medium">{c.nombre}</TableCell>
                     <TableCell className="text-foreground">
@@ -179,7 +181,7 @@ export function ClientesPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Eliminar a {c.nombre}?</AlertDialogTitle>
+                              <AlertDialogTitle className="font-serif text-secondary">¿Eliminar a {c.nombre}?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Esta acción no se puede deshacer. Si <strong>{c.nombre}</strong> tiene
                                 citas o ventas asociadas, su cuenta se desactivará en lugar de eliminarse.
@@ -231,63 +233,63 @@ export function ClientesPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">
+            <DialogTitle className="font-serif text-xl text-secondary">
               {editingId ? 'Editar Cliente' : 'Registrar Cliente'}
             </DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {editingId ? 'Puedes editar todos los campos excepto el correo.' : 'Completa los datos del nuevo cliente.'}
             </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Tipo de documento <span className="text-red-500">*</span></Label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Tipo de documento <span className="text-destructive">*</span></label>
               <Select value={tipoDocumento} onValueChange={(v) => { setTipoDocumento(v); if (errors.tipoDocumento) setErrors({...errors, tipoDocumento: ''}) }}>
-                <SelectTrigger className="bg-card text-foreground border-border">
+                <SelectTrigger className={selectCls}>
                   <SelectValue placeholder="Seleccionar tipo" />
                 </SelectTrigger>
                 <SelectContent>
                   {DOCUMENT_TYPES.map(t => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {errors.tipoDocumento && <p className="text-sm text-destructive">{errors.tipoDocumento}</p>}
+              {errors.tipoDocumento && <p className="mt-1 text-xs text-destructive">{errors.tipoDocumento}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="doc" className="text-foreground">Número de documento <span className="text-red-500">*</span></Label>
-              <Input id="doc" value={documento}
+            <div>
+              <label className={labelCls}>Número de documento <span className="text-destructive">*</span></label>
+              <input value={documento} placeholder="Ej: 1234567890"
                 onChange={e => { setDocumento(e.target.value); if (errors.documento) setErrors({...errors, documento: ''}) }}
-                className="bg-card text-foreground border-border" />
-              {errors.documento && <p className="text-sm text-destructive">{errors.documento}</p>}
+                className={inputCls} />
+              {errors.documento && <p className="mt-1 text-xs text-destructive">{errors.documento}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="nom" className="text-foreground">Nombre completo <span className="text-red-500">*</span></Label>
-              <Input id="nom" value={nombre}
+            <div>
+              <label className={labelCls}>Nombre completo <span className="text-destructive">*</span></label>
+              <input value={nombre} placeholder="Nombre completo del cliente"
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({...errors, nombre: ''}) }}
-                className="bg-card text-foreground border-border" />
-              {errors.nombre && <p className="text-sm text-destructive">{errors.nombre}</p>}
+                className={inputCls} />
+              {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
             {!editingId && (
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="cor" className="text-foreground">Correo electrónico <span className="text-red-500">*</span></Label>
-                <Input id="cor" type="email" value={correo}
+              <div>
+                <label className={labelCls}>Correo electrónico <span className="text-destructive">*</span></label>
+                <input type="email" value={correo} placeholder="correo@ejemplo.com"
                   onChange={e => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo: ''}) }}
-                  className="bg-card text-foreground border-border" />
-                {errors.correo && <p className="text-sm text-destructive">{errors.correo}</p>}
+                  className={inputCls} />
+                {errors.correo && <p className="mt-1 text-xs text-destructive">{errors.correo}</p>}
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="tel" className="text-foreground">Teléfono (opcional)</Label>
-              <Input id="tel" type="tel" value={telefono}
+            <div>
+              <label className={labelCls}>Teléfono (opcional)</label>
+              <input type="tel" value={telefono} placeholder="Ej: 3001234567"
                 onChange={e => setTelefono(e.target.value)}
-                className="bg-card text-foreground border-border" />
+                className={inputCls} />
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline"
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button"
                 onClick={() => { setIsFormOpen(false); resetForm() }}
-                className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90">
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting}
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>

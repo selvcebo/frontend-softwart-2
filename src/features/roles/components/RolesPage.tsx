@@ -3,8 +3,6 @@ import { useRoles } from '../hooks/useRoles'
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
@@ -19,6 +17,9 @@ import { usePagination } from '@/src/shared/hooks/usePagination'
 import { withToast }     from '@/src/shared/lib/withToast'
 
 type Rol = { id_rol: number; nombre: string; descripcion?: string; estado: boolean }
+
+const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
 
 export function RolesPage() {
   const { roles, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useRoles()
@@ -71,7 +72,7 @@ export function RolesPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Roles</h1>
+          <h1 className="font-serif text-3xl text-secondary">Roles</h1>
           <p className="text-muted-foreground">Gestiona los roles del sistema</p>
         </div>
         <div className="flex items-center gap-2">
@@ -101,15 +102,15 @@ export function RolesPage() {
               <TableHeader>
                 <TableRow>
             
-                  <TableHead className="text-muted-foreground w-[22%]">Nombre</TableHead>
-                  <TableHead className="text-muted-foreground w-[42%]">Descripción</TableHead>
-                  <TableHead className="text-muted-foreground w-[14%]">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground w-[22%]">Acciones</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[22%]">Nombre</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[42%]">Descripción</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[22%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginated.map((r) => (
-                  <TableRow key={r.id_rol}>
+                  <TableRow key={r.id_rol} className="hover:bg-muted/40 transition-colors border-border">
           
                     <TableCell className="text-foreground font-medium">{r.nombre}</TableCell>
                     <TableCell className="text-muted-foreground">{r.descripcion ?? '—'}</TableCell>
@@ -122,7 +123,7 @@ export function RolesPage() {
                           <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Eliminar rol "{r.nombre}"?</AlertDialogTitle>
+                              <AlertDialogTitle className="font-serif text-secondary">¿Eliminar rol "{r.nombre}"?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Si este rol tiene usuarios asignados no podrá eliminarse. Esta acción no se puede deshacer.
                               </AlertDialogDescription>
@@ -162,28 +163,28 @@ export function RolesPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Rol' : 'Registrar Rol'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Rol' : 'Registrar Rol'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos del rol.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Nombre <span className="text-red-500">*</span></Label>
-              <Input value={nombre} onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({}) }}
-                className="bg-card text-foreground border-border" />
-              {errors.nombre && <p className="text-sm text-destructive">{errors.nombre}</p>}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Nombre <span className="text-destructive">*</span></label>
+              <input value={nombre} placeholder="Ej: Administrador" onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({}) }}
+                className={inputCls} />
+              {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Descripción (opcional)</Label>
-              <Input value={descripcion} onChange={e => setDescripcion(e.target.value)}
-                className="bg-card text-foreground border-border" />
+            <div>
+              <label className={labelCls}>Descripción (opcional)</label>
+              <input value={descripcion} placeholder="Descripción del rol..." onChange={e => setDescripcion(e.target.value)}
+                className={inputCls} />
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }}
-                className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting}
-                className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }}
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting}
+                className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>

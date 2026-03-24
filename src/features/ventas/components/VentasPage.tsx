@@ -12,11 +12,8 @@ import { withToast } from '@/src/shared/lib/withToast'
 import { formatFecha } from '@/src/shared/lib/formatFecha'
 import { Plus, Pencil, Trash2, Eye, CreditCard, CheckCircle2, CircleDashed } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
-import { Input } from '@/src/shared/components/ui/input'
-import { Label } from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch } from '@/src/shared/components/ui/switch'
-import { Textarea } from '@/src/shared/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
@@ -28,6 +25,9 @@ import { DatePicker } from '@/src/shared/components/DatePicker'
 type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
 
 const fmt = formatCOP
+
+const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
 
 export function VentasPage() {
   const { ventas, isLoading, onCrear, onEditar, onEliminar, onToggleEstado, refetch } = useVentas()
@@ -110,7 +110,7 @@ export function VentasPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Ventas</h1>
+          <h1 className="font-serif text-3xl text-secondary">Ventas</h1>
           <p className="text-muted-foreground">Gestiona las ventas registradas</p>
         </div>
         <div className="flex items-center gap-2">
@@ -141,12 +141,12 @@ export function VentasPage() {
             <TableHeader>
               <TableRow>
            
-                <TableHead className="text-muted-foreground w-[24%]">Cliente</TableHead>
-                <TableHead className="text-muted-foreground w-[15%]">Cita</TableHead>
-                <TableHead className="text-muted-foreground w-[12%]">Fecha</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[17%]">Total</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[14%]">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[18%]">Acciones</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Cliente</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[15%]">Cita</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Fecha</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[17%]">Total</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -155,7 +155,7 @@ export function VentasPage() {
                 const citaLabel = v.id_cita ? (citasOpts.find(o => o.value === String(v.id_cita))?.label ?? `#${v.id_cita}`) : '—'
                 const pagada = v.pagos_realizados >= v.num_abonos
                 return (
-                  <TableRow key={v.id_venta} className={pagada ? 'bg-emerald-50 dark:bg-emerald-950/30' : ''}>
+                  <TableRow key={v.id_venta} className={pagada ? 'bg-emerald-50 dark:bg-emerald-950/30 border-border' : 'hover:bg-muted/40 transition-colors border-border'}>
 
                     <TableCell className="text-foreground">{clienteLabel}</TableCell>
                     <TableCell className="text-muted-foreground text-sm">{citaLabel}</TableCell>
@@ -198,7 +198,7 @@ export function VentasPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Eliminar venta</AlertDialogTitle>
+                              <AlertDialogTitle className="font-serif text-secondary">Eliminar venta</AlertDialogTitle>
                               <AlertDialogDescription>
                                 Si esta venta tiene pedidos o pagos asociados,
                                 <strong className="text-destructive"> no podrá eliminarse</strong>.
@@ -246,19 +246,19 @@ export function VentasPage() {
       <Dialog open={isFormOpen} onOpenChange={v => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Venta' : 'Registrar Venta'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Venta' : 'Registrar Venta'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos de la venta.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Cliente <span className="text-red-500">*</span></Label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Cliente <span className="text-destructive">*</span></label>
               <Combobox options={clientesOpts} value={idCliente}
                 onValueChange={v => { setIdCliente(v); setIdCita(''); if (errors.idCliente) setErrors(p => ({...p, idCliente:''})) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..." />
-              {errors.idCliente && <p className="text-sm text-destructive">{errors.idCliente}</p>}
+              {errors.idCliente && <p className="mt-1 text-xs text-destructive">{errors.idCliente}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Cita (opcional)</Label>
+            <div>
+              <label className={labelCls}>Cita (opcional)</label>
               <Combobox options={citasFormOpts} value={idCita}
                 onValueChange={v => {
                   setIdCita(v)
@@ -268,38 +268,38 @@ export function VentasPage() {
                 placeholder={idCliente ? 'Vincular a una cita...' : 'Selecciona un cliente primero'}
                 searchPlaceholder="Buscar cita..." />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
               <DatePicker
                 value={fecha}
                 onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
                 error={errors.fecha}
               />
-              {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
+              {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Total <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Total <span className="text-destructive">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                <Input type="number" step="1" min="0" value={total}
+                <input type="number" step="1" min="0" value={total}
                   onChange={e => { setTotal(e.target.value); if (errors.total) setErrors(p => ({...p, total:''})) }}
-                  className="bg-card text-foreground border-border pl-7" placeholder="0" />
+                  className={inputCls + ' pl-8'} placeholder="0" />
               </div>
               {total && <p className="text-xs text-muted-foreground">{fmt(Number(total))}</p>}
-              {errors.total && <p className="text-sm text-destructive">{errors.total}</p>}
+              {errors.total && <p className="mt-1 text-xs text-destructive">{errors.total}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Observación (opcional)</Label>
-              <Textarea value={observacion} onChange={e => setObservacion(e.target.value)}
-                className="bg-card text-foreground border-border" rows={3} />
+            <div>
+              <label className={labelCls}>Observación (opcional)</label>
+              <textarea value={observacion} placeholder="Notas o detalles de la venta..." onChange={e => setObservacion(e.target.value)}
+                className={inputCls + ' resize-none'} rows={3} />
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">
                 Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              </button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>

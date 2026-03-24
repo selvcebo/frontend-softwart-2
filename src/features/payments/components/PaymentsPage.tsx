@@ -6,8 +6,6 @@ import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Plus, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
@@ -27,6 +25,10 @@ import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Pago = { id_pago: number; id_venta: number; monto: number; fecha: string; id_metodo_pago: number; id_estado_pago: number }
 const fmt = formatCOP
+
+const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 const ESTADO_BADGE: Record<string, string> = {
   Pendiente:   'border-amber-300 bg-amber-100 text-amber-800',
@@ -115,7 +117,7 @@ export function PaymentsPage() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Pagos</h1>
+          <h1 className="font-serif text-3xl text-secondary">Pagos</h1>
           <p className="text-muted-foreground">Gestiona los pagos registrados</p>
         </div>
         <div className="flex items-center gap-2">
@@ -147,12 +149,12 @@ export function PaymentsPage() {
             <TableHeader>
               <TableRow>
      
-                <TableHead className="text-muted-foreground w-[28%]">Venta</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[11%]">Monto</TableHead>
-                <TableHead className="text-muted-foreground w-[13%]">Fecha</TableHead>
-                <TableHead className="text-muted-foreground w-[16%]">Método</TableHead>
-                <TableHead className="text-muted-foreground w-[18%]">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[14%]">Acciones</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[28%]">Venta</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[11%]">Monto</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[13%]">Fecha</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[16%]">Método</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Estado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -160,7 +162,7 @@ export function PaymentsPage() {
                 const ventaLabel   = ventasOpts.find(o => o.value === String(p.id_venta))?.label ?? `#${p.id_venta}`
                 const estadoNombre = getEstadoLabel(p.id_estado_pago)
                 return (
-                  <TableRow key={p.id_pago}>
+                  <TableRow key={p.id_pago} className="hover:bg-muted/40 transition-colors border-border">
      
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
                     <TableCell className="text-foreground text-right font-medium tabular-nums">{fmt(p.monto)}</TableCell>
@@ -185,7 +187,7 @@ export function PaymentsPage() {
                         <AlertDialog>
                           <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader><AlertDialogTitle>Eliminar pago</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
+                            <AlertDialogHeader><AlertDialogTitle className="font-serif text-secondary">Eliminar pago</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
                               <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(p.id_pago), 'Pago eliminado') }}>Eliminar</AlertDialogAction>
@@ -224,52 +226,52 @@ export function PaymentsPage() {
       <Dialog open={isFormOpen} onOpenChange={v => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Registrar Pago</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">Registrar Pago</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos del pago.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Venta <span className="text-red-500">*</span></Label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Venta <span className="text-destructive">*</span></label>
               <Combobox options={ventasOpts} value={idVenta} onValueChange={v => { setIdVenta(v); if (errors.idVenta) setErrors(p => ({...p, idVenta:''})) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
-              {errors.idVenta && <p className="text-sm text-destructive">{errors.idVenta}</p>}
+              {errors.idVenta && <p className="mt-1 text-xs text-destructive">{errors.idVenta}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Monto <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Monto <span className="text-destructive">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                <Input type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className="bg-card text-foreground border-border pl-7" placeholder="0" />
+                <input type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className={inputCls + ' pl-8'} placeholder="0" />
               </div>
               {monto && <p className="text-xs text-muted-foreground">{fmt(Number(monto))}</p>}
-              {errors.monto && <p className="text-sm text-destructive">{errors.monto}</p>}
+              {errors.monto && <p className="mt-1 text-xs text-destructive">{errors.monto}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
               <DatePicker
                 value={fecha}
                 onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
                 error={errors.fecha}
               />
-              {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
+              {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Método de pago <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Método de pago <span className="text-destructive">*</span></label>
               <Select value={idMetodo} onValueChange={v => { setIdMetodo(v); if (errors.idMetodo) setErrors(p => ({...p, idMetodo:''})) }}>
-                <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar método" /></SelectTrigger>
+                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar método" /></SelectTrigger>
                 <SelectContent>{metodosPago.map(m => <SelectItem key={m.id_metodo_pago} value={String(m.id_metodo_pago)}>{m.nombre}</SelectItem>)}</SelectContent>
               </Select>
-              {errors.idMetodo && <p className="text-sm text-destructive">{errors.idMetodo}</p>}
+              {errors.idMetodo && <p className="mt-1 text-xs text-destructive">{errors.idMetodo}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Estado <span className="text-destructive">*</span></label>
               <Select value={idEstado} onValueChange={v => { setIdEstado(v); if (errors.idEstado) setErrors(p => ({...p, idEstado:''})) }}>
-                <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar estado" /></SelectTrigger>
+                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar estado" /></SelectTrigger>
                 <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>
               </Select>
-              {errors.idEstado && <p className="text-sm text-destructive">{errors.idEstado}</p>}
+              {errors.idEstado && <p className="mt-1 text-xs text-destructive">{errors.idEstado}</p>}
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">Registrar</Button>
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">Registrar</button>
             </div>
           </form>
         </DialogContent>

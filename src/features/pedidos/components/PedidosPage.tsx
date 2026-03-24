@@ -13,12 +13,9 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Pencil, Trash2, Eye, ArrowRight } from 'lucide-react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Button } from '@/src/shared/components/ui/button'
-import { Input } from '@/src/shared/components/ui/input'
-import { Label } from '@/src/shared/components/ui/label'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Textarea } from '@/src/shared/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
@@ -27,6 +24,9 @@ import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 import { formatCOP } from '@/src/shared/lib/formatCOP'
+
+const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
 
 // ── Tipo local ────────────────────────────────────────────────────────────────
 type Pedido = {
@@ -164,7 +164,7 @@ export function PedidosPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Servicios</h1>
+          <h1 className="font-serif text-3xl text-secondary">Pedidos</h1>
   
           <p className="text-muted-foreground">Gestiona los servicios registrados</p>
         </div>
@@ -202,13 +202,13 @@ export function PedidosPage() {
             <TableHeader>
               <TableRow>
            
-                <TableHead className="text-muted-foreground w-[18%]">Venta</TableHead>
-                <TableHead className="text-muted-foreground w-[14%]">Tipo de Servicio</TableHead>
-                <TableHead className="text-muted-foreground w-[13%]">Marco</TableHead>
-                <TableHead className="text-muted-foreground w-[11%]">Fecha</TableHead>
-                <TableHead className="text-muted-foreground w-[10%]">Precio</TableHead>
-                <TableHead className="text-muted-foreground w-[18%]">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[16%]">Acciones</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Venta</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Tipo de Servicio</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[13%]">Marco</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[11%]">Fecha</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[10%]">Precio</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Estado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[16%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -219,7 +219,7 @@ export function PedidosPage() {
                   ? (marcosOpts.find(o => o.value === String(p.id_marco))?.label ?? `#${p.id_marco}`)
                   : '—'
                 return (
-                  <TableRow key={p.id_detalle}>
+                  <TableRow key={p.id_detalle} className="hover:bg-muted/40 transition-colors border-border">
               
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
                     <TableCell className="text-foreground">{servicioLabel}</TableCell>
@@ -260,7 +260,7 @@ export function PedidosPage() {
                           </AlertDialogTrigger>
                           <AlertDialogContent className="bg-card text-card-foreground border-border">
                             <AlertDialogHeader>
-                              <AlertDialogTitle>Eliminar pedido</AlertDialogTitle>
+                              <AlertDialogTitle className="font-serif text-secondary">Eliminar pedido</AlertDialogTitle>
                               <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -310,64 +310,48 @@ export function PedidosPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md overflow-y-auto max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Pedido' : 'Registrar Pedido'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Pedido' : 'Registrar Pedido'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos del pedido.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Venta <span className="text-red-500">*</span></Label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Venta <span className="text-destructive">*</span></label>
               <Combobox options={ventasOpts} value={idVenta} onValueChange={(v) => { setIdVenta(v); if (errors.idVenta) setErrors({...errors, idVenta: ''}) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
-              {errors.idVenta && <p className="text-sm text-destructive">{errors.idVenta}</p>}
+              {errors.idVenta && <p className="mt-1 text-xs text-destructive">{errors.idVenta}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Tipo de Servicio <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Tipo de Servicio <span className="text-destructive">*</span></label>
               <Combobox options={serviciosOpts} value={idServicio} onValueChange={(v) => { setIdServicio(v); if (errors.idServicio) setErrors({...errors, idServicio: ''}) }} placeholder="Buscar servicio..." searchPlaceholder="Nombre del servicio..." />
-              {errors.idServicio && <p className="text-sm text-destructive">{errors.idServicio}</p>}
+              {errors.idServicio && <p className="mt-1 text-xs text-destructive">{errors.idServicio}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Marco (opcional)</Label>
+            <div>
+              <label className={labelCls}>Marco (opcional)</label>
               <Combobox options={marcosOpts} value={idMarco} onValueChange={setIdMarco} placeholder="Seleccionar marco..." searchPlaceholder="Código del marco..." />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
-              <Select value={idEstado} onValueChange={(v) => { setIdEstado(v); if (errors.idEstado) setErrors({...errors, idEstado: ''}) }}>
-                <SelectTrigger className="bg-card text-foreground border-border">
-                  <SelectValue placeholder="Seleccionar estado" />
-                </SelectTrigger>
-                <SelectContent>
-                  {/* ── Dinámico desde BD ── */}
-                  {estados.map((e, i) => (
-                    <SelectItem key={e.id_estado} value={String(e.id_estado)}>
-                      <Badge variant="outline" className={badgeClass(i)}>{e.nombre}</Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.idEstado && <p className="text-sm text-destructive">{errors.idEstado}</p>}
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
+          
+            <div>
+              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
               <DatePicker
                 value={fecha}
                 onChange={(v) => { setFecha(v); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
                 error={errors.fecha}
               />
-              {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
+              {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Precio <span className="text-red-500">*</span></Label>
-              <Input type="number" step="0.01" value={precio} onChange={(e) => { setPrecio(e.target.value); if (errors.precio) setErrors({...errors, precio: ''}) }} className="bg-card text-foreground border-border" />
-              {errors.precio && <p className="text-sm text-destructive">{errors.precio}</p>}
+            <div>
+              <label className={labelCls}>Precio <span className="text-destructive">*</span></label>
+              <input type="number" step="0.01" value={precio} onChange={(e) => { setPrecio(e.target.value); if (errors.precio) setErrors({...errors, precio: ''}) }} className={inputCls} placeholder='Ingrese el precio...'/>
+              {errors.precio && <p className="mt-1 text-xs text-destructive">{errors.precio}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Observación (opcional)</Label>
-              <Textarea value={observacion} onChange={(e) => setObservacion(e.target.value)} className="bg-card text-foreground border-border" />
+            <div>
+              <label className={labelCls}>Observación (opcional)</label>
+              <textarea value={observacion} onChange={(e) => setObservacion(e.target.value)} className={inputCls + ' resize-none'} rows={3} placeholder='Detalles adicionales del pedido...'/>
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>
