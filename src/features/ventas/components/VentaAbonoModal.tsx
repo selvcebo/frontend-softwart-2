@@ -11,6 +11,7 @@ import { Badge }   from '@/src/shared/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { CheckCircle2, CreditCard, Settings2, ChevronRight } from 'lucide-react'
 import { formatFecha } from '@/src/shared/lib/formatFecha'
+import { DatePicker } from '@/src/shared/components/DatePicker'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
 type AbonoEsperado = { numero: number; monto: number; porcentaje: number }
@@ -227,10 +228,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                       </div>
                       <div className="flex flex-col gap-1.5">
                         <Label className="text-foreground text-xs">Fecha <span className="text-red-500">*</span></Label>
-                        <Input
-                          type="date" value={fechaPago}
-                          onChange={e => setFechaPago(e.target.value)}
-                          className="bg-card border-border h-9 text-sm"
+                        <DatePicker
+                          value={fechaPago}
+                          onChange={v => setFechaPago(v)}
                         />
                       </div>
                     </div>

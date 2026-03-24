@@ -23,6 +23,7 @@ import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar }   from '@/src/shared/components/FilterBar'
 import { formatFecha } from '@/src/shared/lib/formatFecha'
+import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Pago = { id_pago: number; id_venta: number; monto: number; fecha: string; id_metodo_pago: number; id_estado_pago: number }
 const fmt = formatCOP
@@ -243,7 +244,11 @@ export function PaymentsPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
-              <Input type="date" value={fecha} onChange={e => { setFecha(e.target.value); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }} className="bg-card text-foreground border-border" />
+              <DatePicker
+                value={fecha}
+                onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
+                error={errors.fecha}
+              />
               {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
             </div>
             <div className="flex flex-col gap-2">
