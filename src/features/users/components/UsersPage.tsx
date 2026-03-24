@@ -3,8 +3,6 @@ import { useUsers } from '../hooks/useUsers'
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
@@ -23,6 +21,10 @@ import { Pagination } from '@/src/shared/components/Pagination'
 type Usuario = { id_usuario: number; correo: string; clave: string; estado: boolean; id_rol: number }
 type CreateUsuarioDto = Omit<Usuario, 'id_usuario'>
 type UpdateUsuarioDto = Omit<Partial<CreateUsuarioDto>, 'clave'>
+
+const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 const ROL_LABELS: Record<number, string> = { 1: 'Admin', 2: 'Empleado', 3: 'Cliente' }
 const getRolBadgeClass = (id_rol: number) => {
@@ -96,7 +98,7 @@ export function UsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Usuarios</h1>
+          <h1 className="font-serif text-3xl text-secondary">Usuarios</h1>
           <p className="text-muted-foreground">Gestiona los usuarios del sistema</p>
         </div>
         <div className="flex items-center gap-2">
@@ -129,15 +131,15 @@ export function UsersPage() {
             <TableHeader>
               <TableRow>
      
-                <TableHead className="text-muted-foreground w-[50%]">Correo</TableHead>
-                <TableHead className="text-muted-foreground w-[18%]">Rol</TableHead>
-                <TableHead className="text-muted-foreground w-[14%]">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground w-[18%]">Acciones</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[50%]">Correo</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Rol</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginated.map((u) => (
-                <TableRow key={u.id_usuario}>
+                <TableRow key={u.id_usuario} className="hover:bg-muted/40 transition-colors border-border">
             
                   <TableCell className="text-foreground">{u.correo}</TableCell>
                   <TableCell>
@@ -153,7 +155,7 @@ export function UsersPage() {
                       <AlertDialog>
                         <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                         <AlertDialogContent className="bg-card text-card-foreground border-border">
-                          <AlertDialogHeader><AlertDialogTitle>¿Eliminar {u.correo}?</AlertDialogTitle><AlertDialogDescription>Los datos del usuario se perderán permanentemente. Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
+                          <AlertDialogHeader><AlertDialogTitle className="font-serif text-secondary">¿Eliminar {u.correo}?</AlertDialogTitle><AlertDialogDescription>Los datos del usuario se perderán permanentemente. Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
                             <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(u.id_usuario), 'Usuario eliminado') }}>Eliminar</AlertDialogAction>
@@ -189,37 +191,37 @@ export function UsersPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Usuario' : 'Registrar Usuario'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Usuario' : 'Registrar Usuario'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">{editingId ? 'Actualiza el correo o el rol.' : 'Completa los datos del nuevo usuario.'}</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="correo" className="text-foreground">Correo <span className="text-red-500">*</span></Label>
-              <Input id="correo" type="email" value={correo} onChange={(e) => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo:''}) }} className="bg-card text-foreground border-border" />
-              {errors.correo && <p className="text-sm text-destructive">{errors.correo}</p>}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Correo <span className="text-destructive">*</span></label>
+              <input type="email" value={correo} placeholder='Ingrese el correo...' onChange={(e) => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo:''}) }} className={inputCls} />
+              {errors.correo && <p className="mt-1 text-xs text-destructive">{errors.correo}</p>}
             </div>
             {!editingId && (
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="clave" className="text-foreground">Contraseña <span className="text-red-500">*</span></Label>
-                <Input id="clave" type="password" value={clave} onChange={(e) => { setClave(e.target.value); if (errors.clave) setErrors({...errors, clave:''}) }} className="bg-card text-foreground border-border" />
-                {errors.clave && <p className="text-sm text-destructive">{errors.clave}</p>}
+              <div>
+                <label className={labelCls}>Contraseña <span className="text-destructive">*</span></label>
+                <input type="password" value={clave} placeholder='Ingrese la contraseña...' onChange={(e) => { setClave(e.target.value); if (errors.clave) setErrors({...errors, clave:''}) }} className={inputCls} />
+                {errors.clave && <p className="mt-1 text-xs text-destructive">{errors.clave}</p>}
               </div>
             )}
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Rol <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Rol <span className="text-destructive">*</span></label>
               <Select value={idRol} onValueChange={(v) => { setIdRol(v); if (errors.idRol) setErrors({...errors, idRol:''}) }}>
-                <SelectTrigger className="bg-card text-foreground border-border"><SelectValue placeholder="Seleccionar rol" /></SelectTrigger>
+                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar rol" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">Admin</SelectItem>
                   <SelectItem value="2">Empleado</SelectItem>
                   <SelectItem value="3">Cliente</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.idRol && <p className="text-sm text-destructive">{errors.idRol}</p>}
+              {errors.idRol && <p className="mt-1 text-xs text-destructive">{errors.idRol}</p>}
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">{editingId ? 'Guardar cambios' : 'Registrar'}</Button>
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">{editingId ? 'Guardar cambios' : 'Registrar'}</button>
             </div>
           </form>
         </DialogContent>

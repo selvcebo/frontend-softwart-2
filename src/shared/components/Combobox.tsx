@@ -4,7 +4,6 @@
 // ============================================================
 import { useState } from 'react'
 import { Check, ChevronsUpDown, Search } from 'lucide-react'
-import { Button } from '@/src/shared/components/ui/button'
 import {
   Command,
   CommandEmpty,
@@ -54,14 +53,16 @@ export function Combobox({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button
-          variant="outline"
+        <button
+          type="button"
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            'w-full justify-between bg-card text-foreground border-border font-normal',
-            !selected && 'text-muted-foreground',
+            'w-full bg-muted border-0 border-b-2 rounded-t-lg px-4 py-3 text-sm text-left flex items-center justify-between gap-2 focus:outline-none transition-all',
+            open ? 'border-secondary' : 'border-transparent',
+            selected ? 'text-foreground' : 'text-muted-foreground/60',
+            disabled && 'opacity-50 cursor-not-allowed',
             className
           )}
         >
@@ -69,7 +70,7 @@ export function Combobox({
             {selected ? selected.label : placeholder}
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
+        </button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-card border-border" align="start">
         <Command className="bg-card">

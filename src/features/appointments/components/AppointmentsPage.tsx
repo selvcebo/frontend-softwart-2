@@ -13,8 +13,6 @@ import { formatFecha, formatHora } from '@/src/shared/lib/formatFecha'
 import { Plus, Pencil, Trash2, Eye, ShoppingCart, PlusCircle, Trash } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Input } from '@/src/shared/components/ui/input'
-import { Textarea } from '@/src/shared/components/ui/textarea'
-import { Label } from '@/src/shared/components/ui/label'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
@@ -28,6 +26,10 @@ import { EmptyState } from '@/src/shared/components/EmptyState'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Cita = { id_cita: number; fecha: string; hora: string; id_estado_cita: number; id_cliente: number }
+
+const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 const ESTADO_BADGE: Record<number, string> = {
   1: 'border-amber-300 bg-amber-100 text-amber-800',
@@ -178,7 +180,7 @@ export function AppointmentsPage() {
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Citas</h1>
+            <h1 className="font-serif text-3xl text-secondary">Citas</h1>
             <p className="text-muted-foreground">Gestiona las citas programadas</p>
           </div>
           <div className="flex items-center gap-2">  
@@ -211,18 +213,18 @@ export function AppointmentsPage() {
               <TableHeader>
                 <TableRow>
                
-                  <TableHead className="text-muted-foreground w-[34%]">Cliente</TableHead>
-                  <TableHead className="text-muted-foreground w-[14%]">Fecha</TableHead>
-                  <TableHead className="text-muted-foreground w-[12%]">Hora</TableHead>
-                  <TableHead className="text-muted-foreground w-[20%]">Estado</TableHead>
-                  <TableHead className="text-right text-muted-foreground w-[20%]">Acciones</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[34%]">Cliente</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Fecha</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Hora</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[20%]">Estado</TableHead>
+                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[20%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginated.map((c) => {
                   const clienteLabel = clientesOpts.find(o => o.value === String(c.id_cliente))?.label ?? `#${c.id_cliente}`
                   return (
-                    <TableRow key={c.id_cita}>
+                    <TableRow key={c.id_cita} className="hover:bg-muted/40 transition-colors border-border">
                     
                       <TableCell className="text-foreground">{clienteLabel}</TableCell>
                       <TableCell className="text-foreground">{formatFecha(c.fecha)}</TableCell>
@@ -262,7 +264,7 @@ export function AppointmentsPage() {
                             </AlertDialogTrigger>
                             <AlertDialogContent className="bg-card text-card-foreground border-border">
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Eliminar cita</AlertDialogTitle>
+                                <AlertDialogTitle className="font-serif text-secondary">Eliminar cita</AlertDialogTitle>
                                 <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
@@ -310,28 +312,28 @@ export function AppointmentsPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Cita' : 'Registrar Cita'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Cita' : 'Registrar Cita'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos de la cita.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Cliente <span className="text-red-500">*</span></Label>
+          <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
+            <div>
+              <label className={labelCls}>Cliente <span className="text-destructive">*</span></label>
               <Combobox
                 options={clientesOpts} value={idCliente}
                 onValueChange={(v) => { setIdCliente(v); if (errors.idCliente) setErrors({...errors, idCliente: ''}) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..."
               />
-              {errors.idCliente && <p className="text-sm text-destructive">{errors.idCliente}</p>}
+              {errors.idCliente && <p className="mt-1 text-xs text-destructive">{errors.idCliente}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Fecha <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
               <DatePicker
                 value={fecha}
                 min={new Date().toISOString().slice(0, 10)}
                 onChange={(v) => { setFecha(v); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
                 error={errors.fecha}
               />
-              {errors.fecha && <p className="text-sm text-destructive">{errors.fecha}</p>}
+              {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
             <TimePicker
               value={hora}
@@ -345,25 +347,25 @@ export function AppointmentsPage() {
                   : []
               }
             />
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Estado <span className="text-red-500">*</span></Label>
+            <div>
+              <label className={labelCls}>Estado <span className="text-destructive">*</span></label>
               <Select value={idEstado} onValueChange={(v) => { setIdEstado(v); if (errors.idEstado) setErrors({...errors, idEstado: ''}) }}>
-                <SelectTrigger className="bg-card text-foreground border-border">
+                <SelectTrigger className={selectCls}>
                   <SelectValue placeholder="Seleccionar estado" />
                 </SelectTrigger>
                 <SelectContent>
                   {estadosCita.map(e => <SelectItem key={e.id_estado_cita} value={String(e.id_estado_cita)}>{e.nombre}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {errors.idEstado && <p className="text-sm text-destructive">{errors.idEstado}</p>}
+              {errors.idEstado && <p className="mt-1 text-xs text-destructive">{errors.idEstado}</p>}
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">
                 Cancelar
-              </Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">
+              </button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">
                 {editingId ? 'Guardar cambios' : 'Registrar'}
-              </Button>
+              </button>
             </div>
           </form>
         </DialogContent>
@@ -399,7 +401,7 @@ export function AppointmentsPage() {
             {/* Líneas de servicio */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <Label className="text-foreground font-semibold">Servicios</Label>
+                <label className={labelCls}>Servicios</label>
                 <Button type="button" variant="outline" size="sm" onClick={addLinea} className="gap-1 h-7 text-xs">
                   <PlusCircle className="h-3.5 w-3.5" />Agregar servicio
                 </Button>
@@ -408,7 +410,7 @@ export function AppointmentsPage() {
               {ventaLineas.map((linea, i) => (
                 <div key={linea.id} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-border bg-background">
                   <div className="col-span-4 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Tipo de Servicio <span className="text-red-500">*</span></Label>
+                    <label className="block text-xs text-muted-foreground mb-0.5">Tipo de Servicio <span className="text-destructive">*</span></label>
                     <select
                       value={linea.id_servicio}
                       onChange={e => updateLinea(linea.id, 'id_servicio', e.target.value)}
@@ -420,7 +422,7 @@ export function AppointmentsPage() {
                     {ventaErrors[`servicio_${i}`] && <p className="text-[10px] text-destructive">{ventaErrors[`servicio_${i}`]}</p>}
                   </div>
                   <div className="col-span-3 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Marco (opcional)</Label>
+                    <label className="block text-xs text-muted-foreground mb-0.5">Marco (opcional)</label>
                     <select
                       value={linea.id_marco}
                       onChange={e => updateLinea(linea.id, 'id_marco', e.target.value)}
@@ -431,7 +433,7 @@ export function AppointmentsPage() {
                     </select>
                   </div>
                   <div className="col-span-3 flex flex-col gap-1">
-                    <Label className="text-xs text-muted-foreground">Precio (COP) <span className="text-red-500">*</span></Label>
+                    <label className="block text-xs text-muted-foreground mb-0.5">Precio (COP) <span className="text-destructive">*</span></label>
                     <Input
                       type="number" min="0" placeholder="0"
                       value={linea.precio}
@@ -463,13 +465,14 @@ export function AppointmentsPage() {
             </div>
 
             {/* Observación general */}
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Observación general (opcional)</Label>
-              <Textarea
+            <div>
+              <label className={labelCls}>Observación general (opcional)</label>
+              <textarea
                 value={ventaObs}
                 onChange={e => setVentaObs(e.target.value)}
                 placeholder="Notas sobre la venta..."
-                className="bg-card border-border min-h-[60px]"
+                className="w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm resize-none"
+                rows={2}
               />
             </div>
 
@@ -480,17 +483,18 @@ export function AppointmentsPage() {
                 <p className="text-xl font-bold text-foreground">{fmt(totalVenta)}</p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setVentaModalCita(null)} disabled={isCreandoVenta}>
+                <button type="button" onClick={() => setVentaModalCita(null)} disabled={isCreandoVenta} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors disabled:opacity-50">
                   Cancelar
-                </Button>
-                <Button
+                </button>
+                <button
+                  type="button"
                   onClick={handleCrearVenta}
                   disabled={isCreandoVenta || ventaMsg?.tipo === 'ok'}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                  className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-emerald-600 hover:bg-emerald-700 text-white active:scale-95 transition-all disabled:opacity-50"
                 >
                   <ShoppingCart className="h-4 w-4" />
                   {isCreandoVenta ? 'Creando...' : 'Crear venta'}
-                </Button>
+                </button>
               </div>
             </div>
           </div>

@@ -3,8 +3,6 @@ import { useCalculadora } from '../hooks/useCalculadora'
 import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye, Calculator } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
-import { Input }    from '@/src/shared/components/ui/input'
-import { Label }    from '@/src/shared/components/ui/label'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
@@ -21,6 +19,9 @@ import { EmptyState } from '@/src/shared/components/EmptyState'
 type Marco = { id_marco: number; codigo: string; colilla: number; precio_ensamblado: number; estado: boolean }
 
 const fmt = (v: number) => v.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })
+
+const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
+const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
 
 export function CalculadoraPage() {
   const { marcos, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useCalculadora()
@@ -90,7 +91,7 @@ export function CalculadoraPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Calculadora de Marcos</h1>
+          <h1 className="font-serif text-3xl text-secondary">Calculadora de Marcos</h1>
           <p className="text-muted-foreground">Gestiona marcos y calcula precios</p>
         </div>
         <div className="flex items-center gap-2">
@@ -121,16 +122,16 @@ export function CalculadoraPage() {
             <TableHeader>
               <TableRow>
     
-                <TableHead className="text-muted-foreground">Código</TableHead>
-                <TableHead className="text-muted-foreground text-right">Colilla</TableHead>
-                <TableHead className="text-muted-foreground text-right">Precio Ensamblado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Estado</TableHead>
-                <TableHead className="text-right text-muted-foreground">Acciones</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[28%]">Código</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[20%]">Colilla</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Precio ensamblado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {paginated.map((m) => (
-                <TableRow key={m.id_marco}>
+                <TableRow key={m.id_marco} className="hover:bg-muted/40 transition-colors border-border">
       
                   <TableCell className="text-foreground font-medium">{m.codigo}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.colilla)}</TableCell>
@@ -147,7 +148,7 @@ export function CalculadoraPage() {
                       <AlertDialog>
                         <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
                         <AlertDialogContent className="bg-card text-card-foreground border-border">
-                          <AlertDialogHeader><AlertDialogTitle>Eliminar marco</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
+                          <AlertDialogHeader><AlertDialogTitle className="font-serif text-secondary">Eliminar marco</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
                             <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(m.id_marco), 'Marco eliminado') }}>Eliminar</AlertDialogAction>
@@ -186,19 +187,19 @@ export function CalculadoraPage() {
       <Dialog open={isCalcOpen} onOpenChange={setIsCalcOpen}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-foreground">Calcular Precio</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">Calcular precio</DialogTitle>
             <DialogDescription className="text-muted-foreground">{calcMarco?.codigo}</DialogDescription>
           </DialogHeader>
           {calcMarco && (
             <div className="flex flex-col gap-4 mt-2">
               <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-2">
-                  <Label className="text-foreground">Largo (cm) <span className="text-red-500">*</span></Label>
-                  <Input type="number" value={largo} onChange={(e) => setLargo(e.target.value)} className="bg-card text-foreground border-border" />
+                <div>
+                  <label className={labelCls}>Largo (cm) <span className="text-destructive">*</span></label>
+                  <input type="number" min="0" value={largo} onChange={(e) => setLargo(e.target.value)} placeholder="Ej: 30" className={inputCls} />
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="text-foreground">Ancho (cm) <span className="text-red-500">*</span></Label>
-                  <Input type="number" value={ancho} onChange={(e) => setAncho(e.target.value)} className="bg-card text-foreground border-border" />
+                <div>
+                  <label className={labelCls}>Ancho (cm) <span className="text-destructive">*</span></label>
+                  <input type="number" min="0" value={ancho} onChange={(e) => setAncho(e.target.value)} placeholder="Ej: 20" className={inputCls} />
                 </div>
               </div>
               <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
@@ -217,28 +218,28 @@ export function CalculadoraPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-foreground">{editingId ? 'Editar Marco' : 'Registrar Marco'}</DialogTitle>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Marco' : 'Registrar Marco'}</DialogTitle>
             <DialogDescription className="text-muted-foreground">Completa los datos del marco.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Código <span className="text-red-500">*</span></Label>
-              <Input value={codigo} onChange={(e) => { setCodigo(e.target.value); if (errors.codigo) setErrors({}) }} className="bg-card text-foreground border-border" />
-              {errors.codigo && <p className="text-sm text-destructive">{errors.codigo}</p>}
+            <div>
+              <label className={labelCls}>Código <span className="text-destructive">*</span></label>
+              <input value={codigo} placeholder="Ej: MDF-001" onChange={(e) => { setCodigo(e.target.value); if (errors.codigo) setErrors({}) }} className={inputCls} />
+              {errors.codigo && <p className="mt-1 text-xs text-destructive">{errors.codigo}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Colilla <span className="text-red-500">*</span></Label>
-              <Input type="number" step="0.01" value={colillaStr} onChange={(e) => { setColillaStr(e.target.value); if (errors.colilla) setErrors({}) }} className="bg-card text-foreground border-border" />
-              {errors.colilla && <p className="text-sm text-destructive">{errors.colilla}</p>}
+            <div>
+              <label className={labelCls}>Colilla <span className="text-destructive">*</span></label>
+              <input type="number" step="0.01" min="0" value={colillaStr} placeholder="Ej: 5" onChange={(e) => { setColillaStr(e.target.value); if (errors.colilla) setErrors({}) }} className={inputCls} />
+              {errors.colilla && <p className="mt-1 text-xs text-destructive">{errors.colilla}</p>}
             </div>
-            <div className="flex flex-col gap-2">
-              <Label className="text-foreground">Precio Ensamblado <span className="text-red-500">*</span></Label>
-              <Input type="number" step="0.01" value={precioStr} onChange={(e) => { setPrecioStr(e.target.value); if (errors.precio) setErrors({}) }} className="bg-card text-foreground border-border" />
-              {errors.precio && <p className="text-sm text-destructive">{errors.precio}</p>}
+            <div>
+              <label className={labelCls}>Precio Ensamblado <span className="text-destructive">*</span></label>
+              <input type="number" step="0.01" min="0" value={precioStr} placeholder="Ej: 15000" onChange={(e) => { setPrecioStr(e.target.value); if (errors.precio) setErrors({}) }} className={inputCls} />
+              {errors.precio && <p className="mt-1 text-xs text-destructive">{errors.precio}</p>}
             </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <Button type="button" variant="outline" onClick={() => { setIsFormOpen(false); resetForm() }} className="border-border text-foreground">Cancelar</Button>
-              <Button type="submit" disabled={isSubmitting} className="bg-primary text-primary-foreground hover:bg-primary/90">{editingId ? 'Guardar cambios' : 'Registrar'}</Button>
+            <div className="flex justify-end gap-3 pt-2 border-t border-border">
+              <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
+              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">{editingId ? 'Guardar cambios' : 'Registrar'}</button>
             </div>
           </form>
         </DialogContent>
