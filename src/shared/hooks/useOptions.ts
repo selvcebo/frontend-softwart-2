@@ -35,17 +35,20 @@ export function useClientesOptions() {
 }
 
 // ── Ventas ────────────────────────────────────────────────────
-type VentaOption = { id_venta: number; fecha: string; total: number; cliente?: { id_cliente: number; nombre?: string } | null }
+type VentaOption = { id_venta: number; fecha: string; total: number; num_abonos?: number; pagos?: unknown[]; cliente?: { id_cliente: number; nombre?: string } | null }
 
 export function useVentasOptions() {
-  const [options,   setOptions]   = useState<ComboboxOption[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [options,    setOptions]    = useState<ComboboxOption[]>([])
+  const [rawVentas,  setRawVentas]  = useState<VentaOption[]>([])
+  const [isLoading,  setIsLoading]  = useState(true)
 
   useEffect(() => {
     apiRequest<ApiResponse<VentaOption[]>>('/api/ventas?limit=100')
       .then((res) => {
+        const data = res.data ?? []
+        setRawVentas(data)
         setOptions(
-          (res.data ?? []).map((v) => ({
+          data.map((v) => ({
             value:    String(v.id_venta),
             label:    `Venta #${v.id_venta} — ${new Date(v.fecha).toLocaleDateString('es-CO')}`,
             sublabel: v.total?.toLocaleString('es-CO', { style: 'currency', currency: 'COP' }),
@@ -56,11 +59,11 @@ export function useVentasOptions() {
       .finally(() => setIsLoading(false))
   }, [])
 
-  return { options, isLoading }
+  return { options, rawVentas, isLoading }
 }
 
 // ── Citas ─────────────────────────────────────────────────────
-export type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
+type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
 
 export function useCitasOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])

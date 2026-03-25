@@ -92,7 +92,7 @@ export function RolesPage() {
       />
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay roles que coincidan." />
       ) : (
@@ -168,14 +168,14 @@ export function RolesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Nombre <span className="text-destructive">*</span></label>
-              <input value={nombre} placeholder="Ej: Administrador" onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({}) }}
+              <label className={labelCls} htmlFor="rol-nombre">Nombre <span className="text-destructive">*</span></label>
+              <input id="rol-nombre" value={nombre} placeholder="Ej: Administrador" onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({}) }}
                 className={inputCls} />
               {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
             <div>
-              <label className={labelCls}>Descripción (opcional)</label>
-              <input value={descripcion} placeholder="Descripción del rol..." onChange={e => setDescripcion(e.target.value)}
+              <label className={labelCls} htmlFor="rol-descripcion">Descripción (opcional)</label>
+              <input id="rol-descripcion" value={descripcion} placeholder="Descripción del rol..." onChange={e => setDescripcion(e.target.value)}
                 className={inputCls} />
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">

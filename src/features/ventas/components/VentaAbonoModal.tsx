@@ -54,7 +54,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
   // Form pago
   const [monto,        setMonto]        = useState('')
   const [idMetodo,     setIdMetodo]     = useState('')
-  const [fechaPago,    setFechaPago]    = useState(new Date().toISOString().slice(0, 10))
+  const [fechaPago,    setFechaPago]    = useState(() => new Date().toISOString().slice(0, 10))
   const [pagoMsg,      setPagoMsg]      = useState<{ tipo: 'ok' | 'err'; texto: string } | null>(null)
   const [isPagando,    setIsPagando]    = useState(false)
 
@@ -227,8 +227,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={labelCls}>Monto ($) <span className="text-destructive">*</span></label>
+                        <label className={labelCls} htmlFor="abono-monto">Monto ($) <span className="text-destructive">*</span></label>
                         <input
+                          id="abono-monto"
                           type="number" min="0" value={monto} placeholder="0"
                           onChange={e => setMonto(e.target.value)}
                           className={inputCls}
@@ -236,8 +237,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                         {monto && <p className="text-xs text-muted-foreground mt-1">{fmt(Number(monto))}</p>}
                       </div>
                       <div>
-                        <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+                        <label className={labelCls} htmlFor="abono-fecha">Fecha <span className="text-destructive">*</span></label>
                         <DatePicker
+                          id="abono-fecha"
                           value={fechaPago}
                           onChange={v => setFechaPago(v)}
                         />
@@ -245,9 +247,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                     </div>
 
                     <div>
-                      <label className={labelCls}>Método de pago <span className="text-destructive">*</span></label>
+                      <label className={labelCls} htmlFor="abono-metodo">Método de pago <span className="text-destructive">*</span></label>
                       <Select value={idMetodo} onValueChange={setIdMetodo}>
-                        <SelectTrigger className={selectCls}>
+                        <SelectTrigger id="abono-metodo" className={selectCls}>
                           <SelectValue placeholder="Seleccionar..." />
                         </SelectTrigger>
                         <SelectContent>
@@ -291,8 +293,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className={labelCls}>Número de abonos <span className="text-destructive">*</span></label>
+                        <label className={labelCls} htmlFor="abono-num">Número de abonos <span className="text-destructive">*</span></label>
                         <input
+                          id="abono-num"
                           type="number" min="1" max="12"
                           value={numAbonos} placeholder="Ej: 2"
                           onChange={e => setNumAbonos(e.target.value)}
@@ -302,8 +305,9 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                         <p className="text-[10px] text-muted-foreground mt-1">Máximo 12</p>
                       </div>
                       <div>
-                        <label className={labelCls}>% primer abono <span className="text-destructive">*</span></label>
+                        <label className={labelCls} htmlFor="abono-pct">% primer abono <span className="text-destructive">*</span></label>
                         <input
+                          id="abono-pct"
                           type="number" min="1" max="99"
                           value={pctPrimero} placeholder="Ej: 70"
                           onChange={e => setPctPrimero(e.target.value)}
@@ -332,7 +336,7 @@ export function VentaAbonoModal({ open, onClose, idVenta, labelVenta, onSuccess 
                           return (
                             <div className="space-y-0.5">
                               <p>Abono 1: {fmt(a1)} ({p}%)</p>
-                              {intermedios.map((m, i) => <p key={i}>Abono {i+2}: {fmt(m)}</p>)}
+                              {intermedios.map((m, i) => <p key={`abono-${i}`}>Abono {i+2}: {fmt(m)}</p>)}
                               <p>Abono {n} (último): {fmt(ultimo)}</p>
                             </div>
                           )

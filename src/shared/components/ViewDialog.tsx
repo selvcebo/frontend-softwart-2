@@ -11,7 +11,7 @@ import {
 } from '@/src/shared/components/ui/dialog'
 import { Badge } from '@/src/shared/components/ui/badge'
 
-export interface ViewField {
+interface ViewField {
   label: string
   value: React.ReactNode
   fullWidth?: boolean // ocupa las 2 columnas
@@ -38,7 +38,7 @@ export function ViewDialog({ open, onOpenChange, title, description, fields }: V
         <div className="grid grid-cols-2 gap-x-6 gap-y-4 mt-2">
           {fields.map((field, i) => (
             <div
-              key={i}
+              key={`field-${i}`}
               className={field.fullWidth ? 'col-span-2' : 'col-span-1'}
             >
               <p className="text-xs font-medium text-muted-foreground capitalize tracking-wide mb-1">

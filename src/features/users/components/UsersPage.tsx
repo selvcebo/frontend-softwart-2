@@ -121,7 +121,7 @@ export function UsersPage() {
       />
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay usuarios que coincidan con la búsqueda." />
       ) : (
@@ -196,21 +196,21 @@ export function UsersPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Correo <span className="text-destructive">*</span></label>
-              <input type="email" value={correo} placeholder='Ingrese el correo...' onChange={(e) => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo:''}) }} className={inputCls} />
+              <label className={labelCls} htmlFor="usr-correo">Correo <span className="text-destructive">*</span></label>
+              <input id="usr-correo" type="email" value={correo} placeholder='Ingrese el correo...' onChange={(e) => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo:''}) }} className={inputCls} />
               {errors.correo && <p className="mt-1 text-xs text-destructive">{errors.correo}</p>}
             </div>
             {!editingId && (
               <div>
-                <label className={labelCls}>Contraseña <span className="text-destructive">*</span></label>
-                <input type="password" value={clave} placeholder='Ingrese la contraseña...' onChange={(e) => { setClave(e.target.value); if (errors.clave) setErrors({...errors, clave:''}) }} className={inputCls} />
+                <label className={labelCls} htmlFor="usr-clave">Contraseña <span className="text-destructive">*</span></label>
+                <input id="usr-clave" type="password" value={clave} placeholder='Ingrese la contraseña...' onChange={(e) => { setClave(e.target.value); if (errors.clave) setErrors({...errors, clave:''}) }} className={inputCls} />
                 {errors.clave && <p className="mt-1 text-xs text-destructive">{errors.clave}</p>}
               </div>
             )}
             <div>
-              <label className={labelCls}>Rol <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="usr-rol">Rol <span className="text-destructive">*</span></label>
               <Select value={idRol} onValueChange={(v) => { setIdRol(v); if (errors.idRol) setErrors({...errors, idRol:''}) }}>
-                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar rol" /></SelectTrigger>
+                <SelectTrigger id="usr-rol" className={selectCls}><SelectValue placeholder="Seleccionar rol" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="1">Admin</SelectItem>
                   <SelectItem value="2">Empleado</SelectItem>

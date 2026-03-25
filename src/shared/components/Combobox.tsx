@@ -34,7 +34,10 @@ interface ComboboxProps {
   emptyText?:        string
   disabled?:         boolean
   className?:        string
+  id?:               string
 }
+
+let _comboboxId = 0
 
 export function Combobox({
   options,
@@ -45,8 +48,10 @@ export function Combobox({
   emptyText        = 'Sin resultados',
   disabled         = false,
   className,
+  id,
 }: ComboboxProps) {
   const [open, setOpen] = useState(false)
+  const [listId] = useState(() => `combobox-list-${++_comboboxId}`)
 
   const selected = options.find((o) => o.value === value)
 
@@ -54,9 +59,11 @@ export function Combobox({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
+          id={id}
           type="button"
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           disabled={disabled}
           className={cn(
             'w-full bg-muted border-0 border-b-2 rounded-t-lg px-4 py-3 text-sm text-left flex items-center justify-between gap-2 focus:outline-none transition-all',
@@ -73,7 +80,7 @@ export function Combobox({
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 bg-card border-border" align="start">
-        <Command className="bg-card">
+        <Command id={listId} className="bg-card">
           <div className="flex items-center border-b border-border px-3">
             <Search className="mr-2 h-4 w-4 shrink-0 text-muted-foreground" />
             <CommandInput

@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Permiso = { id_permiso: number; nombre: string; descripcion?: string }
-export type Rol     = { id_rol: number; nombre: string }
+type Permiso = { id_permiso: number; nombre: string; descripcion?: string }
+type Rol     = { id_rol: number; nombre: string }
 
 // Backend devuelve relaciones anidadas: { permiso: { id_permiso, ... }, rol: { id_rol, ... } }
 type PermisoRolRaw = {

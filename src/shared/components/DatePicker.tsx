@@ -14,6 +14,7 @@ interface DatePickerProps {
   error?: string
   /** Sobreescribe el estilo del trigger (por defecto: underline igual al resto de inputs) */
   triggerClassName?: string
+  id?: string
 }
 
 // Parseo local para evitar desfases UTC
@@ -31,6 +32,7 @@ export function DatePicker({
   placeholder = 'Selecciona una fecha',
   error,
   triggerClassName,
+  id,
 }: DatePickerProps) {
   const [open, setOpen] = useState(false)
 
@@ -45,6 +47,7 @@ export function DatePicker({
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button
+          id={id}
           type="button"
           className={
             triggerClassName ??

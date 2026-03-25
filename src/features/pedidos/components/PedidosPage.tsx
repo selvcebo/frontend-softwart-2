@@ -66,7 +66,7 @@ function useEstadosServicio() {
 export function PedidosPage() {
   const navigate = useNavigate()
   const { pedidos, isLoading, onCrear, onEditar, onEliminar, onCambiarEstado } = usePedidos()
-  const { options: ventasOpts }    = useVentasOptions()
+  const { options: ventasOpts, rawVentas } = useVentasOptions()
   const { options: serviciosOpts } = useServiciosOptions()
   const { options: marcosOpts }    = useMarcoOptions()
   const estados = useEstadosServicio()
@@ -129,23 +129,31 @@ export function PedidosPage() {
     setPrecio(String(p.precio)); setObservacion(p.observacion ?? '')
     setErrors({}); setIsFormOpen(true)
   }
+
+  const handleVentaChange = (v: string) => {
+    setIdVenta(v)
+    if (errors.idVenta) setErrors(p => ({...p, idVenta: ''}))
+    if (!editingId) {
+      const total = rawVentas.find(rv => String(rv.id_venta) === v)?.total
+      if (total != null) setPrecio(String(total))
+    }
+  }
   const openView = (p: Pedido) => { setViewingItem(p); setIsViewOpen(true) }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const newErrors: Record<string, string> = {}
-    if (!idVenta)       newErrors.idVenta    = 'Campo requerido'
-    if (!idServicio)    newErrors.idServicio = 'Campo requerido'
-    if (!idEstado)      newErrors.idEstado   = 'Campo requerido'
-    if (!fecha.trim())  newErrors.fecha      = 'Campo requerido'
-    if (!precio.trim()) newErrors.precio     = 'Campo requerido'
+    if (!idVenta)      newErrors.idVenta    = 'Campo requerido'
+    if (!idServicio)   newErrors.idServicio = 'Campo requerido'
+    if (!fecha.trim()) newErrors.fecha      = 'Campo requerido'
+    if (!precio)       newErrors.precio     = 'Campo requerido'
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return }
     setIsSubmitting(true)
     try {
       const data = {
         id_venta: Number(idVenta), id_servicio: Number(idServicio),
         id_marco: idMarco ? Number(idMarco) : null,
-        id_estado: Number(idEstado), fecha,
+        id_estado: idEstado ? Number(idEstado) : (estados[0]?.id_estado ?? 1), fecha,
         precio: Number(precio), observacion, estado: true,
       }
       const err = editingId ? await onEditar(editingId, data) : await onCrear(data)
@@ -171,7 +179,7 @@ export function PedidosPage() {
         <div className="flex items-center gap-2">
           <SearchInput value={q} onChange={setQ} placeholder="Buscar venta, servicio, marco, fecha..." className="w-72" />
           <Button onClick={openCreate} className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
-            <Plus className="mr-2 h-4 w-4" />Registrar Servicio
+            <Plus className="mr-2 h-4 w-4" />Registrar Pedido
           </Button>
         </div>
       </div>
@@ -192,7 +200,7 @@ export function PedidosPage() {
         )}
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin registros" description="No hay pedidos registrados aún." />
       ) : (
@@ -315,23 +323,24 @@ export function PedidosPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Venta <span className="text-destructive">*</span></label>
-              <Combobox options={ventasOpts} value={idVenta} onValueChange={(v) => { setIdVenta(v); if (errors.idVenta) setErrors({...errors, idVenta: ''}) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
+              <label className={labelCls} htmlFor="ped-venta">Venta <span className="text-destructive">*</span></label>
+              <Combobox id="ped-venta" options={ventasOpts} value={idVenta} onValueChange={handleVentaChange} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
               {errors.idVenta && <p className="mt-1 text-xs text-destructive">{errors.idVenta}</p>}
             </div>
             <div>
-              <label className={labelCls}>Tipo de Servicio <span className="text-destructive">*</span></label>
-              <Combobox options={serviciosOpts} value={idServicio} onValueChange={(v) => { setIdServicio(v); if (errors.idServicio) setErrors({...errors, idServicio: ''}) }} placeholder="Buscar servicio..." searchPlaceholder="Nombre del servicio..." />
+              <label className={labelCls} htmlFor="ped-servicio">Tipo de Servicio <span className="text-destructive">*</span></label>
+              <Combobox id="ped-servicio" options={serviciosOpts} value={idServicio} onValueChange={(v) => { setIdServicio(v); if (errors.idServicio) setErrors({...errors, idServicio: ''}) }} placeholder="Buscar servicio..." searchPlaceholder="Nombre del servicio..." />
               {errors.idServicio && <p className="mt-1 text-xs text-destructive">{errors.idServicio}</p>}
             </div>
             <div>
-              <label className={labelCls}>Marco (opcional)</label>
-              <Combobox options={marcosOpts} value={idMarco} onValueChange={setIdMarco} placeholder="Seleccionar marco..." searchPlaceholder="Código del marco..." />
+              <label className={labelCls} htmlFor="ped-marco">Marco (opcional)</label>
+              <Combobox id="ped-marco" options={marcosOpts} value={idMarco} onValueChange={setIdMarco} placeholder="Seleccionar marco..." searchPlaceholder="Código del marco..." />
             </div>
           
             <div>
-              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="ped-fecha">Fecha <span className="text-destructive">*</span></label>
               <DatePicker
+                id="ped-fecha"
                 value={fecha}
                 onChange={(v) => { setFecha(v); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
                 error={errors.fecha}
@@ -339,13 +348,21 @@ export function PedidosPage() {
               {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
             <div>
-              <label className={labelCls}>Precio <span className="text-destructive">*</span></label>
-              <input type="number" step="0.01" value={precio} onChange={(e) => { setPrecio(e.target.value); if (errors.precio) setErrors({...errors, precio: ''}) }} className={inputCls} placeholder='Ingrese el precio...'/>
+              <label className={labelCls} htmlFor="ped-precio">Precio {!editingId && <span className="text-muted-foreground font-normal normal-case tracking-normal">(tomado de la venta)</span>}</label>
+              <input
+                id="ped-precio"
+                type="number" step="0.01"
+                value={precio}
+                readOnly={!editingId}
+                onChange={editingId ? (e) => { setPrecio(e.target.value); if (errors.precio) setErrors({...errors, precio: ''}) } : undefined}
+                className={inputCls + (!editingId ? ' opacity-60 cursor-not-allowed' : '')}
+                placeholder={!editingId ? 'Se completa al seleccionar la venta' : 'Ingrese el precio...'}
+              />
               {errors.precio && <p className="mt-1 text-xs text-destructive">{errors.precio}</p>}
             </div>
             <div>
-              <label className={labelCls}>Observación (opcional)</label>
-              <textarea value={observacion} onChange={(e) => setObservacion(e.target.value)} className={inputCls + ' resize-none'} rows={3} placeholder='Detalles adicionales del pedido...'/>
+              <label className={labelCls} htmlFor="ped-observacion">Observación (opcional)</label>
+              <textarea id="ped-observacion" value={observacion} onChange={(e) => setObservacion(e.target.value)} className={inputCls + ' resize-none'} rows={3} placeholder='Detalles adicionales del pedido...'/>
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">
               <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>

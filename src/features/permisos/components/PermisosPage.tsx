@@ -95,8 +95,10 @@ function ModuloCard({ moduloKey, permisos, id_rol, isAdmin, tienePermiso, onTogg
           {!isAdmin && (
             <div
               role="checkbox"
+              tabIndex={0}
               aria-checked={todosOn ? true : algunoOn ? 'mixed' : false}
               onClick={e => { e.stopPropagation(); handleToggleAll() }}
+              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.stopPropagation(); handleToggleAll() } }}
               className="flex items-center gap-1 rounded px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               title={todosOn ? 'Desmarcar todos' : 'Marcar todos'}
             >
@@ -123,6 +125,7 @@ function ModuloCard({ moduloKey, permisos, id_rol, isAdmin, tienePermiso, onTogg
             return (
               <label
                 key={permiso.id_permiso}
+                htmlFor={`perm-${permiso.id_permiso}`}
                 title={isAdmin ? 'El Admin siempre tiene todos los permisos' : undefined}
                 className={[
                   'flex items-center gap-2 rounded-md border px-2.5 py-1.5 cursor-pointer select-none transition-colors',
@@ -134,6 +137,7 @@ function ModuloCard({ moduloKey, permisos, id_rol, isAdmin, tienePermiso, onTogg
                 ].join(' ')}
               >
                 <Checkbox
+                  id={`perm-${permiso.id_permiso}`}
                   checked={asignado}
                   onCheckedChange={() => !isAdmin && onToggle(permiso.id_permiso)}
                   disabled={isAdmin}
@@ -220,10 +224,10 @@ export function PermisosPage() {
       {/* Selector de Rol + resumen */}
       <div className="flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-2 min-w-[200px]">
-          <Label className="text-foreground">Rol</Label>
+          <Label htmlFor="perm-rol" className="text-foreground">Rol</Label>
           {isLoading ? <Skeleton className="h-10 w-48 rounded-md" /> : (
             <Select value={selectedRol} onValueChange={v => { setSelectedRol(v); setActionError(null) }}>
-              <SelectTrigger className="bg-card text-foreground border-border">
+              <SelectTrigger id="perm-rol" className="bg-card text-foreground border-border">
                 <SelectValue placeholder="Seleccionar rol..." />
               </SelectTrigger>
               <SelectContent>
@@ -282,7 +286,7 @@ export function PermisosPage() {
         <EmptyState title="Selecciona un rol" description="Elige un rol para ver y gestionar sus permisos agrupados por módulo." />
       ) : isLoading ? (
         <div className="flex flex-col gap-3">
-          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
+          {Array.from({ length: 4 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-16 w-full rounded-lg" />)}
         </div>
       ) : permisos.length === 0 ? (
         <EmptyState title="Sin permisos" description="No hay permisos registrados en el sistema." />

@@ -24,6 +24,8 @@ export type BookedSlot = {
   id_cita?:       number
 }
 
+const EMPTY_BOOKED_SLOTS: BookedSlot[] = []
+
 interface TimePickerProps {
   value:        string
   onChange:     (val: string) => void
@@ -36,7 +38,7 @@ interface TimePickerProps {
 export function TimePicker({
   value,
   onChange,
-  bookedSlots = [],
+  bookedSlots = EMPTY_BOOKED_SLOTS,
   error,
   label = 'Hora',
   disabled = false,

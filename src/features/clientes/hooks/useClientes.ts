@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Cliente = {
+type Cliente = {
   id_cliente:    number
   tipoDocumento: string
   documento:     string

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion'
 import { useRecuperar } from '../hooks/useRecuperar'
 import { Button } from '@/src/shared/components/ui/button'
 import { Input }  from '@/src/shared/components/ui/input'
@@ -31,6 +31,7 @@ export function RecuperarPage() {
   }
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="min-h-screen flex flex-col bg-[#002926] selection:bg-[#805533]/30">
 
       {/* ── Header ────────────────────────────────────────────────────── */}
@@ -75,7 +76,7 @@ export function RecuperarPage() {
               {success ? (
 
                 /* ── Estado: código enviado ── */
-                <motion.div
+                <m.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -96,12 +97,12 @@ export function RecuperarPage() {
                       Ingresar mi código <ArrowRight className="h-4 w-4" />
                     </Button>
                   </Link>
-                </motion.div>
+                </m.div>
 
               ) : (
 
                 /* ── Formulario ── */
-                <motion.div
+                <m.div
                   key="form"
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -164,7 +165,7 @@ export function RecuperarPage() {
                       Volver al inicio de sesión
                     </Link>
                   </div>
-                </motion.div>
+                </m.div>
 
               )}
             </AnimatePresence>
@@ -191,5 +192,6 @@ export function RecuperarPage() {
       </footer>
 
     </div>
+    </LazyMotion>
   )
 }

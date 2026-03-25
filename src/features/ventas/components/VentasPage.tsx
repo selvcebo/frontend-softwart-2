@@ -130,7 +130,7 @@ export function VentasPage() {
       />
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin registros" description="No hay ventas registradas aún." />
       ) : (
@@ -251,15 +251,15 @@ export function VentasPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Cliente <span className="text-destructive">*</span></label>
-              <Combobox options={clientesOpts} value={idCliente}
+              <label className={labelCls} htmlFor="vta-cliente">Cliente <span className="text-destructive">*</span></label>
+              <Combobox id="vta-cliente" options={clientesOpts} value={idCliente}
                 onValueChange={v => { setIdCliente(v); setIdCita(''); if (errors.idCliente) setErrors(p => ({...p, idCliente:''})) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..." />
               {errors.idCliente && <p className="mt-1 text-xs text-destructive">{errors.idCliente}</p>}
             </div>
             <div>
-              <label className={labelCls}>Cita (opcional)</label>
-              <Combobox options={citasFormOpts} value={idCita}
+              <label className={labelCls} htmlFor="vta-cita">Cita (opcional)</label>
+              <Combobox id="vta-cita" options={citasFormOpts} value={idCita}
                 onValueChange={v => {
                   setIdCita(v)
                   const citaFecha = rawCitas.find(c => String(c.id_cita) === v)?.fecha
@@ -269,8 +269,9 @@ export function VentasPage() {
                 searchPlaceholder="Buscar cita..." />
             </div>
             <div>
-              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="vta-fecha">Fecha <span className="text-destructive">*</span></label>
               <DatePicker
+                id="vta-fecha"
                 value={fecha}
                 onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
                 error={errors.fecha}
@@ -278,10 +279,10 @@ export function VentasPage() {
               {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
             <div>
-              <label className={labelCls}>Total <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="vta-total">Total <span className="text-destructive">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                <input type="number" step="1" min="0" value={total}
+                <input id="vta-total" type="number" step="1" min="0" value={total}
                   onChange={e => { setTotal(e.target.value); if (errors.total) setErrors(p => ({...p, total:''})) }}
                   className={inputCls + ' pl-8'} placeholder="0" />
               </div>
@@ -289,8 +290,8 @@ export function VentasPage() {
               {errors.total && <p className="mt-1 text-xs text-destructive">{errors.total}</p>}
             </div>
             <div>
-              <label className={labelCls}>Observación (opcional)</label>
-              <textarea value={observacion} placeholder="Notas o detalles de la venta..." onChange={e => setObservacion(e.target.value)}
+              <label className={labelCls} htmlFor="vta-observacion">Observación (opcional)</label>
+              <textarea id="vta-observacion" value={observacion} placeholder="Notas o detalles de la venta..." onChange={e => setObservacion(e.target.value)}
                 className={inputCls + ' resize-none'} rows={3} />
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">

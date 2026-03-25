@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Servicio = {
+type Servicio = {
   id_servicio: number
   nombre: string
   descripcion?: string

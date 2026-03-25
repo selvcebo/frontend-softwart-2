@@ -4,9 +4,9 @@
 import { cn } from '@/src/shared/lib/utils'
 import { X, SlidersHorizontal } from 'lucide-react'
 
-export type FilterOption = { value: string; label: string }
+type FilterOption = { value: string; label: string }
 
-export type FilterConfig = {
+type FilterConfig = {
   key:      string
   label:    string
   type:     'select' | 'chips'
