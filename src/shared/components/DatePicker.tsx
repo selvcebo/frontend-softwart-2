@@ -18,7 +18,7 @@ interface DatePickerProps {
 }
 
 // Parseo local para evitar desfases UTC
-function parseDate(str: string): Date | undefined {
+function parseDate(str: string | undefined): Date | undefined {
   if (!str) return undefined
   const parts = str.split('-').map(Number)
   if (parts.length < 3 || parts.some(isNaN)) return undefined
