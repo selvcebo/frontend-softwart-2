@@ -202,7 +202,7 @@ export function AppointmentsPage() {
 
         {isLoading ? (
           <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}
+            {Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}
           </div>
         ) : citas.length === 0 ? (
           <EmptyState title="Sin registros" description="No hay citas registradas aún." />
@@ -317,8 +317,9 @@ export function AppointmentsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Cliente <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="cita-cliente">Cliente <span className="text-destructive">*</span></label>
               <Combobox
+                id="cita-cliente"
                 options={clientesOpts} value={idCliente}
                 onValueChange={(v) => { setIdCliente(v); if (errors.idCliente) setErrors({...errors, idCliente: ''}) }}
                 placeholder="Buscar cliente..." searchPlaceholder="Nombre o documento..."
@@ -326,8 +327,9 @@ export function AppointmentsPage() {
               {errors.idCliente && <p className="mt-1 text-xs text-destructive">{errors.idCliente}</p>}
             </div>
             <div>
-              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="cita-fecha">Fecha <span className="text-destructive">*</span></label>
               <DatePicker
+                id="cita-fecha"
                 value={fecha}
                 min={new Date().toISOString().slice(0, 10)}
                 onChange={(v) => { setFecha(v); if (errors.fecha) setErrors({...errors, fecha: ''}) }}
@@ -348,9 +350,9 @@ export function AppointmentsPage() {
               }
             />
             <div>
-              <label className={labelCls}>Estado <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="cita-estado">Estado <span className="text-destructive">*</span></label>
               <Select value={idEstado} onValueChange={(v) => { setIdEstado(v); if (errors.idEstado) setErrors({...errors, idEstado: ''}) }}>
-                <SelectTrigger className={selectCls}>
+                <SelectTrigger id="cita-estado" className={selectCls}>
                   <SelectValue placeholder="Seleccionar estado" />
                 </SelectTrigger>
                 <SelectContent>
@@ -401,7 +403,7 @@ export function AppointmentsPage() {
             {/* Líneas de servicio */}
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <label className={labelCls}>Servicios</label>
+                <span className={labelCls}>Servicios</span>
                 <Button type="button" variant="outline" size="sm" onClick={addLinea} className="gap-1 h-7 text-xs">
                   <PlusCircle className="h-3.5 w-3.5" />Agregar servicio
                 </Button>
@@ -410,8 +412,9 @@ export function AppointmentsPage() {
               {ventaLineas.map((linea, i) => (
                 <div key={linea.id} className="grid grid-cols-12 gap-2 items-start p-3 rounded-lg border border-border bg-background">
                   <div className="col-span-4 flex flex-col gap-1">
-                    <label className="block text-xs text-muted-foreground mb-0.5">Tipo de Servicio <span className="text-destructive">*</span></label>
+                    <label className="block text-xs text-muted-foreground mb-0.5" htmlFor={`srv-svc-${i}`}>Tipo de Servicio <span className="text-destructive">*</span></label>
                     <select
+                      id={`srv-svc-${i}`}
                       value={linea.id_servicio}
                       onChange={e => updateLinea(linea.id, 'id_servicio', e.target.value)}
                       className="flex h-8 w-full rounded-md border border-border bg-card px-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -422,8 +425,9 @@ export function AppointmentsPage() {
                     {ventaErrors[`servicio_${i}`] && <p className="text-[10px] text-destructive">{ventaErrors[`servicio_${i}`]}</p>}
                   </div>
                   <div className="col-span-3 flex flex-col gap-1">
-                    <label className="block text-xs text-muted-foreground mb-0.5">Marco (opcional)</label>
+                    <label className="block text-xs text-muted-foreground mb-0.5" htmlFor={`srv-marco-${i}`}>Marco (opcional)</label>
                     <select
+                      id={`srv-marco-${i}`}
                       value={linea.id_marco}
                       onChange={e => updateLinea(linea.id, 'id_marco', e.target.value)}
                       className="flex h-8 w-full rounded-md border border-border bg-card px-2 text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
@@ -433,8 +437,9 @@ export function AppointmentsPage() {
                     </select>
                   </div>
                   <div className="col-span-3 flex flex-col gap-1">
-                    <label className="block text-xs text-muted-foreground mb-0.5">Precio (COP) <span className="text-destructive">*</span></label>
+                    <label className="block text-xs text-muted-foreground mb-0.5" htmlFor={`srv-precio-${i}`}>Precio (COP) <span className="text-destructive">*</span></label>
                     <Input
+                      id={`srv-precio-${i}`}
                       type="number" min="0" placeholder="0"
                       value={linea.precio}
                       onChange={e => updateLinea(linea.id, 'precio', e.target.value)}
@@ -466,8 +471,9 @@ export function AppointmentsPage() {
 
             {/* Observación general */}
             <div>
-              <label className={labelCls}>Observación general (opcional)</label>
+              <label className={labelCls} htmlFor="venta-obs">Observación general (opcional)</label>
               <textarea
+                id="venta-obs"
                 value={ventaObs}
                 onChange={e => setVentaObs(e.target.value)}
                 placeholder="Notas sobre la venta..."

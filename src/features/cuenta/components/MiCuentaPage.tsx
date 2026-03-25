@@ -51,14 +51,7 @@ export function MiCuentaPage() {
   const [searchParams] = useSearchParams()
   const citaFormRef    = useRef<HTMLDivElement>(null)
 
-  // Hook siempre primero
   const { perfil, citas, isLoading, error, onActualizarPerfil, onCambiarClave, onCancelarCita, onEliminarCuenta } = useCuenta()
-
-  // Guards después del hook
-  const token = getToken()
-  const rol   = getRol()
-  if (!token || !rol) return <Navigate to="/login" replace />
-  if (rol !== 'Cliente') return <Navigate to="/" replace />
 
   // ── Estado formulario perfil ──────────────────────────────────────────────
   const [nombre,         setNombre]         = useState('')
@@ -105,6 +98,12 @@ export function MiCuentaPage() {
       setTimeout(() => citaFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 300)
     }
   }, [searchParams])
+
+  // ── Guards — después de todos los hooks ──────────────────────────────────
+  const token = getToken()
+  const rol   = getRol()
+  if (!token || !rol) return <Navigate to="/login" replace />
+  if (rol !== 'Cliente') return <Navigate to="/" replace />
 
   // ── Submit perfil ─────────────────────────────────────────────────────────
   const submitPerfil = async (e: React.FormEvent) => {
@@ -350,8 +349,9 @@ export function MiCuentaPage() {
                   <form onSubmit={submitCita} className="flex flex-col gap-4">
                     {/* Fecha */}
                     <div>
-                      <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+                      <label className={labelCls} htmlFor="cita-fecha-mc">Fecha <span className="text-destructive">*</span></label>
                       <DatePicker
+                        id="cita-fecha-mc"
                         value={citaFecha}
                         min={tomorrowString()}
                         error={citaErrors.fecha}
@@ -382,11 +382,12 @@ export function MiCuentaPage() {
 
                     {/* Observaciones */}
                     <div>
-                      <label className={labelCls}>
+                      <label className={labelCls} htmlFor="cita-obs">
                         Observaciones{' '}
                         <span className="text-muted-foreground font-normal normal-case tracking-normal">(opcional)</span>
                       </label>
                       <textarea
+                        id="cita-obs"
                         value={citaObs}
                         onChange={e => setCitaObs(e.target.value)}
                         placeholder="Cuéntanos qué necesitas, medidas, tipo de marco, etc."
@@ -424,16 +425,16 @@ export function MiCuentaPage() {
               ) : (
                 <form onSubmit={submitPerfil} className="space-y-5">
                   <div>
-                    <label className={labelCls}>Nombre completo</label>
-                    <input type="text" value={nombre} onChange={e => setNombre(e.target.value)} required className={inputCls} />
+                    <label className={labelCls} htmlFor="perfil-nombre">Nombre completo</label>
+                    <input id="perfil-nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} required className={inputCls} />
                   </div>
                   <div>
-                    <label className={labelCls}>Teléfono</label>
-                    <input type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} className={inputCls} />
+                    <label className={labelCls} htmlFor="perfil-telefono">Teléfono</label>
+                    <input id="perfil-telefono" type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} className={inputCls} />
                   </div>
                   <div>
-                    <label className={labelCls}>Correo electrónico</label>
-                    <input type="email" value={correo} onChange={e => setCorreo(e.target.value)} required className={inputCls} />
+                    <label className={labelCls} htmlFor="perfil-correo">Correo electrónico</label>
+                    <input id="perfil-correo" type="email" value={correo} onChange={e => setCorreo(e.target.value)} required className={inputCls} />
                   </div>
                   <div className="pt-2 flex items-center gap-3">
                     <button

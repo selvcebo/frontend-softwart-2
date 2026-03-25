@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Pedido = {
+type Pedido = {
   id_detalle:   number
   id_venta:     number
   id_servicio:  number

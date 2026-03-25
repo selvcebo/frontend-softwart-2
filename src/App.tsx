@@ -27,9 +27,6 @@ import { LoginPage }        from '@/src/features/auth/components/LoginPage'
 import { RegisterPage }     from '@/src/features/auth/components/RegisterPage'
 import { LandingPage }      from '@/src/features/dashboard/components/LandingPage'
 import { MiCuentaPage }     from '@/src/features/cuenta/components/MiCuentaPage'
-// DEV ONLY — eliminar antes de push a prod ↓
-import { AdminCrudDemo }   from '@/src/dev/AdminCrudDemo'
-
 
 // Lee token de localStorage (recordarme) o sessionStorage (sesión temporal)
 function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
@@ -121,10 +118,7 @@ export default function App() {
           <Route path="*"           element={<Navigate to="dashboard" replace />} />
         </Route>
 
-        {/* DEV ONLY — eliminar antes de push a prod ↓ */}
-        <Route path="/dev/admin-crud" element={<AdminCrudDemo />} />
-
-        {/* Catch-all global → 404 */}
+{/* Catch-all global → 404 */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
 

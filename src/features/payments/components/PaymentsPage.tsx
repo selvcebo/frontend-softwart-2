@@ -39,7 +39,7 @@ const ESTADO_BADGE: Record<string, string> = {
 
 export function PaymentsPage() {
   const { pagos, metodosPago, estadosPago, isLoading, onCrear, onEliminar, onCambiarEstado, onCambiarMetodo } = usePayments()
-  const { options: ventasOpts } = useVentasOptions()
+  const { options: ventasOpts, rawVentas } = useVentasOptions()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,             setQ]             = useState('')
@@ -70,6 +70,13 @@ export function PaymentsPage() {
   const [idMetodo, setIdMetodo] = useState('')
   const [idEstado, setIdEstado] = useState('')
   const [errors,   setErrors]   = useState<Record<string, string>>({})
+
+  const ventaPagada = useMemo(() => {
+    if (!idVenta) return false
+    const v = rawVentas.find(rv => String(rv.id_venta) === idVenta)
+    if (!v) return false
+    return (v.pagos?.length ?? 0) >= (v.num_abonos ?? 2)
+  }, [idVenta, rawVentas])
 
   const resetForm  = () => { setIdVenta(''); setMonto(''); setFecha(''); setIdMetodo(''); setIdEstado(''); setErrors({}) }
   const openCreate = (preIdVenta = '') => {
@@ -139,7 +146,7 @@ export function PaymentsPage() {
       />
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay pagos que coincidan." />
       ) : (
@@ -231,22 +238,26 @@ export function PaymentsPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Venta <span className="text-destructive">*</span></label>
-              <Combobox options={ventasOpts} value={idVenta} onValueChange={v => { setIdVenta(v); if (errors.idVenta) setErrors(p => ({...p, idVenta:''})) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
+              <label className={labelCls} htmlFor="pago-venta">Venta <span className="text-destructive">*</span></label>
+              <Combobox id="pago-venta" options={ventasOpts} value={idVenta} onValueChange={v => { setIdVenta(v); if (errors.idVenta) setErrors(p => ({...p, idVenta:''})) }} placeholder="Buscar venta..." searchPlaceholder="ID o fecha..." />
               {errors.idVenta && <p className="mt-1 text-xs text-destructive">{errors.idVenta}</p>}
+              {ventaPagada && (
+                <p className="mt-1 text-xs text-destructive font-medium">Esta venta ya tiene todos sus abonos registrados y no admite más pagos.</p>
+              )}
             </div>
             <div>
-              <label className={labelCls}>Monto <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="pago-monto">Monto <span className="text-destructive">*</span></label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
-                <input type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className={inputCls + ' pl-8'} placeholder="0" />
+                <input id="pago-monto" type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className={inputCls + ' pl-8'} placeholder="0" />
               </div>
               {monto && <p className="text-xs text-muted-foreground">{fmt(Number(monto))}</p>}
               {errors.monto && <p className="mt-1 text-xs text-destructive">{errors.monto}</p>}
             </div>
             <div>
-              <label className={labelCls}>Fecha <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="pago-fecha">Fecha <span className="text-destructive">*</span></label>
               <DatePicker
+                id="pago-fecha"
                 value={fecha}
                 onChange={v => { setFecha(v); if (errors.fecha) setErrors(p => ({...p, fecha:''})) }}
                 error={errors.fecha}
@@ -254,24 +265,24 @@ export function PaymentsPage() {
               {errors.fecha && <p className="mt-1 text-xs text-destructive">{errors.fecha}</p>}
             </div>
             <div>
-              <label className={labelCls}>Método de pago <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="pago-metodo">Método de pago <span className="text-destructive">*</span></label>
               <Select value={idMetodo} onValueChange={v => { setIdMetodo(v); if (errors.idMetodo) setErrors(p => ({...p, idMetodo:''})) }}>
-                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar método" /></SelectTrigger>
+                <SelectTrigger id="pago-metodo" className={selectCls}><SelectValue placeholder="Seleccionar método" /></SelectTrigger>
                 <SelectContent>{metodosPago.map(m => <SelectItem key={m.id_metodo_pago} value={String(m.id_metodo_pago)}>{m.nombre}</SelectItem>)}</SelectContent>
               </Select>
               {errors.idMetodo && <p className="mt-1 text-xs text-destructive">{errors.idMetodo}</p>}
             </div>
             <div>
-              <label className={labelCls}>Estado <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="pago-estado">Estado <span className="text-destructive">*</span></label>
               <Select value={idEstado} onValueChange={v => { setIdEstado(v); if (errors.idEstado) setErrors(p => ({...p, idEstado:''})) }}>
-                <SelectTrigger className={selectCls}><SelectValue placeholder="Seleccionar estado" /></SelectTrigger>
+                <SelectTrigger id="pago-estado" className={selectCls}><SelectValue placeholder="Seleccionar estado" /></SelectTrigger>
                 <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>
               </Select>
               {errors.idEstado && <p className="mt-1 text-xs text-destructive">{errors.idEstado}</p>}
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">
               <button type="button" onClick={() => { setIsFormOpen(false); resetForm() }} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors">Cancelar</button>
-              <button type="submit" disabled={isSubmitting} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">Registrar</button>
+              <button type="submit" disabled={isSubmitting || ventaPagada} className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50">Registrar</button>
             </div>
           </form>
         </DialogContent>

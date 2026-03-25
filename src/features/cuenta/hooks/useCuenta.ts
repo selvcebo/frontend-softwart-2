@@ -6,7 +6,7 @@ import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 
 type ApiResponse<T> = { success: boolean; message?: string; data: T }
 
-export type PerfilCliente = {
+type PerfilCliente = {
   id_cliente:     number
   tipoDocumento?: string
   documento?:     string
@@ -16,7 +16,7 @@ export type PerfilCliente = {
   estado:         boolean
 }
 
-export type Cita = {
+type Cita = {
   id_cita:    number
   fecha:      string
   hora:       string

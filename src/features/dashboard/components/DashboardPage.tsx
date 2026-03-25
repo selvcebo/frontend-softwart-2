@@ -141,7 +141,7 @@ export function DashboardPage() {
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {isLoading ? (
-          Array.from({ length: 7 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-xl" />)
+          Array.from({ length: 7 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-28 rounded-xl" />)
         ) : (
           <>
             <KpiCard label="Ventas del mes"         value={fmt(ventasMes)}                          icon={DollarSign}    trend={ventasTrend}  trendLabel={ventasDiff} color="primary" />
@@ -188,7 +188,7 @@ export function DashboardPage() {
             {data && <Badge variant="secondary" className="ml-2">{data.kpis.citas_hoy}</Badge>}
           </h2>
           {isLoading ? (
-            <div className="flex flex-col gap-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}</div>
+            <div className="flex flex-col gap-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full" />)}</div>
           ) : data!.citas_hoy.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Sin citas para hoy 🎉</p>
           ) : (
@@ -214,7 +214,7 @@ export function DashboardPage() {
         <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-foreground">Últimas ventas</h2>
           {isLoading ? (
-            <div className="flex flex-col gap-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-10 w-full" />)}</div>
+            <div className="flex flex-col gap-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-10 w-full" />)}</div>
           ) : (
             <ul className="flex flex-col gap-2">
               {data!.ventas_recientes.map(v => (
@@ -247,7 +247,7 @@ export function DashboardPage() {
                   paddingAngle={3}
                 >
                   {data!.pedidos_por_estado.map((_, i) => (
-                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                    <Cell key={`pie-${i}`} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
                 <Legend
@@ -263,7 +263,7 @@ export function DashboardPage() {
         <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-foreground">Métodos de pago</h2>
           {isLoading ? (
-            <div className="flex flex-col gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-8 w-full" />)}</div>
+            <div className="flex flex-col gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-8 w-full" />)}</div>
           ) : data!.metodos_pago.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Sin pagos registrados</p>
           ) : (

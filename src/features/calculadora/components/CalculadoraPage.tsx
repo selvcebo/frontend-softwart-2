@@ -112,7 +112,7 @@ export function CalculadoraPage() {
       />
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay marcos que coincidan." />
       ) : (
@@ -194,12 +194,12 @@ export function CalculadoraPage() {
             <div className="flex flex-col gap-4 mt-2">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className={labelCls}>Largo (cm) <span className="text-destructive">*</span></label>
-                  <input type="number" min="0" value={largo} onChange={(e) => setLargo(e.target.value)} placeholder="Ej: 30" className={inputCls} />
+                  <label className={labelCls} htmlFor="calc-largo">Largo (cm) <span className="text-destructive">*</span></label>
+                  <input id="calc-largo" type="number" min="0" value={largo} onChange={(e) => setLargo(e.target.value)} placeholder="Ej: 30" className={inputCls} />
                 </div>
                 <div>
-                  <label className={labelCls}>Ancho (cm) <span className="text-destructive">*</span></label>
-                  <input type="number" min="0" value={ancho} onChange={(e) => setAncho(e.target.value)} placeholder="Ej: 20" className={inputCls} />
+                  <label className={labelCls} htmlFor="calc-ancho">Ancho (cm) <span className="text-destructive">*</span></label>
+                  <input id="calc-ancho" type="number" min="0" value={ancho} onChange={(e) => setAncho(e.target.value)} placeholder="Ej: 20" className={inputCls} />
                 </div>
               </div>
               <div className="rounded-lg bg-muted p-3 text-xs text-muted-foreground">
@@ -223,18 +223,18 @@ export function CalculadoraPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-2">
             <div>
-              <label className={labelCls}>Código <span className="text-destructive">*</span></label>
-              <input value={codigo} placeholder="Ej: MDF-001" onChange={(e) => { setCodigo(e.target.value); if (errors.codigo) setErrors({}) }} className={inputCls} />
+              <label className={labelCls} htmlFor="marco-codigo">Código <span className="text-destructive">*</span></label>
+              <input id="marco-codigo" value={codigo} placeholder="Ej: MDF-001" onChange={(e) => { setCodigo(e.target.value); if (errors.codigo) setErrors({}) }} className={inputCls} />
               {errors.codigo && <p className="mt-1 text-xs text-destructive">{errors.codigo}</p>}
             </div>
             <div>
-              <label className={labelCls}>Colilla <span className="text-destructive">*</span></label>
-              <input type="number" step="0.01" min="0" value={colillaStr} placeholder="Ej: 5" onChange={(e) => { setColillaStr(e.target.value); if (errors.colilla) setErrors({}) }} className={inputCls} />
+              <label className={labelCls} htmlFor="marco-colilla">Colilla <span className="text-destructive">*</span></label>
+              <input id="marco-colilla" type="number" step="0.01" min="0" value={colillaStr} placeholder="Ej: 5" onChange={(e) => { setColillaStr(e.target.value); if (errors.colilla) setErrors({}) }} className={inputCls} />
               {errors.colilla && <p className="mt-1 text-xs text-destructive">{errors.colilla}</p>}
             </div>
             <div>
-              <label className={labelCls}>Precio Ensamblado <span className="text-destructive">*</span></label>
-              <input type="number" step="0.01" min="0" value={precioStr} placeholder="Ej: 15000" onChange={(e) => { setPrecioStr(e.target.value); if (errors.precio) setErrors({}) }} className={inputCls} />
+              <label className={labelCls} htmlFor="marco-precio">Precio Ensamblado <span className="text-destructive">*</span></label>
+              <input id="marco-precio" type="number" step="0.01" min="0" value={precioStr} placeholder="Ej: 15000" onChange={(e) => { setPrecioStr(e.target.value); if (errors.precio) setErrors({}) }} className={inputCls} />
               {errors.precio && <p className="mt-1 text-xs text-destructive">{errors.precio}</p>}
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">

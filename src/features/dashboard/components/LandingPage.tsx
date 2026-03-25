@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLanding } from '../hooks/useLanding'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion, useInView } from 'framer-motion'
+import { LazyMotion, domAnimation, m, useInView } from 'framer-motion'
 import {
   CalendarPlus, LogOut, ArrowRight, BadgeCheck,
   Clock, MapPin, MessageCircle, X,
@@ -66,7 +66,7 @@ function FadeInView({
   const ref = useRef<HTMLDivElement>(null)
   const inView = useInView(ref, { once: true, margin: '-60px 0px' })
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={className}
       initial={{ opacity: 0, y: 28 }}
@@ -74,7 +74,7 @@ function FadeInView({
       transition={{ duration: 0.65, delay, ease: EASE }}
     >
       {children}
-    </motion.div>
+    </m.div>
   )
 }
 
@@ -114,6 +114,7 @@ export function LandingPage() {
   }
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="min-h-screen bg-background text-foreground">
 
       {/* ── Navbar ──────────────────────────────────────────────────────────── */}
@@ -233,16 +234,16 @@ export function LandingPage() {
 
             {/* Columna izquierda */}
             <div className="space-y-8">
-              <motion.p
+              <m.p
                 className="text-xs font-semibold tracking-widest uppercase text-secondary-foreground/60"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
               >
                 Marquetería · Laureles, Medellín
-              </motion.p>
+              </m.p>
 
-              <motion.h1
+              <m.h1
                 className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight"
                 initial={{ opacity: 0, y: 36 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -251,9 +252,9 @@ export function LandingPage() {
                 Preservando tus momentos más{' '}
                 <em className="not-italic text-accent">especiales</em>{' '}
                 con manos artesanas
-              </motion.h1>
+              </m.h1>
 
-              <motion.p
+              <m.p
                 className="text-lg text-secondary-foreground/70 max-w-md leading-relaxed"
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -261,9 +262,9 @@ export function LandingPage() {
               >
                 Transformando recuerdos en legados duraderos a través del meticuloso
                 arte de la marquetería artesanal y el enmarcado personalizado.
-              </motion.p>
+              </m.p>
 
-              <motion.div
+              <m.div
                 className="flex flex-wrap gap-3"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -296,11 +297,11 @@ export function LandingPage() {
                     </Link>
                   </>
                 )}
-              </motion.div>
+              </m.div>
             </div>
 
             {/* Columna derecha — imagen */}
-            <motion.div
+            <m.div
               className="relative hidden md:block"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -315,7 +316,7 @@ export function LandingPage() {
               </div>
               <div className="absolute -bottom-6 -left-6 w-44 h-44 bg-primary/25 rounded-2xl -z-10" />
               <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/30 rounded-xl -z-10" />
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
@@ -341,12 +342,15 @@ export function LandingPage() {
                   return (
                     <FadeInView key={s.id_servicio} delay={i * 0.08}>
                       <div
+                        role="button"
+                        tabIndex={0}
                         className={`relative h-72 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
                           isActive
                             ? 'ring-2 ring-primary shadow-xl scale-[1.02]'
                             : 'shadow-sm hover:shadow-md hover:scale-[1.01]'
                         }`}
                         onClick={() => setActiveService(isActive ? null : s.id_servicio)}
+                        onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') setActiveService(isActive ? null : s.id_servicio) }}
                       >
                         <img
                           src={CARD_IMGS[i % CARD_IMGS.length]}
@@ -358,7 +362,7 @@ export function LandingPage() {
                           <h3 className="text-white font-semibold text-base leading-tight">
                             {s.nombre}
                           </h3>
-                          <motion.div
+                          <m.div
                             className="overflow-hidden"
                             initial={false}
                             animate={isActive ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
@@ -373,7 +377,7 @@ export function LandingPage() {
                             >
                               <X className="h-3 w-3" /> Cerrar
                             </button>
-                          </motion.div>
+                          </m.div>
                           {!isActive && (
                             <span className="text-white/50 text-[10px] flex items-center gap-1 mt-1">
                               <ArrowRight className="h-3 w-3" /> Ver descripción
@@ -418,7 +422,7 @@ export function LandingPage() {
               </p>
             </FadeInView>
 
-            <motion.div
+            <m.div
               ref={processRef}
               className="grid md:grid-cols-3 gap-12 relative"
               variants={STAGGER}
@@ -426,7 +430,7 @@ export function LandingPage() {
               animate={processInView ? 'visible' : 'hidden'}
             >
               {PASOS.map((p, i) => (
-                <motion.div key={p.n} variants={FADE_UP} className="text-center relative">
+                <m.div key={p.n} variants={FADE_UP} className="text-center relative">
                   <div className="w-16 h-16 bg-secondary text-secondary-foreground rounded-full flex items-center justify-center font-serif text-2xl font-bold mx-auto mb-6 shadow-lg">
                     {p.n}
                   </div>
@@ -435,9 +439,9 @@ export function LandingPage() {
                   {i < 2 && (
                     <div className="hidden md:block absolute top-8 left-[62%] w-[78%] h-px border-t border-dashed border-border" />
                   )}
-                </motion.div>
+                </m.div>
               ))}
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
@@ -533,5 +537,6 @@ export function LandingPage() {
       </footer>
 
     </div>
+    </LazyMotion>
   )
 }

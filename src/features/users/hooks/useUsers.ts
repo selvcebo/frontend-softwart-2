@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Usuario = {
+type Usuario = {
   id_usuario: number
   correo:     string
   clave:      string

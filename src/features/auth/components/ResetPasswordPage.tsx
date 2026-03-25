@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion'
 import { useResetPassword } from '../hooks/useResetPassword'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Button } from '@/src/shared/components/ui/button'
@@ -94,6 +94,7 @@ export function ResetPasswordPage() {
   }
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="min-h-screen flex flex-col bg-[#002926] selection:bg-[#805533]/30">
 
       {/* ── Header ────────────────────────────────────────────────────── */}
@@ -157,7 +158,7 @@ export function ResetPasswordPage() {
               {success ? (
 
                 /* ── Estado: contraseña actualizada ── */
-                <motion.div
+                <m.div
                   key="success"
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -171,12 +172,12 @@ export function ResetPasswordPage() {
                     <h2 className="font-serif text-2xl font-bold text-foreground">¡Contraseña actualizada!</h2>
                     <p className="text-muted-foreground text-sm mt-2">Redirigiendo al inicio de sesión...</p>
                   </div>
-                </motion.div>
+                </m.div>
 
               ) : (
 
                 /* ── Formulario ── */
-                <motion.div
+                <m.div
                   key="form"
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -304,7 +305,7 @@ export function ResetPasswordPage() {
                     </div>
 
                   </form>
-                </motion.div>
+                </m.div>
 
               )}
             </AnimatePresence>
@@ -324,5 +325,6 @@ export function ResetPasswordPage() {
       </footer>
 
     </div>
+    </LazyMotion>
   )
 }

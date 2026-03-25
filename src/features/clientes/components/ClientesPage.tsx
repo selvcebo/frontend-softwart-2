@@ -133,7 +133,7 @@ export function ClientesPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}
+          {Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}
         </div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay clientes que coincidan con la búsqueda." />
@@ -242,9 +242,9 @@ export function ClientesPage() {
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
-              <label className={labelCls}>Tipo de documento <span className="text-destructive">*</span></label>
+              <label className={labelCls} htmlFor="cli-tipo-doc">Tipo de documento <span className="text-destructive">*</span></label>
               <Select value={tipoDocumento} onValueChange={(v) => { setTipoDocumento(v); if (errors.tipoDocumento) setErrors({...errors, tipoDocumento: ''}) }}>
-                <SelectTrigger className={selectCls}>
+                <SelectTrigger id="cli-tipo-doc" className={selectCls}>
                   <SelectValue placeholder="Seleccionar tipo" />
                 </SelectTrigger>
                 <SelectContent>
@@ -254,31 +254,31 @@ export function ClientesPage() {
               {errors.tipoDocumento && <p className="mt-1 text-xs text-destructive">{errors.tipoDocumento}</p>}
             </div>
             <div>
-              <label className={labelCls}>Número de documento <span className="text-destructive">*</span></label>
-              <input value={documento} placeholder="Ej: 1234567890"
+              <label className={labelCls} htmlFor="cli-documento">Número de documento <span className="text-destructive">*</span></label>
+              <input id="cli-documento" value={documento} placeholder="Ej: 1234567890"
                 onChange={e => { setDocumento(e.target.value); if (errors.documento) setErrors({...errors, documento: ''}) }}
                 className={inputCls} />
               {errors.documento && <p className="mt-1 text-xs text-destructive">{errors.documento}</p>}
             </div>
             <div>
-              <label className={labelCls}>Nombre completo <span className="text-destructive">*</span></label>
-              <input value={nombre} placeholder="Nombre completo del cliente"
+              <label className={labelCls} htmlFor="cli-nombre">Nombre completo <span className="text-destructive">*</span></label>
+              <input id="cli-nombre" value={nombre} placeholder="Nombre completo del cliente"
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors({...errors, nombre: ''}) }}
                 className={inputCls} />
               {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
             {!editingId && (
               <div>
-                <label className={labelCls}>Correo electrónico <span className="text-destructive">*</span></label>
-                <input type="email" value={correo} placeholder="correo@ejemplo.com"
+                <label className={labelCls} htmlFor="cli-correo">Correo electrónico <span className="text-destructive">*</span></label>
+                <input id="cli-correo" type="email" value={correo} placeholder="correo@ejemplo.com"
                   onChange={e => { setCorreo(e.target.value); if (errors.correo) setErrors({...errors, correo: ''}) }}
                   className={inputCls} />
                 {errors.correo && <p className="mt-1 text-xs text-destructive">{errors.correo}</p>}
               </div>
             )}
             <div>
-              <label className={labelCls}>Teléfono (opcional)</label>
-              <input type="tel" value={telefono} placeholder="Ej: 3001234567"
+              <label className={labelCls} htmlFor="cli-telefono">Teléfono (opcional)</label>
+              <input id="cli-telefono" type="tel" value={telefono} placeholder="Ej: 3001234567"
                 onChange={e => setTelefono(e.target.value)}
                 className={inputCls} />
             </div>

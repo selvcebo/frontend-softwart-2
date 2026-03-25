@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Marco = { id_marco: number; codigo: string; colilla: number; precio_ensamblado: number; estado: boolean }
+type Marco = { id_marco: number; codigo: string; colilla: number; precio_ensamblado: number; estado: boolean }
 type CreateMarcoDto = Omit<Marco, 'id_marco'>
 type UpdateMarcoDto = Partial<CreateMarcoDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }

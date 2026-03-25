@@ -20,7 +20,7 @@ type LoginResponse = {
 // ── Helpers: guardar/leer/limpiar auth según "recordarme" ─────────────────────
 type AuthData = { token: string; rol: string; id_usuario: number; correo: string; id_cliente?: number | null }
 
-export function saveAuth(data: AuthData, remember: boolean) {
+function saveAuth(data: AuthData, remember: boolean) {
   const storage = remember ? localStorage : sessionStorage
   storage.setItem('token',      data.token)
   storage.setItem('rol',        data.rol)
@@ -38,11 +38,11 @@ export function clearAuth() {
   })
 }
 
-export function getAuthToken(): string | null {
+function getAuthToken(): string | null {
   return localStorage.getItem('token') ?? sessionStorage.getItem('token')
 }
 
-export function getAuthRol(): string | null {
+function getAuthRol(): string | null {
   return localStorage.getItem('rol') ?? sessionStorage.getItem('rol')
 }
 

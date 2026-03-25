@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 
-export type Cita = {
+type Cita = {
   id_cita:        number
   fecha:          string
   hora:           string

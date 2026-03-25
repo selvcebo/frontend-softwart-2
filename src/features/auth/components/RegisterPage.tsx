@@ -105,9 +105,9 @@ export function RegisterPage() {
             {/* Tipo + Número de documento */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className={labelCls}>Tipo de documento</label>
+                <label className={labelCls} htmlFor="reg-tipo-doc">Tipo de documento</label>
                 <Select value={tipoDocumento} onValueChange={setTipoDocumento}>
-                  <SelectTrigger className={fieldCls}>
+                  <SelectTrigger id="reg-tipo-doc" className={fieldCls}>
                     <SelectValue placeholder="Seleccione..." />
                   </SelectTrigger>
                   <SelectContent>

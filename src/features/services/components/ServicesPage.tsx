@@ -134,7 +134,7 @@ export function ServicesPage() {
       )}
 
       {isLoading ? (
-        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 w-full rounded-md" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
       ) : filtered.length === 0 ? (
         <EmptyState title="Sin resultados" description="No hay servicios que coincidan." />
       ) : (
@@ -235,17 +235,17 @@ export function ServicesPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             {errors._global && <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">{errors._global}</p>}
             <div>
-              <label className={labelCls}>Nombre <span className="text-destructive">*</span></label>
-              <input value={nombre} placeholder="Ej: Enmarcado simple"
+              <label className={labelCls} htmlFor="srv-nombre">Nombre <span className="text-destructive">*</span></label>
+              <input id="srv-nombre" value={nombre} placeholder="Ej: Enmarcado simple"
                 onChange={e => { setNombre(e.target.value); if (errors.nombre) setErrors(p => ({...p, nombre:''})) }}
                 className={inputCls} />
               {errors.nombre && <p className="mt-1 text-xs text-destructive">{errors.nombre}</p>}
             </div>
             <div>
-              <label className={labelCls}>
+              <label className={labelCls} htmlFor="srv-duracion">
                 Duración estimada (días) <span className="text-destructive">*</span>
               </label>
-              <input type="number" min="1" step="1" value={duracionStr}
+              <input id="srv-duracion" type="number" min="1" step="1" value={duracionStr}
                 onChange={e => { setDuracionStr(e.target.value); if (errors.duracion) setErrors(p => ({...p, duracion:''})) }}
                 className={inputCls}
                 placeholder="Ej: 7 (= 1 semana)" />
@@ -255,8 +255,8 @@ export function ServicesPage() {
               {errors.duracion && <p className="mt-1 text-xs text-destructive">{errors.duracion}</p>}
             </div>
             <div>
-              <label className={labelCls}>Descripción (opcional)</label>
-              <textarea value={descripcion} placeholder="Descripción del servicio..." onChange={e => setDescripcion(e.target.value)}
+              <label className={labelCls} htmlFor="srv-descripcion">Descripción (opcional)</label>
+              <textarea id="srv-descripcion" value={descripcion} placeholder="Descripción del servicio..." onChange={e => setDescripcion(e.target.value)}
                 className={`${inputCls} resize-none`} rows={3} />
             </div>
             <div className="flex justify-end gap-3 pt-2 border-t border-border">
