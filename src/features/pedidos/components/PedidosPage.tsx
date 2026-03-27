@@ -172,14 +172,14 @@ export function PedidosPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-serif text-3xl text-secondary">Pedidos</h1>
+          <h1 className="font-serif text-3xl text-secondary">Servicios</h1>
   
           <p className="text-muted-foreground">Gestiona los servicios registrados</p>
         </div>
         <div className="flex items-center gap-2">
-          <SearchInput value={q} onChange={setQ} placeholder="Buscar venta, servicio, marco, fecha..." className="w-72" />
+          <SearchInput value={q} onChange={setQ} placeholder="Buscar venta, tipo de servicio, marco, fecha..." className="w-72" />
           <Button onClick={openCreate} className="bg-primary text-primary-foreground hover:bg-primary/90 shrink-0">
-            <Plus className="mr-2 h-4 w-4" />Registrar Pedido
+            <Plus className="mr-2 h-4 w-4" />Registrar Servicio
           </Button>
         </div>
       </div>
