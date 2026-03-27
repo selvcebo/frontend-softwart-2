@@ -79,18 +79,13 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
         collapsed ? 'justify-center' : 'justify-between'
       )}>
         {!collapsed && (
-          <img
-            src="/softwart-logo.png"
-            alt="SoftwArt"
-            className="h-8 w-auto object-contain"
-          />
+          <div className="flex items-center gap-2">
+            <img src="/softwart-logo.png" alt="SoftwArt" className="h-8 w-8 object-contain" />
+            <span className="text-base font-bold text-sidebar-foreground truncate">SoftwArt</span>
+          </div>
         )}
         {collapsed && (
-          <img
-            src="/softwart-logo.png"
-            alt="SoftwArt"
-            className="h-7 w-7 object-contain"
-          />
+          <img src="/softwart-logo.png" alt="SoftwArt" className="h-7 w-7 object-contain" />
         )}
         <button
           onClick={() => setCollapsed(v => !v)}
