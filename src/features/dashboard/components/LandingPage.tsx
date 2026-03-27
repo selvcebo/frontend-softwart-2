@@ -127,13 +127,11 @@ export function LandingPage() {
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           {/* Logo */}
-          <span
-            className={`text-xl font-serif font-bold italic transition-colors duration-300 ${
-              scrolled ? 'text-secondary' : 'text-secondary-foreground'
-            }`}
-          >
-            Arte Café
-          </span>
+          <img
+            src="/softwart-logo.png"
+            alt="SoftwArt"
+            className="h-9 w-auto object-contain"
+          />
 
           {/* Links (desktop) */}
           <div
