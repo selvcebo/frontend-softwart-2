@@ -145,7 +145,7 @@ npm run dev
 # → http://localhost:3000
 ```
 
-> El backend debe estar corriendo en `:3001`. Ver [softwart-backend](https://github.com/selvcebo/softwart-backend).
+> El backend debe estar corriendo en `:3002`. Ver [softwart-backend](https://github.com/selvcebo/softwart-backend).
 
 ---
 
