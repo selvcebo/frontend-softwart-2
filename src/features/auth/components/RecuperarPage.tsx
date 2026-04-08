@@ -8,7 +8,7 @@ import { ArrowLeft, ArrowRight, LockKeyhole, Loader2, LogIn, MailCheck } from 'l
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-const labelCls = 'block text-xs font-medium uppercase tracking-widest text-foreground/70 mb-2'
+const labelCls = 'block text-xs font-medium capitalize tracking-widest text-foreground/70 mb-2'
 const fieldCls =
   'bg-[#f5f3ef] border-0 border-b border-border rounded-none ' +
   'focus-visible:ring-0 focus-visible:ring-offset-0 ' +

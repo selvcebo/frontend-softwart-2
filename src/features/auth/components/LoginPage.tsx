@@ -7,7 +7,7 @@ import { Checkbox }    from '@/src/shared/components/ui/checkbox'
 import { ArrowLeft, CalendarPlus, Eye, EyeOff, Lock, Mail, UserPlus } from 'lucide-react'
 
 const labelCls =
-  'block text-xs font-medium uppercase tracking-widest text-foreground/70'
+  'block text-xs font-medium capitalize tracking-widest text-foreground/70'
 const fieldCls =
   'bg-[#f5f3ef] border-0 border-b-2 border-transparent ' +
   'focus-visible:border-[#002926] focus-visible:ring-0 focus-visible:ring-offset-0 ' +

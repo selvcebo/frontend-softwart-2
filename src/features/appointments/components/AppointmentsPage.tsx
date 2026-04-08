@@ -28,7 +28,7 @@ import { DatePicker } from '@/src/shared/components/DatePicker'
 type Cita = { id_cita: number; fecha: string; hora: string; id_estado_cita: number; id_cliente: number }
 
 const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 const ESTADO_BADGE: Record<number, string> = {
