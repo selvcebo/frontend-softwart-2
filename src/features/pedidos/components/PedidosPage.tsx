@@ -318,8 +318,8 @@ export function PedidosPage() {
       <Dialog open={isFormOpen} onOpenChange={(v) => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md overflow-y-auto max-h-[90vh]">
           <DialogHeader>
-            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Pedido' : 'Registrar Pedido'}</DialogTitle>
-            <DialogDescription className="text-muted-foreground">Completa los datos del pedido.</DialogDescription>
+            <DialogTitle className="font-serif text-xl text-secondary">{editingId ? 'Editar Servicio' : 'Registrar Servicio'}</DialogTitle>
+            <DialogDescription className="text-muted-foreground">Completa los datos del servicio.</DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="flex flex-col gap-5 mt-2">
             <div>
