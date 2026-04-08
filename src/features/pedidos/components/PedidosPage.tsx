@@ -6,11 +6,9 @@ import { SearchInput } from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar } from '@/src/shared/components/FilterBar'
-import { withToast } from '@/src/shared/lib/withToast'
-import { toast } from 'sonner'   
+import { toast } from 'sonner'
 import { formatFecha } from '@/src/shared/lib/formatFecha'
-import { useNavigate } from 'react-router-dom'
-import { Plus, Pencil, Trash2, Eye, ArrowRight } from 'lucide-react'
+import { Plus, Pencil, Eye } from 'lucide-react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Button } from '@/src/shared/components/ui/button'
 import { Badge } from '@/src/shared/components/ui/badge'
@@ -18,7 +16,6 @@ import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
 import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
@@ -64,8 +61,7 @@ function useEstadosServicio() {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function PedidosPage() {
-  const navigate = useNavigate()
-  const { pedidos, isLoading, onCrear, onEditar, onEliminar, onCambiarEstado } = usePedidos()
+  const { pedidos, isLoading, onCrear, onEditar, onCambiarEstado } = usePedidos()
   const { options: ventasOpts, rawVentas } = useVentasOptions()
   const { options: serviciosOpts } = useServiciosOptions()
   const { options: marcosOpts }    = useMarcoOptions()
@@ -77,6 +73,8 @@ export function PedidosPage() {
 
   const filtered = useMemo(() => {
     const s = q.toLowerCase()
+    // Mapa de orden de estado por posición en el array (Sin empezar=0, En preparación=1, Completado=2)
+    const estadoOrder = new Map(estados.map((e, i) => [e.id_estado, i]))
     return pedidos.filter(p => {
       const ventaLabel    = ventasOpts.find(o => o.value === String(p.id_venta))?.label ?? ''
       const servicioLabel = serviciosOpts.find(o => o.value === String(p.id_servicio))?.label ?? ''
@@ -88,8 +86,14 @@ export function PedidosPage() {
         p.fecha.includes(s)
       const matchEstado   = !filterEstado || String(p.id_estado) === filterEstado
       return matchQ && matchEstado
+    }).sort((a, b) => {
+      // 1. Estado: Sin empezar → En preparación → Completado
+      const estCmp = (estadoOrder.get(a.id_estado) ?? 9) - (estadoOrder.get(b.id_estado) ?? 9)
+      if (estCmp !== 0) return estCmp
+      // 2. Fecha: más viejo primero
+      return a.fecha.localeCompare(b.fecha)
     })
-  }, [pedidos, ventasOpts, serviciosOpts, marcosOpts, q, filterEstado])
+  }, [pedidos, ventasOpts, serviciosOpts, marcosOpts, q, filterEstado, estados])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 
@@ -262,23 +266,6 @@ export function PedidosPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEdit(p)}>
                           <Pencil className="h-4 w-4 text-foreground" />
                         </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="font-serif text-secondary">Eliminar pedido</AlertDialogTitle>
-                              <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                              <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(p.id_detalle), 'Pedido eliminado') }}>
-                                Eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                    
                       </div>
                     </TableCell>

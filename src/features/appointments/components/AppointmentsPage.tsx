@@ -10,7 +10,7 @@ import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar } from '@/src/shared/components/FilterBar'
 import { withToast } from '@/src/shared/lib/withToast'   
 import { formatFecha, formatHora } from '@/src/shared/lib/formatFecha'
-import { Plus, Pencil, Trash2, Eye, ShoppingCart, PlusCircle, Trash } from 'lucide-react'
+import { Plus, Pencil, Eye, ShoppingCart, PlusCircle, Trash } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Input } from '@/src/shared/components/ui/input'
 import { Badge } from '@/src/shared/components/ui/badge'
@@ -19,7 +19,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
 import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
@@ -39,13 +38,15 @@ const ESTADO_BADGE: Record<number, string> = {
 }
 
 export function AppointmentsPage() {
-  const { citas, estadosCita, isLoading, onCrear, onEditar, onEliminar, onCambiarEstado, refresh } = useAppointments()
+  const { citas, estadosCita, isLoading, onCrear, onEditar, onCambiarEstado, refresh } = useAppointments()
   const { options: clientesOpts }  = useClientesOptions()
   const { options: serviciosOpts } = useServiciosOptions()
   const { options: marcosOpts }    = useMarcoOptions()
 
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
+
+  const ESTADO_ORDER: Record<number, number> = { 1: 0, 2: 1, 3: 2, 4: 3 }
 
   const filtered = useMemo(() => {
     const s = q.toLowerCase()
@@ -58,6 +59,12 @@ export function AppointmentsPage() {
         clienteLabel.toLowerCase().includes(s)
       const matchEstado  = !filterEstado || String(c.id_estado_cita) === filterEstado
       return matchQ && matchEstado
+    }).sort((a, b) => {
+      // 1. Fecha (más reciente primero)
+      const fechaCmp = b.fecha.localeCompare(a.fecha)
+      if (fechaCmp !== 0) return fechaCmp
+      // 2. Estado: Pendiente → Completada → No asistió → Cancelada
+      return (ESTADO_ORDER[a.id_estado_cita] ?? 9) - (ESTADO_ORDER[b.id_estado_cita] ?? 9)
     })
   }, [citas, clientesOpts, q, filterEstado])
 
@@ -256,25 +263,6 @@ export function AppointmentsPage() {
                               <ShoppingCart className="h-4 w-4 text-emerald-600" />
                             </Button>
                           )}
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon">
-                                <Trash2 className="h-4 w-4 text-destructive" />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-card text-card-foreground border-border">
-                              <AlertDialogHeader>
-                                <AlertDialogTitle className="font-serif text-secondary">Eliminar cita</AlertDialogTitle>
-                                <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                                <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(c.id_cita), 'Cita eliminada') }}>
-                                  Eliminar
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
                         </div>
                       </TableCell>
                     </TableRow>

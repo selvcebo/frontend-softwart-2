@@ -1,7 +1,7 @@
 // src/features/users/components/UsersPage.tsx
 import { useUsers } from '../hooks/useUsers'
 import { useState, useMemo } from 'react'
-import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
+import { Plus, Pencil, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -9,7 +9,6 @@ import { Switch }   from '@/src/shared/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
 import { ViewDialog, EstadoBadge } from '@/src/shared/components/ViewDialog'
 import { EmptyState } from '@/src/shared/components/EmptyState'
 import { withToast } from '@/src/shared/lib/withToast'   
@@ -37,7 +36,7 @@ const getRolBadgeClass = (id_rol: number) => {
 }
 
 export function UsersPage() {
-  const { usuarios, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useUsers()
+  const { usuarios, isLoading, onCrear, onEditar, onToggleEstado } = useUsers()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,           setQ]           = useState('')
@@ -152,16 +151,6 @@ export function UsersPage() {
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" onClick={() => openView(u)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>
                       <Button variant="ghost" size="icon" onClick={() => openEdit(u)}><Pencil className="h-4 w-4 text-foreground" /></Button>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                        <AlertDialogContent className="bg-card text-card-foreground border-border">
-                          <AlertDialogHeader><AlertDialogTitle className="font-serif text-secondary">¿Eliminar {u.correo}?</AlertDialogTitle><AlertDialogDescription>Los datos del usuario se perderán permanentemente. Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                            <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(u.id_usuario), 'Usuario eliminado') }}>Eliminar</AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
                     </div>
                   </TableCell>
                 </TableRow>

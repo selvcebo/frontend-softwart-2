@@ -119,24 +119,26 @@ export function RolesPage() {
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => openView(r)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>
                         <Button variant="ghost" size="icon" onClick={() => openEdit(r)}><Pencil className="h-4 w-4 text-foreground" /></Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="font-serif text-secondary">¿Eliminar rol "{r.nombre}"?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Si este rol tiene usuarios asignados no podrá eliminarse. Esta acción no se puede deshacer.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                              <AlertDialogAction className="bg-destructive text-destructive-foreground"
-                                onClick={async () => { await withToast(onEliminar(r.id_rol), 'Rol eliminado') }}>
-                                Eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        {r.id_rol !== 1 && r.id_rol !== 3 && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
+                            <AlertDialogContent className="bg-card text-card-foreground border-border">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle className="font-serif text-secondary">¿Eliminar rol "{r.nombre}"?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Si este rol tiene usuarios asignados no podrá eliminarse. Esta acción no se puede deshacer.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
+                                <AlertDialogAction className="bg-destructive text-destructive-foreground"
+                                  onClick={async () => { await withToast(onEliminar(r.id_rol), 'Rol eliminado') }}>
+                                  Eliminar
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
