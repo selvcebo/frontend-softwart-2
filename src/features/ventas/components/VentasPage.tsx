@@ -65,14 +65,14 @@ export function VentasPage() {
   const [idCliente, setIdCliente] = useState('')
   const [idCita, setIdCita] = useState('')
 
-  // Citas filtradas por el cliente seleccionado en el formulario
-  const citasFormOpts = useMemo(() =>
-    idCliente
-      ? citasOpts.filter(opt =>
-          rawCitas.find(c => String(c.id_cita) === opt.value)?.cliente?.id_cliente === Number(idCliente)
-        )
-      : [],
-  [idCliente, citasOpts, rawCitas])
+  // Citas filtradas por el cliente seleccionado — últimas 5
+  const citasFormOpts = useMemo(() => {
+    if (!idCliente) return []
+    const del_cliente = citasOpts.filter(opt =>
+      rawCitas.find(c => String(c.id_cita) === opt.value)?.cliente?.id_cliente === Number(idCliente)
+    )
+    return del_cliente.slice(-5)
+  }, [idCliente, citasOpts, rawCitas])
   const [fecha, setFecha] = useState('')
   const [total, setTotal] = useState('')
   const [observacion, setObservacion] = useState('')

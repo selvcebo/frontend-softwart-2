@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { LazyMotion, domAnimation, m } from 'framer-motion'
 import { useRegister } from '../hooks/useRegister'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Input }    from '@/src/shared/components/ui/input'
 import { Checkbox } from '@/src/shared/components/ui/checkbox'
 import { ArrowLeft, Eye, EyeOff, LogIn } from 'lucide-react'
+
+const EASE = [0.22, 1, 0.36, 1] as const
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/src/shared/components/ui/select'
@@ -51,10 +54,16 @@ export function RegisterPage() {
   }
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="min-h-screen flex flex-col bg-[#002926] selection:bg-[#805533]/30">
 
       {/* ── Header ────────────────────────────────────────────────────── */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm">
+      <m.header
+        className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-sm"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: EASE }}
+      >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link to="/">
             <img src="/softwart-logo.png" alt="SoftwArt" className="h-9 w-auto object-contain" />
@@ -76,7 +85,7 @@ export function RegisterPage() {
             </Link>
           </div>
         </div>
-      </header>
+      </m.header>
 
       {/* ── Main ──────────────────────────────────────────────────────── */}
       <main className="flex-1 flex items-center justify-center px-4 py-24 md:py-32 relative overflow-hidden">
@@ -88,7 +97,12 @@ export function RegisterPage() {
         </div>
 
         <div className="relative z-10 w-full max-w-2xl">
-        <div className="bg-white rounded-xl border border-white/10 p-8 md:p-12 shadow-2xl">
+        <m.div
+          className="bg-white rounded-xl border border-white/10 p-8 md:p-12 shadow-2xl"
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, delay: 0.1, ease: EASE }}
+        >
 
           {/* Cabecera */}
           <div className="text-center mb-10">
@@ -253,26 +267,37 @@ export function RegisterPage() {
               </Link>
             </p>
           </div>
-        </div>
+        </m.div>
 
         {/* Decorativo */}
-        <div className="mt-8 flex justify-center items-center gap-4 opacity-40">
+        <m.div
+          className="mt-8 flex justify-center items-center gap-4 opacity-40"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ duration: 0.8, delay: 0.4, ease: EASE }}
+        >
           <div className="h-px w-12 bg-white/40" />
           <span className="text-[10px] uppercase tracking-[0.3em] text-white/60">Artesanía &amp; Precisión</span>
           <div className="h-px w-12 bg-white/40" />
-        </div>
+        </m.div>
         </div>
       </main>
 
       {/* ── Footer ────────────────────────────────────────────────────── */}
-      <footer className="bg-secondary border-t border-secondary-foreground/10 py-8">
+      <m.footer
+        className="bg-secondary border-t border-secondary-foreground/10 py-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.5, ease: EASE }}
+      >
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-1 text-center">
           <span className="text-xs text-secondary-foreground/50">
             © {new Date().getFullYear()} SoftwArt · Todos los derechos reservados
           </span>
         </div>
-      </footer>
+      </m.footer>
 
     </div>
+    </LazyMotion>
   )
 }
