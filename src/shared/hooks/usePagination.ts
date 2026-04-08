@@ -7,8 +7,8 @@
 //               onChange={setPage} />
 import { useState, useMemo, useEffect } from 'react'
 
-const DEFAULT_PAGE_SIZE = 10
-export const PAGE_SIZE_OPTIONS = [10, 25, 50, 100]
+const DEFAULT_PAGE_SIZE = 5
+export const PAGE_SIZE_OPTIONS = [5, 10, 25, 50, 100]
 
 export function usePagination<T>(items: T[], initialPageSize = DEFAULT_PAGE_SIZE) {
   const [page,     setPage]     = useState(1)
