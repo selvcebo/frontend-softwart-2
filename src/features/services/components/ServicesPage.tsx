@@ -1,14 +1,12 @@
 // src/features/services/components/ServicesPage.tsx
 import { useServices } from '../hooks/useServices'
 import { useState, useMemo } from 'react'
-import { Plus, Pencil, Trash2, Eye, AlertCircle, CalendarDays } from 'lucide-react'
+import { Plus, Pencil, Eye, CalendarDays } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Switch }   from '@/src/shared/components/ui/switch'
-import { Alert, AlertDescription } from '@/src/shared/components/ui/alert'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/src/shared/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
 import { ViewDialog, EstadoBadge } from '@/src/shared/components/ViewDialog'
 import { EmptyState }    from '@/src/shared/components/EmptyState'
 import { SearchInput }   from '@/src/shared/components/SearchInput'
@@ -29,7 +27,7 @@ const fmtDuracion = (dias: number) => {
 }
 
 export function ServicesPage() {
-  const { servicios, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useServices()
+  const { servicios, isLoading, onCrear, onEditar, onToggleEstado } = useServices()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,            setQ]            = useState('')
@@ -51,7 +49,6 @@ export function ServicesPage() {
   const [isViewOpen,   setIsViewOpen]   = useState(false)
   const [editingId,    setEditingId]    = useState<number | null>(null)
   const [viewingItem,  setViewingItem]  = useState<Servicio | null>(null)
-  const [deleteError,  setDeleteError]  = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [nombre,       setNombre]       = useState('')
   const [descripcion,  setDescripcion]  = useState('')
@@ -90,14 +87,6 @@ export function ServicesPage() {
     finally { setIsSubmitting(false) }
   }
 
-  const handleDelete = async (id: number, nombreServicio: string) => {
-    setDeleteError(null)
-    try {
-      await withToast(onEliminar(id), `Servicio "${nombreServicio}" eliminado`)
-    } catch (e) {
-      setDeleteError(e instanceof Error ? e.message : 'No se pudo eliminar')
-    }
-  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -123,15 +112,6 @@ export function ServicesPage() {
         onClear={() => setFilterEstado('')}
       />
 
-      {deleteError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="flex items-center justify-between">
-            <span>{deleteError}</span>
-            <Button variant="ghost" size="sm" onClick={() => setDeleteError(null)} className="ml-2 h-auto p-0 text-destructive">✕</Button>
-          </AlertDescription>
-        </Alert>
-      )}
 
       {isLoading ? (
         <div className="space-y-3">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-12 w-full rounded-md" />)}</div>
@@ -176,28 +156,6 @@ export function ServicesPage() {
                         <Button variant="ghost" size="icon" onClick={() => openEdit(s)}>
                           <Pencil className="h-4 w-4 text-foreground" />
                         </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="font-serif text-secondary">¿Eliminar "{s.nombre}"?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Si este servicio está vinculado a pedidos existentes
-                                <strong className="text-destructive"> no podrá eliminarse</strong>.
-                                Esta acción no se puede deshacer.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                              <AlertDialogAction className="bg-destructive text-destructive-foreground"
-                                onClick={() => handleDelete(s.id_servicio, s.nombre)}>
-                                Intentar eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>

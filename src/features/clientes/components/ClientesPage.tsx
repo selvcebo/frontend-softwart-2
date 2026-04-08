@@ -183,8 +183,8 @@ export function ClientesPage() {
                             <AlertDialogHeader>
                               <AlertDialogTitle className="font-serif text-secondary">¿Eliminar a {c.nombre}?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta acción no se puede deshacer. Si <strong>{c.nombre}</strong> tiene
-                                citas o ventas asociadas, su cuenta se desactivará en lugar de eliminarse.
+                                Se eliminará el cliente y su usuario asociado. Si <strong>{c.nombre}</strong> tiene
+                                citas o ventas asociadas, no podrá eliminarse. Esta acción no se puede deshacer.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

@@ -4,14 +4,13 @@ import { useVentasOptions } from '@/src/shared/hooks/useOptions'
 import { formatCOP } from '@/src/shared/lib/formatCOP'
 import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { Plus, Trash2, Eye } from 'lucide-react'
+import { Plus, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
 import { Combobox }    from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
@@ -38,7 +37,7 @@ const ESTADO_BADGE: Record<string, string> = {
 }
 
 export function PaymentsPage() {
-  const { pagos, metodosPago, estadosPago, isLoading, onCrear, onEliminar, onCambiarEstado, onCambiarMetodo } = usePayments()
+  const { pagos, metodosPago, estadosPago, isLoading, onCrear, onCambiarEstado, onCambiarMetodo } = usePayments()
   const { options: ventasOpts, rawVentas } = useVentasOptions()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
@@ -191,16 +190,6 @@ export function PaymentsPage() {
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => openView(p)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild><Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button></AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader><AlertDialogTitle className="font-serif text-secondary">Eliminar pago</AlertDialogTitle><AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription></AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                              <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(p.id_pago), 'Pago eliminado') }}>Eliminar</AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
                       </div>
                     </TableCell>
                   </TableRow>
