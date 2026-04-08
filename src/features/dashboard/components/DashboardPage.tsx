@@ -14,6 +14,7 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
+import { useState, useMemo } from 'react'
 
 const fmt = formatCOP
 
@@ -114,6 +115,20 @@ export function DashboardPage() {
     ? `${ventasMes > ventasAntMes ? '+' : ''}${(((ventasMes - ventasAntMes) / ventasAntMes) * 100).toFixed(1)}% vs mes anterior`
     : 'Sin datos mes anterior'
 
+  // ── Filtro de semanas para gráfica de ventas ──────────────────────────────
+  const WEEK_OPTIONS = [
+    { value: 1, label: '1 semana' },
+    { value: 2, label: '2 semanas' },
+    { value: 4, label: '4 semanas' },
+    { value: 8, label: '8 semanas' },
+  ] as const
+  const [weeksFilter, setWeeksFilter] = useState(8)
+  const ventasFiltradas = useMemo(() => {
+    if (!data) return []
+    const all = data.ventas_por_semana
+    return all.slice(-weeksFilter)
+  }, [data, weeksFilter])
+
   const today = new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' })
 
   return (
@@ -161,18 +176,35 @@ export function DashboardPage() {
 
         {/* Ventas por semana — ocupa 2/3 */}
         <div className="lg:col-span-2 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
-          <h2 className="text-sm font-semibold text-foreground">Ventas últimas 8 semanas</h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">Ventas por semana</h2>
+            <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+              {WEEK_OPTIONS.map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => setWeeksFilter(opt.value)}
+                  className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+                    weeksFilter === opt.value
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
           {isLoading ? <Skeleton className="h-48 w-full" /> : (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart
-                data={data!.ventas_por_semana.map((d, i) => ({ ...d, fill: PIE_COLORS[i % PIE_COLORS.length] }))}
+                data={ventasFiltradas.map((d, i) => ({ ...d, fill: PIE_COLORS[i % PIE_COLORS.length] }))}
                 margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
               >
                 <XAxis dataKey="semana" tick={{ fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tickFormatter={v => `$${(v/1000).toFixed(0)}k`} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={48} />
                 <Tooltip content={<CustomTooltip />} />
                 <Bar dataKey="total" radius={[4, 4, 0, 0]} isAnimationActive={false}>
-                  {data!.ventas_por_semana.map((_, i) => (
+                  {ventasFiltradas.map((_, i) => (
                     <Cell key={`bar-${i}`} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Bar>
@@ -262,31 +294,29 @@ export function DashboardPage() {
         {/* Métodos de pago — 1/3 */}
         <div className="rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-foreground">Métodos de pago</h2>
-          {isLoading ? (
-            <div className="flex flex-col gap-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-8 w-full" />)}</div>
-          ) : data!.metodos_pago.length === 0 ? (
+          {isLoading ? <Skeleton className="h-40 w-full" /> : data!.metodos_pago.length === 0 ? (
             <p className="text-sm text-muted-foreground py-6 text-center">Sin pagos registrados</p>
           ) : (
-            <ul className="flex flex-col gap-3">
-              {data!.metodos_pago.map((m, i) => {
-                const total = data!.metodos_pago.reduce((a, b) => a + Number(b.total), 0)
-                const pct   = total > 0 ? Math.round((Number(m.total) / total) * 100) : 0
-                return (
-                  <li key={m.metodo} className="flex flex-col gap-1">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-foreground">{m.metodo}</span>
-                      <span className="text-muted-foreground tabular-nums">{m.total} ({pct}%)</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-muted overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{ width: `${pct}%`, backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }}
-                      />
-                    </div>
-                  </li>
-                )
-              })}
-            </ul>
+            <ResponsiveContainer width="100%" height={160}>
+              <PieChart>
+                <Pie
+                  data={data!.metodos_pago.map(m => ({ ...m, total: Number(m.total) }))}
+                  dataKey="total"
+                  nameKey="metodo"
+                  cx="50%" cy="50%"
+                  innerRadius={40} outerRadius={65}
+                  paddingAngle={3}
+                >
+                  {data!.metodos_pago.map((_, i) => (
+                    <Cell key={`mp-${i}`} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Legend
+                  formatter={(value) => <span className="text-xs text-foreground">{value}</span>}
+                />
+                <Tooltip formatter={(v) => [Number(v), 'Pagos']} />
+              </PieChart>
+            </ResponsiveContainer>
           )}
         </div>
       </div>
