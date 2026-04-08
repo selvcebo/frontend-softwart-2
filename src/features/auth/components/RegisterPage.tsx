@@ -20,7 +20,7 @@ const fieldCls =
   'bg-[#f5f3ef] border-0 border-b border-border rounded-none rounded-t-lg ' +
   'focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-[#002926] ' +
   'py-3 px-4 h-auto text-foreground placeholder:text-muted-foreground/50 transition-colors'
-const labelCls = 'block text-xs font-medium uppercase tracking-widest text-foreground/70 mb-1.5'
+const labelCls = 'block text-xs font-medium capitalize tracking-widest text-foreground/70 mb-1.5'
 
 export function RegisterPage() {
   const [searchParams] = useSearchParams()

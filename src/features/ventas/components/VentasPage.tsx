@@ -27,7 +27,7 @@ type Venta = { id_venta: number; fecha: string; total: number; observacion?: str
 const fmt = formatCOP
 
 const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2'
+const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
 export function VentasPage() {
   const { ventas, isLoading, onCrear, onEditar, onEliminar, onToggleEstado, refetch } = useVentas()
@@ -171,7 +171,7 @@ export function VentasPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end">
-                        <Switch checked={v.estado} onCheckedChange={async () => { await withToast(onToggleEstado(v.id_venta), 'Estado actualizado') }} />
+                        <Switch checked={v.estado} disabled={!v.estado} onCheckedChange={async () => { await withToast(onToggleEstado(v.id_venta), 'Estado actualizado') }} />
                       </div>
                     </TableCell>
                     <TableCell className="text-right">

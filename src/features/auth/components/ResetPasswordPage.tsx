@@ -9,7 +9,7 @@ import { ArrowLeft, Eye, EyeOff, LockKeyhole, LogIn, ShieldCheck } from 'lucide-
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-const labelCls = 'block text-xs font-medium uppercase tracking-widest text-foreground/70 mb-1'
+const labelCls = 'block text-xs font-medium capitalize tracking-widest text-foreground/70 mb-1'
 
 // Código — grande, mono, centrado, fondo suave
 const codeCls =
