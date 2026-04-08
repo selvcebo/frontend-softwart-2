@@ -179,9 +179,7 @@ export function VentasPage() {
                         <Button variant="ghost" size="icon" onClick={() => openView(v)}>
                           <Eye className="h-4 w-4 text-muted-foreground" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => openEdit(v)}>
-                          <Pencil className="h-4 w-4 text-foreground" />
-                        </Button>
+                       
                         <Button
                           variant="ghost" size="icon"
                           title="Gestionar abonos"
@@ -192,26 +190,7 @@ export function VentasPage() {
                         >
                           <CreditCard className="h-4 w-4 text-primary" />
                         </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button variant="ghost" size="icon"><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-card text-card-foreground border-border">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle className="font-serif text-secondary">Eliminar venta</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Si esta venta tiene pedidos o pagos asociados,
-                                <strong className="text-destructive"> no podrá eliminarse</strong>.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                              <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={async () => { await withToast(onEliminar(v.id_venta), 'Venta eliminada') }}>
-                                Eliminar
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        
                       </div>
                     </TableCell>
                   </TableRow>
