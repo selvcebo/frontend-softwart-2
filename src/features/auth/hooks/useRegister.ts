@@ -23,7 +23,7 @@ export function useRegister(loginRedirect?: string) {
     setIsLoading(true)
     setError(null)
     try {
-      await apiRequest('/api/auth/registro', {
+      await apiRequest('/api/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
       })

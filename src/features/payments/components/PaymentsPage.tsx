@@ -1,7 +1,7 @@
 // src/features/payments/components/PaymentsPage.tsx
 import { usePayments } from '../hooks/usePayments'
-import { useVentasOptions } from '@/src/shared/hooks/useOptions'
-import { formatCOP } from '@/src/shared/lib/formatCOP'
+import { useSalesOptions } from '@/src/shared/hooks/useOptions'
+import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 import { useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Plus, Eye } from 'lucide-react'
@@ -19,11 +19,11 @@ import { SearchInput } from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar }   from '@/src/shared/components/FilterBar'
-import { formatFecha } from '@/src/shared/lib/formatFecha'
+import { formatDate } from '@/src/shared/lib/formatDate'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
 type Pago = { id_pago: number; id_venta: number; monto: number; fecha: string; id_metodo_pago: number; id_estado_pago: number }
-const fmt = formatCOP
+const fmt = formatCurrency
 
 const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
 const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
@@ -37,8 +37,8 @@ const ESTADO_BADGE: Record<string, string> = {
 }
 
 export function PaymentsPage() {
-  const { pagos, metodosPago, estadosPago, isLoading, onCrear, onCambiarEstado, onCambiarMetodo } = usePayments()
-  const { options: ventasOpts, rawVentas } = useVentasOptions()
+  const { pagos, metodosPago, estadosPago, isLoading, onCreate, onChangeStatus, onChangeMethod } = usePayments()
+  const { options: ventasOpts, rawVentas } = useSalesOptions()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,             setQ]             = useState('')
@@ -112,7 +112,7 @@ export function PaymentsPage() {
     setIsSubmitting(true)
     try {
       await withToast(
-        onCrear({ id_venta: Number(idVenta), monto: Number(monto), fecha, id_metodo_pago: Number(idMetodo), id_estado_pago: Number(idEstado) }),
+        onCreate({ id_venta: Number(idVenta), monto: Number(monto), fecha, id_metodo_pago: Number(idMetodo), id_estado_pago: Number(idEstado) }),
         'Pago registrado correctamente'
       )
       setIsFormOpen(false); resetForm()
@@ -172,15 +172,15 @@ export function PaymentsPage() {
      
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
                     <TableCell className="text-foreground text-right font-medium tabular-nums">{fmt(p.monto)}</TableCell>
-                    <TableCell className="text-foreground">{formatFecha(p.fecha)}</TableCell>
+                    <TableCell className="text-foreground">{formatDate(p.fecha)}</TableCell>
                     <TableCell>
-                      <Select value={String(p.id_metodo_pago)} onValueChange={v => onCambiarMetodo(p.id_pago, Number(v))}>
+                      <Select value={String(p.id_metodo_pago)} onValueChange={v => onChangeMethod(p.id_pago, Number(v))}>
                         <SelectTrigger className="w-32 h-8 text-foreground border-border"><SelectValue /></SelectTrigger>
                         <SelectContent>{metodosPago.map(m => <SelectItem key={m.id_metodo_pago} value={String(m.id_metodo_pago)}>{m.nombre}</SelectItem>)}</SelectContent>
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Select value={String(p.id_estado_pago)} onValueChange={v => onCambiarEstado(p.id_pago, Number(v))}>
+                      <Select value={String(p.id_estado_pago)} onValueChange={v => onChangeStatus(p.id_pago, Number(v))}>
                         <SelectTrigger className="w-36 h-8">
                           <Badge variant="outline" className={ESTADO_BADGE[estadoNombre] ?? 'border-slate-300 bg-slate-100 text-slate-600'}>{estadoNombre}</Badge>
                         </SelectTrigger>
@@ -213,7 +213,7 @@ export function PaymentsPage() {
             { label: 'ID',             value: viewingItem.id_pago },
             { label: 'Venta',          value: ventasOpts.find(o => o.value === String(viewingItem.id_venta))?.label ?? `#${viewingItem.id_venta}`, fullWidth: true },
             { label: 'Monto',          value: fmt(viewingItem.monto) },
-            { label: 'Fecha',          value: formatFecha(viewingItem.fecha) },
+            { label: 'Fecha',          value: formatDate(viewingItem.fecha) },
             { label: 'Método de pago', value: getMetodoLabel(viewingItem.id_metodo_pago) },
             { label: 'Estado',         value: getEstadoLabel(viewingItem.id_estado_pago) },
           ]} />

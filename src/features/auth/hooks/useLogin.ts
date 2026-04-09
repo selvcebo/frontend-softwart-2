@@ -78,7 +78,7 @@ export function useLogin(redirectCita = false) {
         navigate('/admin/dashboard', { replace: true })
       } else if (redirectCita) {
         // Venía desde "Agenda tu cita" → abrir formulario directo
-        navigate('/mi-cuenta?nueva-cita=true', { replace: true })
+        navigate('/mi-cuenta?new-appointment=true', { replace: true })
       } else {
         navigate('/', { replace: true })
       }

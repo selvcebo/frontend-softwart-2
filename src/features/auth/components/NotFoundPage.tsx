@@ -16,7 +16,7 @@ export function NotFoundPage() {
   const homeRoute = token && (rol === 'Admin' || rol === 'Empleado')
     ? '/admin/dashboard'
     : token && rol === 'Cliente'
-      ? '/mi-cuenta'
+      ? '/my-account'
       : '/'
 
   const homeLabel = token && (rol === 'Admin' || rol === 'Empleado')

@@ -27,7 +27,7 @@ const fmtDuracion = (dias: number) => {
 }
 
 export function ServicesPage() {
-  const { servicios, isLoading, onCrear, onEditar, onToggleEstado } = useServices()
+  const { servicios, isLoading, onCreate, onEdit, onToggleStatus } = useServices()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,            setQ]            = useState('')
@@ -79,7 +79,7 @@ export function ServicesPage() {
     try {
       const data = { nombre, descripcion, duracion: Number(duracionStr), estado: true }
       await withToast(
-        editingId ? onEditar(editingId, data) : onCrear(data),
+        editingId ? onEdit(editingId, data) : onCreate(data),
         editingId ? 'Servicio actualizado' : 'Servicio registrado'
       )
       setIsFormOpen(false); resetForm()
@@ -145,7 +145,7 @@ export function ServicesPage() {
                     <TableCell className="text-muted-foreground max-w-xs truncate">{s.descripcion ?? '—'}</TableCell>
                     <TableCell>
                       <div className='flex justify-end'>
-                      <Switch checked={s.estado === true} onCheckedChange={async () => { await withToast(onToggleEstado(s.id_servicio), 'Estado actualizado') }} />
+                      <Switch checked={s.estado === true} onCheckedChange={async () => { await withToast(onToggleStatus(s.id_servicio), 'Estado actualizado') }} />
                       </div>
                     </TableCell>
                     <TableCell className="text-right">

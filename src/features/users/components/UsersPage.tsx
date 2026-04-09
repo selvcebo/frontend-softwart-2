@@ -36,7 +36,7 @@ const getRolBadgeClass = (id_rol: number) => {
 }
 
 export function UsersPage() {
-  const { usuarios, isLoading, onCrear, onEditar, onToggleEstado } = useUsers()
+  const { usuarios, isLoading, onCreate, onEdit, onToggleStatus } = useUsers()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,           setQ]           = useState('')
@@ -84,8 +84,8 @@ export function UsersPage() {
     try {
       await withToast(
         editingId
-          ? onEditar(editingId, { correo, id_rol: Number(idRol) } as UpdateUsuarioDto)
-          : onCrear({ correo, clave, id_rol: Number(idRol), estado: true } as CreateUsuarioDto),
+          ? onEdit(editingId, { correo, id_rol: Number(idRol) } as UpdateUsuarioDto)
+          : onCreate({ correo, clave, id_rol: Number(idRol), estado: true } as CreateUsuarioDto),
         editingId ? 'Usuario actualizado' : 'Usuario registrado'
       )
       setIsFormOpen(false); resetForm()
@@ -146,7 +146,7 @@ export function UsersPage() {
                       {ROL_LABELS[u.id_rol] ?? `Rol ${u.id_rol}`}
                     </Badge>
                   </TableCell>
-                  <TableCell><Switch checked={u.estado} onCheckedChange={async () => { await withToast(onToggleEstado(u.id_usuario), 'Estado actualizado') }} /></TableCell>
+                  <TableCell><Switch checked={u.estado} onCheckedChange={async () => { await withToast(onToggleStatus(u.id_usuario), 'Estado actualizado') }} /></TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" onClick={() => openView(u)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>

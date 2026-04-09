@@ -18,7 +18,7 @@ export function useBackendWakeup() {
 
     const dismiss = () => { clearTimeout(splashTimer); setShowSplash(false) }
 
-    fetch(`${API_URL}/api/servicios`, { signal: controller.signal })
+    fetch(`${API_URL}/api/services`, { signal: controller.signal })
       .then(dismiss)
       .catch(dismiss)
       .finally(() => clearTimeout(giveUp))

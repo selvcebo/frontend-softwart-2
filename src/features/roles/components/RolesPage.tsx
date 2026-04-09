@@ -22,7 +22,7 @@ const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:b
 const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
 export function RolesPage() {
-  const { roles, isLoading, onCrear, onEditar, onEliminar, onToggleEstado } = useRoles()
+  const { roles, isLoading, onCreate, onEdit, onDelete, onToggleStatus } = useRoles()
 
   // ── Búsqueda y filtros ─────────────────────────────────────────────────────
   const [q,            setQ]            = useState('')
@@ -60,7 +60,7 @@ export function RolesPage() {
     setIsSubmitting(true)
     try {
       await withToast(
-        editingId ? onEditar(editingId, { nombre, descripcion }) : onCrear({ nombre, descripcion, estado: true }),
+        editingId ? onEdit(editingId, { nombre, descripcion }) : onCreate({ nombre, descripcion, estado: true }),
         editingId ? 'Rol actualizado' : 'Rol registrado'
       )
       setIsFormOpen(false); resetForm()
@@ -114,7 +114,7 @@ export function RolesPage() {
           
                     <TableCell className="text-foreground font-medium">{r.nombre}</TableCell>
                     <TableCell className="text-muted-foreground">{r.descripcion ?? '—'}</TableCell>
-                    <TableCell><Switch checked={r.estado} onCheckedChange={async () => { await withToast(onToggleEstado(r.id_rol), 'Estado actualizado') }} /></TableCell>
+                    <TableCell><Switch checked={r.estado} onCheckedChange={async () => { await withToast(onToggleStatus(r.id_rol), 'Estado actualizado') }} /></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => openView(r)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>
@@ -132,7 +132,7 @@ export function RolesPage() {
                               <AlertDialogFooter>
                                 <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
                                 <AlertDialogAction className="bg-destructive text-destructive-foreground"
-                                  onClick={async () => { await withToast(onEliminar(r.id_rol), 'Rol eliminado') }}>
+                                  onClick={async () => { await withToast(onDelete(r.id_rol), 'Rol eliminado') }}>
                                   Eliminar
                                 </AlertDialogAction>
                               </AlertDialogFooter>

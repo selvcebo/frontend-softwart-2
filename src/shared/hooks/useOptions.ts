@@ -12,12 +12,12 @@ type ApiResponse<T> = { success: boolean; data: T; meta?: unknown }
 // ── Clientes ──────────────────────────────────────────────────
 type ClienteOption = { id_cliente: number; nombre: string; documento: string }
 
-export function useClientesOptions() {
+export function useClientsOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    apiRequest<ApiResponse<ClienteOption[]>>('/api/clientes?limit=100')
+    apiRequest<ApiResponse<ClienteOption[]>>('/api/clients?limit=100')
       .then((res) => {
         setOptions(
           (res.data ?? []).map((c) => ({
@@ -37,13 +37,13 @@ export function useClientesOptions() {
 // ── Ventas ────────────────────────────────────────────────────
 type VentaOption = { id_venta: number; fecha: string; total: number; num_abonos?: number; pagos?: unknown[]; cliente?: { id_cliente: number; nombre?: string } | null }
 
-export function useVentasOptions() {
+export function useSalesOptions() {
   const [options,    setOptions]    = useState<ComboboxOption[]>([])
   const [rawVentas,  setRawVentas]  = useState<VentaOption[]>([])
   const [isLoading,  setIsLoading]  = useState(true)
 
   useEffect(() => {
-    apiRequest<ApiResponse<VentaOption[]>>('/api/ventas?limit=100')
+    apiRequest<ApiResponse<VentaOption[]>>('/api/sales?limit=100')
       .then((res) => {
         const data = res.data ?? []
         setRawVentas(data)
@@ -65,13 +65,13 @@ export function useVentasOptions() {
 // ── Citas ─────────────────────────────────────────────────────
 type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
 
-export function useCitasOptions() {
+export function useAppointmentsOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
   const [rawCitas,  setRawCitas]  = useState<CitaOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    apiRequest<ApiResponse<CitaOption[]>>('/api/citas?limit=100')
+    apiRequest<ApiResponse<CitaOption[]>>('/api/appointments?limit=100')
       .then((res) => {
         const data = res.data ?? []
         setRawCitas(data)
@@ -93,12 +93,12 @@ export function useCitasOptions() {
 // ── Servicios ─────────────────────────────────────────────────
 type ServicioOption = { id_servicio: number; nombre: string }
 
-export function useServiciosOptions() {
+export function useServicesOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    apiRequest<ApiResponse<ServicioOption[]>>('/api/servicios')
+    apiRequest<ApiResponse<ServicioOption[]>>('/api/services')
       .then((res) => {
         setOptions(
           (res.data ?? []).map((s) => ({
@@ -117,12 +117,12 @@ export function useServiciosOptions() {
 // ── Marcos ────────────────────────────────────────────────────
 type MarcoOption = { id_marco: number; codigo: string; precio_ensamblado: number }
 
-export function useMarcoOptions() {
+export function useFrameOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    apiRequest<ApiResponse<MarcoOption[]>>('/api/marcos')
+    apiRequest<ApiResponse<MarcoOption[]>>('/api/frames')
       .then((res) => {
         setOptions(
           (res.data ?? []).map((m) => ({

@@ -26,21 +26,21 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   {
     label: 'Flujo de venta',
     items: [
-      { label: 'Clientes',    href: '/admin/clientes',    icon: UserCircle },
-      { label: 'Citas',       href: '/admin/citas',       icon: Calendar },
-      { label: 'Ventas',      href: '/admin/ventas',      icon: ShoppingBag },
-      { label: 'Servicios',     href: '/admin/pedidos',     icon: ClipboardList },
-      { label: 'Pagos',       href: '/admin/pagos',       icon: CreditCard },
+      { label: 'Clientes',    href: '/admin/clients',    icon: UserCircle },
+      { label: 'Citas',       href: '/admin/appointments',       icon: Calendar },
+      { label: 'Ventas',      href: '/admin/sales',      icon: ShoppingBag },
+      { label: 'Servicios',     href: '/admin/orders',     icon: ClipboardList },
+      { label: 'Pagos',       href: '/admin/payments',       icon: CreditCard },
     ],
   },
   {
     label: 'Configuración',
     items: [
-      { label: 'Tipos de Servicio',   href: '/admin/servicios',   icon: Wrench },
-      { label: 'Calculadora', href: '/admin/calculadora', icon: Calculator },
-      { label: 'Usuarios',    href: '/admin/usuarios',    icon: Users },
+      { label: 'Tipos de Servicio',   href: '/admin/services',   icon: Wrench },
+      { label: 'Calculadora', href: '/admin/calculator', icon: Calculator },
+      { label: 'Usuarios',    href: '/admin/users',    icon: Users },
       { label: 'Roles',       href: '/admin/roles',       icon: Shield },
-      { label: 'Permisos',    href: '/admin/permisos',    icon: ShieldCheck },
+      { label: 'Permisos',    href: '/admin/permissions',    icon: ShieldCheck },
     ],
   },
 ]

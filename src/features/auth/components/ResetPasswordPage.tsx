@@ -81,7 +81,7 @@ export function ResetPasswordPage() {
     setResendError('')
     setResendOk(false)
     try {
-      await apiRequest('/api/auth/reenviar-codigo', {
+      await apiRequest('/api/auth/resend-code', {
         method: 'POST',
         body: JSON.stringify({ correo: correoReenvio }),
       })

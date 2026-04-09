@@ -48,7 +48,7 @@ export function LoginPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
-              to="/registro"
+              to="/register"
               className="inline-flex items-center gap-1.5 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               <UserPlus className="h-3.5 w-3.5" />
@@ -99,7 +99,7 @@ export function LoginPage() {
                 <CalendarPlus className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground">
                   Inicia sesión para agendar tu cita.{' '}
-                  <Link to="/registro" className="text-[#805533] font-medium hover:underline">
+                  <Link to="/register" className="text-[#805533] font-medium hover:underline">
                     ¿No tienes cuenta?
                   </Link>
                 </p>
@@ -127,7 +127,7 @@ export function LoginPage() {
                 <div className="flex justify-between items-center">
                   <label className={labelCls} htmlFor="password">Contraseña</label>
                   <Link
-                    to="/recuperar"
+                    to="/recover"
                     className="text-xs text-[#805533] hover:text-[#a6714a] transition-colors"
                   >
                     ¿Olvidaste tu contraseña?
@@ -182,7 +182,7 @@ export function LoginPage() {
               <p className="text-sm text-muted-foreground">
                 ¿No tienes una cuenta?{' '}
                 <Link
-                  to={redirectCita ? '/registro?redirect=cita' : '/registro'}
+                  to={redirectCita ? '/registro?redirect=appointment' : '/register'}
                   className="text-[#002926] font-semibold hover:underline decoration-[#805533] underline-offset-4 ml-1 transition-all"
                 >
                   Regístrate

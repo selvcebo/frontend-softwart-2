@@ -1,15 +1,15 @@
 // src/features/appointments/components/AppointmentsPage.tsx
 import { useAppointments } from '../hooks/useAppointments'
-import { useServiciosOptions, useMarcoOptions } from '@/src/shared/hooks/useOptions'
+import { useServicesOptions, useFrameOptions } from '@/src/shared/hooks/useOptions'
 import { apiRequest } from '@/src/shared/lib/apiClient'
-import { useClientesOptions } from '@/src/shared/hooks/useOptions'
+import { useClientsOptions } from '@/src/shared/hooks/useOptions'
 import { useState, useMemo, useCallback } from 'react'
 import { SearchInput }   from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar } from '@/src/shared/components/FilterBar'
 import { withToast } from '@/src/shared/lib/withToast'   
-import { formatFecha, formatHora } from '@/src/shared/lib/formatFecha'
+import { formatDate, formatTime } from '@/src/shared/lib/formatDate'
 import { Plus, Pencil, Eye, ShoppingCart, PlusCircle, Trash } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Input } from '@/src/shared/components/ui/input'
@@ -38,10 +38,10 @@ const ESTADO_BADGE: Record<number, string> = {
 }
 
 export function AppointmentsPage() {
-  const { citas, estadosCita, isLoading, onCrear, onEditar, onCambiarEstado, refresh } = useAppointments()
-  const { options: clientesOpts }  = useClientesOptions()
-  const { options: serviciosOpts } = useServiciosOptions()
-  const { options: marcosOpts }    = useMarcoOptions()
+  const { citas, estadosCita, isLoading, onCreate, onEdit, onChangeStatus, refresh } = useAppointments()
+  const { options: clientesOpts }  = useClientsOptions()
+  const { options: serviciosOpts } = useServicesOptions()
+  const { options: marcosOpts }    = useFrameOptions()
 
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
@@ -124,7 +124,7 @@ export function AppointmentsPage() {
 
     setIsCreandoVenta(true); setVentaMsg(null)
     try {
-      await apiRequest(`/api/citas/${ventaModalCita.id_cita}/crear-venta`, {
+      await apiRequest(`/api/appointments/${ventaModalCita.id_cita}/create-sale`, {
         method: 'POST',
         body: JSON.stringify({
           observacion: ventaObs || undefined,
@@ -174,7 +174,7 @@ export function AppointmentsPage() {
     try {
       const data = { id_cliente: Number(idCliente), fecha, hora, id_estado_cita: Number(idEstado) }
       await withToast(
-        editingId ? onEditar(editingId, data) : onCrear(data),
+        editingId ? onEdit(editingId, data) : onCreate(data),
         editingId ? 'Cita actualizada' : 'Cita registrada'
       )
       setIsFormOpen(false); resetForm()
@@ -234,10 +234,10 @@ export function AppointmentsPage() {
                     <TableRow key={c.id_cita} className="hover:bg-muted/40 transition-colors border-border">
                     
                       <TableCell className="text-foreground">{clienteLabel}</TableCell>
-                      <TableCell className="text-foreground">{formatFecha(c.fecha)}</TableCell>
-                      <TableCell className="text-foreground">{formatHora(c.hora)}</TableCell>
+                      <TableCell className="text-foreground">{formatDate(c.fecha)}</TableCell>
+                      <TableCell className="text-foreground">{formatTime(c.hora)}</TableCell>
                       <TableCell>
-                        <Select value={String(c.id_estado_cita)} onValueChange={(v) => onCambiarEstado(c.id_cita, Number(v))}>
+                        <Select value={String(c.id_estado_cita)} onValueChange={(v) => onChangeStatus(c.id_cita, Number(v))}>
                           <SelectTrigger className="w-36 h-8">
                             <Badge variant="outline" className={ESTADO_BADGE[c.id_estado_cita] ?? ESTADO_BADGE[4]}>
                               {getEstadoLabel(c.id_estado_cita)}
@@ -290,8 +290,8 @@ export function AppointmentsPage() {
             { label: 'ID',      value: viewingItem.id_cita },
             { label: 'Estado',  value: <Badge variant="outline" className={ESTADO_BADGE[viewingItem.id_estado_cita] ?? ESTADO_BADGE[4]}>{getEstadoLabel(viewingItem.id_estado_cita)}</Badge> },
             { label: 'Cliente', value: clientesOpts.find(o => o.value === String(viewingItem.id_cliente))?.label ?? `#${viewingItem.id_cliente}`, fullWidth: true },
-            { label: 'Fecha',   value: formatFecha(viewingItem.fecha) },
-            { label: 'Hora',    value: formatHora(viewingItem.hora) },
+            { label: 'Fecha',   value: formatDate(viewingItem.fecha) },
+            { label: 'Hora',    value: formatTime(viewingItem.hora) },
           ]}
         />
       )}

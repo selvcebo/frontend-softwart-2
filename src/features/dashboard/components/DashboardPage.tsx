@@ -1,6 +1,6 @@
 // src/features/dashboard/components/DashboardPage.tsx
 import { useDashboard } from '../hooks/useDashboard'
-import { formatCOP } from '@/src/shared/lib/formatCOP'
+import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Alert, AlertDescription } from '@/src/shared/components/ui/alert'
@@ -16,7 +16,7 @@ import {
 } from 'recharts'
 import { useState, useMemo } from 'react'
 
-const fmt = formatCOP
+const fmt = formatCurrency
 
 // ── Colores para el PieChart ──────────────────────────────────────────────────
 const PIE_COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6']
