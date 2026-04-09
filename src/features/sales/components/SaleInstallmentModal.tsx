@@ -16,7 +16,7 @@ const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted
 const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
 
 // ── Tipos ─────────────────────────────────────────────────────────────────────
-type AbonoEsperado = { numero: number; monto: number; porcentaje: number }
+type AbonoEsperado = { number: number; amount: number; percentage: number }
 type EstadoPago = { id_estado_pago: number; nombre: string }
 
 type EstadoPagos = {
@@ -29,7 +29,7 @@ type EstadoPagos = {
   saldo_pendiente:        number
   completado:             boolean
   plan_abonos:            AbonoEsperado[]
-  siguiente_abono:        { numero: number; montoEsperado: number; esUltimo: boolean } | null
+  siguiente_abono:        { number: number; expectedAmount: number; isLast: boolean } | null
   historial_pagos:        { id_pago: number; monto: number; fecha: string; estado: string }[]
 }
 
@@ -84,7 +84,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
         setIdEstadoValidado(validado?.id_estado_pago ?? null)
         // Pre-llenar monto con el siguiente abono esperado
         if (estadoRes.data.siguiente_abono) {
-          setMonto(String(estadoRes.data.siguiente_abono.montoEsperado))
+          setMonto(String(estadoRes.data.siguiente_abono.expectedAmount))
         }
         setNumAbonos(String(estadoRes.data.num_abonos))
         setPctPrimero(String(estadoRes.data.porcentaje_primer_abono))
@@ -108,7 +108,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
       // Recargar estado
       const estadoRes = await apiRequest<{ success: boolean; data: EstadoPagos }>(`/api/sales/${idVenta}/payment-plan`)
       setEstado(estadoRes.data)
-      if (estadoRes.data.siguiente_abono) setMonto(String(estadoRes.data.siguiente_abono.montoEsperado))
+      if (estadoRes.data.siguiente_abono) setMonto(String(estadoRes.data.siguiente_abono.expectedAmount))
       else setMonto('')
     } catch (e) {
       setPagoMsg({ tipo: 'err', texto: e instanceof Error ? e.message : 'Error al registrar abono' })
@@ -128,7 +128,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
       setConfigMsg({ tipo: 'ok', texto: res.message })
       const estadoRes = await apiRequest<{ success: boolean; data: EstadoPagos }>(`/api/sales/${idVenta}/payment-plan`)
       setEstado(estadoRes.data)
-      if (estadoRes.data.siguiente_abono) setMonto(String(estadoRes.data.siguiente_abono.montoEsperado))
+      if (estadoRes.data.siguiente_abono) setMonto(String(estadoRes.data.siguiente_abono.expectedAmount))
     } catch (e) {
       setConfigMsg({ tipo: 'err', texto: e instanceof Error ? e.message : 'Error al configurar' })
     } finally { setIsConfigurando(false) }
@@ -169,12 +169,12 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
             {/* ── Plan de abonos ───────────────────────────────────────────── */}
             <div className="grid gap-1.5">
               {estado.plan_abonos.map(ab => {
-                const pagado = estado.historial_pagos[ab.numero - 1]
+                const pagado = estado.historial_pagos[ab.number - 1]
                 return (
-                  <div key={ab.numero}
+                  <div key={ab.number}
                     className={`flex items-center justify-between rounded-lg border px-3 py-2 text-sm
                       ${pagado ? 'border-emerald-200 bg-emerald-50 dark:bg-emerald-950 dark:border-emerald-800'
-                               : ab.numero === (estado.pagos_realizados + 1)
+                               : ab.number === (estado.pagos_realizados + 1)
                                  ? 'border-primary/40 bg-primary/5'
                                  : 'border-border bg-muted/30'}`}
                   >
@@ -183,11 +183,11 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                         ? <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
                         : <span className="h-4 w-4 rounded-full border-2 border-muted-foreground/40 shrink-0" />
                       }
-                      <span className="font-medium text-foreground">Abono {ab.numero}</span>
-                      <span className="text-muted-foreground text-xs">({ab.porcentaje}%)</span>
+                      <span className="font-medium text-foreground">Abono {ab.number}</span>
+                      <span className="text-muted-foreground text-xs">({ab.percentage}%)</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-semibold text-foreground">{fmt(ab.monto)}</span>
+                      <span className="font-semibold text-foreground">{fmt(ab.amount)}</span>
                       {pagado && (
                         <span className="ml-2 text-xs text-emerald-600">{formatDate(pagado.fecha)}</span>
                       )}
@@ -218,9 +218,9 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                 {tab === 'pagar' && estado.siguiente_abono && (
                   <div className="flex flex-col gap-3">
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm">
-                      <span className="text-muted-foreground">Abono {estado.siguiente_abono.numero} esperado: </span>
-                      <span className="font-bold text-foreground">{fmt(estado.siguiente_abono.montoEsperado)}</span>
-                      {estado.siguiente_abono.esUltimo && (
+                      <span className="text-muted-foreground">Abono {estado.siguiente_abono.number} esperado: </span>
+                      <span className="font-bold text-foreground">{fmt(estado.siguiente_abono.expectedAmount)}</span>
+                      {estado.siguiente_abono.isLast && (
                         <Badge variant="outline" className="ml-2 text-[10px] border-amber-300 bg-amber-50 text-amber-700">Último abono</Badge>
                       )}
                     </div>
@@ -276,7 +276,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                         className="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 active:scale-95 transition-all disabled:opacity-50"
                       >
                         <ChevronRight className="h-4 w-4" />
-                        {isPagando ? 'Registrando...' : `Registrar abono ${estado.siguiente_abono.numero}`}
+                        {isPagando ? 'Registrando...' : `Registrar abono ${estado.siguiente_abono.number}`}
                       </button>
                     </div>
                   </div>
