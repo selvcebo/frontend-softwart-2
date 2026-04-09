@@ -29,7 +29,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { label: 'Clientes',    href: '/admin/clients',    icon: UserCircle },
       { label: 'Citas',       href: '/admin/appointments',       icon: Calendar },
       { label: 'Ventas',      href: '/admin/sales',      icon: ShoppingBag },
-      { label: 'Servicios',     href: '/admin/orders',     icon: ClipboardList },
+      { label: 'Pedidos',       href: '/admin/orders',     icon: ClipboardList },
       { label: 'Pagos',       href: '/admin/payments',       icon: CreditCard },
     ],
   },
