@@ -6,7 +6,8 @@ type Venta = { id_venta: number; fecha: string; total: number; observacion?: str
 type CreateVentaDto = Omit<Venta, 'id_venta' | 'num_abonos' | 'pagos_realizados'>
 type UpdateVentaDto = Partial<CreateVentaDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
-type BackendVenta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; num_abonos?: number; cliente?: { id_cliente: number } | null; cita?: { id_cita: number } | null; pagos?: any[] | null }
+type BackendPayment = { paymentStatus?: { nombre?: string } | null }
+type BackendVenta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; num_abonos?: number; client?: { id_cliente: number } | null; appointment?: { id_cita: number } | null; payments?: BackendPayment[] | null }
 
 export function useSales() {
   const [ventas, setVentas] = useState<Venta[]>([])
@@ -20,10 +21,10 @@ export function useSales() {
       setVentas((res.data ?? []).map(item => ({
         id_venta: item.id_venta, fecha: item.fecha, total: item.total,
         observacion: item.observacion, estado: item.estado,
-        id_cliente: item.cliente?.id_cliente ?? 0,
-        id_cita: item.cita?.id_cita ?? null,
+        id_cliente: item.client?.id_cliente ?? 0,
+        id_cita: item.appointment?.id_cita ?? null,
         num_abonos: item.num_abonos ?? 2,
-        pagos_realizados: item.pagos?.length ?? 0,
+        pagos_realizados: (item.payments ?? []).filter(p => !p.paymentStatus?.nombre?.toLowerCase().includes('anulado')).length,
       })))
     } catch (e) { setError(e instanceof Error ? e.message : 'Error') }
     finally { setIsLoading(false) }

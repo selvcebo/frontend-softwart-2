@@ -24,10 +24,10 @@ type BackendDetalle = {
   precio:        number
   observacion?:  string
   estado:        boolean
-  venta?:         { id_venta: number }     | null
-  servicio?:      { id_servicio: number }  | null
-  estadoServicio?: { id_estado: number }   | null  // FIX: PK es id_estado, no id_estado_servicio
-  marco?:         { id_marco: number }     | null
+  sale?:           { id_venta: number }     | null
+  service?:        { id_servicio: number }  | null
+  serviceStatus?:  { id_estado: number }   | null
+  frame?:          { id_marco: number }     | null
 }
 
 export function useOrders() {
@@ -45,10 +45,10 @@ export function useOrders() {
         precio:      item.precio,
         observacion: item.observacion,
         estado:      item.estado,
-        id_venta:    item.venta?.id_venta       ?? 0,
-        id_servicio: item.servicio?.id_servicio ?? 0,
-        id_estado:   item.estadoServicio?.id_estado ?? 1, // FIX: era id_estado_servicio
-        id_marco:    item.marco?.id_marco       ?? null,
+        id_venta:    item.sale?.id_venta         ?? 0,
+        id_servicio: item.service?.id_servicio   ?? 0,
+        id_estado:   item.serviceStatus?.id_estado ?? 1,
+        id_marco:    item.frame?.id_marco         ?? null,
       })))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error')

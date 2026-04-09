@@ -7,8 +7,8 @@ type Rol     = { id_rol: number; nombre: string }
 
 // Backend devuelve relaciones anidadas: { permiso: { id_permiso, ... }, rol: { id_rol, ... } }
 type PermisoRolRaw = {
-  permiso: { id_permiso: number }
-  rol:     { id_rol: number }
+  permission: { id_permiso: number }
+  role:       { id_rol: number }
 }
 
 // Respuesta estándar del backend: { success, data: T[], meta? }
@@ -37,8 +37,8 @@ export function usePermissions() {
       // Construir mapa rol → Set<permisos>
       const mapa = new Map<number, Set<number>>()
       for (const raw of prRes.data ?? []) {
-        const id_rol     = raw.rol?.id_rol
-        const id_permiso = raw.permiso?.id_permiso
+        const id_rol     = raw.role?.id_rol
+        const id_permiso = raw.permission?.id_permiso
         if (!id_rol || !id_permiso) continue
         if (!mapa.has(id_rol)) mapa.set(id_rol, new Set())
         mapa.get(id_rol)!.add(id_permiso)

@@ -10,6 +10,7 @@ import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/src/shared/components/ui/alert-dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
 import { Combobox }    from '@/src/shared/components/Combobox'
@@ -34,6 +35,7 @@ const ESTADO_BADGE: Record<string, string> = {
   Validado:    'border-emerald-300 bg-emerald-100 text-emerald-800',
   Pagado:      'border-emerald-300 bg-emerald-100 text-emerald-800',
   Reembolsado: 'border-blue-300 bg-blue-100 text-blue-800',
+  Anulado:     'border-red-300 bg-red-100 text-red-800',
 }
 
 export function PaymentsPage() {
@@ -74,7 +76,8 @@ export function PaymentsPage() {
     if (!idVenta) return false
     const v = rawVentas.find(rv => String(rv.id_venta) === idVenta)
     if (!v) return false
-    return (v.pagos?.length ?? 0) >= (v.num_abonos ?? 2)
+    const pagosActivos = (v.payments ?? []).filter((p: any) => !p.paymentStatus?.nombre?.toLowerCase().includes('anulado'))
+    return pagosActivos.length >= (v.num_abonos ?? 2)
   }, [idVenta, rawVentas])
 
   const resetForm  = () => { setIdVenta(''); setMonto(''); setFecha(''); setIdMetodo(''); setIdEstado(''); setErrors({}) }
@@ -99,6 +102,26 @@ export function PaymentsPage() {
 
   const getMetodoLabel = (id: number) => metodosPago.find(m => m.id_metodo_pago === id)?.nombre ?? `#${id}`
   const getEstadoLabel = (id: number) => estadosPago.find(e => e.id_estado_pago === id)?.nombre ?? `#${id}`
+
+  // ── Protección de estado Validado / Anulado ────────────────────────────────
+  const [alertEstado, setAlertEstado] = useState<{ open: boolean; msg: string; pagoId?: number; showAnular?: boolean }>({ open: false, msg: '' })
+
+  const handleChangeStatus = (pago: Pago, nuevoIdEstado: number) => {
+    const estadoActual = getEstadoLabel(pago.id_estado_pago).toLowerCase()
+    const estadoNuevo  = getEstadoLabel(nuevoIdEstado).toLowerCase()
+
+    if (estadoActual.includes('anulado')) {
+      setAlertEstado({ open: true, msg: 'Este pago fue anulado y su estado no puede modificarse.' })
+      return
+    }
+    if (estadoActual.includes('validado') && !estadoNuevo.includes('anulado')) {
+      setAlertEstado({ open: true, msg: 'Un pago validado no puede cambiar de estado. Si es necesario, solo se puede anular.', pagoId: pago.id_pago, showAnular: true })
+      return
+    }
+    onChangeStatus(pago.id_pago, nuevoIdEstado)
+  }
+
+  const idEstadoAnulado = estadosPago.find(e => e.nombre.toLowerCase().includes('anulado'))?.id_estado_pago
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -180,12 +203,16 @@ export function PaymentsPage() {
                       </Select>
                     </TableCell>
                     <TableCell>
-                      <Select value={String(p.id_estado_pago)} onValueChange={v => onChangeStatus(p.id_pago, Number(v))}>
-                        <SelectTrigger className="w-36 h-8">
-                          <Badge variant="outline" className={ESTADO_BADGE[estadoNombre] ?? 'border-slate-300 bg-slate-100 text-slate-600'}>{estadoNombre}</Badge>
-                        </SelectTrigger>
-                        <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>
-                      </Select>
+                      {estadoNombre.toLowerCase().includes('anulado') ? (
+                        <Badge variant="outline" className="border-red-300 bg-red-100 text-red-800 cursor-not-allowed opacity-70">{estadoNombre}</Badge>
+                      ) : (
+                        <Select value={String(p.id_estado_pago)} onValueChange={v => handleChangeStatus(p, Number(v))}>
+                          <SelectTrigger className="w-36 h-8">
+                            <Badge variant="outline" className={ESTADO_BADGE[estadoNombre] ?? 'border-slate-300 bg-slate-100 text-slate-600'}>{estadoNombre}</Badge>
+                          </SelectTrigger>
+                          <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>
+                        </Select>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
@@ -218,6 +245,31 @@ export function PaymentsPage() {
             { label: 'Estado',         value: getEstadoLabel(viewingItem.id_estado_pago) },
           ]} />
       )}
+
+      <AlertDialog open={alertEstado.open} onOpenChange={v => { if (!v) setAlertEstado({ open: false, msg: '' }) }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Estado no modificable</AlertDialogTitle>
+            <AlertDialogDescription>{alertEstado.msg}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cerrar</AlertDialogCancel>
+            {alertEstado.showAnular && idEstadoAnulado && (
+              <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                  if (alertEstado.pagoId && idEstadoAnulado) {
+                    withToast(onChangeStatus(alertEstado.pagoId, idEstadoAnulado), 'Pago anulado')
+                  }
+                  setAlertEstado({ open: false, msg: '' })
+                }}
+              >
+                Anular pago
+              </AlertDialogAction>
+            )}
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Dialog open={isFormOpen} onOpenChange={v => { setIsFormOpen(v); if (!v) resetForm() }}>
         <DialogContent className="bg-card text-card-foreground border-border max-w-md">

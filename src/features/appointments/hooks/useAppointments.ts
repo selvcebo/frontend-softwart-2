@@ -32,8 +32,8 @@ type BackendCita = {
   id_cita: number
   fecha: string
   hora: string
-  cliente?: { id_cliente: number; nombre?: string } | null
-  estadoCita?: { id_estado_cita: number } | null
+  client?: { id_cliente: number; nombre?: string } | null
+  appointmentStatus?: { id_estado_cita: number } | null
 }
 
 export function useAppointments() {
@@ -55,9 +55,9 @@ export function useAppointments() {
         id_cita:        item.id_cita,
         fecha:          item.fecha,
         hora:           item.hora,
-        id_cliente:     item.cliente?.id_cliente ?? 0,
-        id_estado_cita: item.estadoCita?.id_estado_cita ?? 1,
-        clienteNombre:  item.cliente?.nombre ?? `Cliente #${item.cliente?.id_cliente ?? '?'}`,
+        id_cliente:     item.client?.id_cliente ?? 0,
+        id_estado_cita: item.appointmentStatus?.id_estado_cita ?? 1,
+        clienteNombre:  item.client?.nombre ?? `Cliente #${item.client?.id_cliente ?? '?'}`,
       }))
 
       setCitas(normalized)

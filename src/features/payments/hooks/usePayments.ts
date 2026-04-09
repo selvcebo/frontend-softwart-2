@@ -37,9 +37,9 @@ type BackendPago = {
   fecha: string
   monto: number
   observacion?: string
-  venta?:      { id_venta: number } | null
-  metodoPago?: { id_metodo_pago: number } | null
-  estadoPago?: { id_estado_pago: number } | null
+  sale?:          { id_venta: number } | null
+  paymentMethod?: { id_metodo_pago: number } | null
+  paymentStatus?: { id_estado_pago: number } | null
 }
 
 export function usePayments() {
@@ -64,9 +64,9 @@ export function usePayments() {
         fecha:          item.fecha,
         monto:          item.monto,
         observacion:    item.observacion,
-        id_venta:       item.venta?.id_venta       ?? 0,
-        id_metodo_pago: item.metodoPago?.id_metodo_pago ?? 0,
-        id_estado_pago: item.estadoPago?.id_estado_pago ?? 0,
+        id_venta:       item.sale?.id_venta               ?? 0,
+        id_metodo_pago: item.paymentMethod?.id_metodo_pago ?? 0,
+        id_estado_pago: item.paymentStatus?.id_estado_pago ?? 0,
       }))
 
       setPagos(normalized)

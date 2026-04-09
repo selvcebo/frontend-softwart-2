@@ -69,7 +69,7 @@ export function SalesPage() {
   const citasFormOpts = useMemo(() => {
     if (!idCliente) return []
     const del_cliente = citasOpts.filter(opt =>
-      rawCitas.find(c => String(c.id_cita) === opt.value)?.cliente?.id_cliente === Number(idCliente)
+      rawCitas.find(c => String(c.id_cita) === opt.value)?.client?.id_cliente === Number(idCliente)
     )
     return del_cliente.slice(-5)
   }, [idCliente, citasOpts, rawCitas])

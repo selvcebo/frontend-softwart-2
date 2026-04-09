@@ -20,7 +20,7 @@ type BackendUsuario = {
   id_usuario: number
   correo:     string
   estado:     boolean
-  rol?:       { id_rol: number } | null
+  role?:      { id_rol: number } | null
 }
 
 export function useUsers() {
@@ -39,7 +39,7 @@ export function useUsers() {
           correo:     u.correo,
           clave:      '',
           estado:     u.estado,
-          id_rol:     u.rol?.id_rol ?? 0,
+          id_rol:     u.role?.id_rol ?? 0,
         }))
       )
     } catch (e) {

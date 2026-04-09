@@ -35,7 +35,8 @@ export function useClientsOptions() {
 }
 
 // ── Ventas ────────────────────────────────────────────────────
-type VentaOption = { id_venta: number; fecha: string; total: number; num_abonos?: number; pagos?: unknown[]; cliente?: { id_cliente: number; nombre?: string } | null }
+type VentaPayment = { paymentStatus?: { nombre?: string } | null }
+type VentaOption = { id_venta: number; fecha: string; total: number; num_abonos?: number; payments?: VentaPayment[]; client?: { id_cliente: number; nombre?: string } | null }
 
 export function useSalesOptions() {
   const [options,    setOptions]    = useState<ComboboxOption[]>([])
@@ -63,7 +64,7 @@ export function useSalesOptions() {
 }
 
 // ── Citas ─────────────────────────────────────────────────────
-type CitaOption = { id_cita: number; fecha: string; hora: string; cliente?: { id_cliente: number } | null }
+type CitaOption = { id_cita: number; fecha: string; hora: string; client?: { id_cliente: number } | null }
 
 export function useAppointmentsOptions() {
   const [options,   setOptions]   = useState<ComboboxOption[]>([])
