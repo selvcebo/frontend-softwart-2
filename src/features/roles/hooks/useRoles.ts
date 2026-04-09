@@ -23,23 +23,23 @@ export function useRoles() {
 
   useEffect(() => { fetchAll() }, [])
 
-  const onCrear = async (data: CreateRolDto) => {
+  const onCreate = async (data: CreateRolDto) => {
     await apiRequest('/api/roles', { method: 'POST', body: JSON.stringify(data) })
     await fetchAll()
   }
-  const onEditar = async (id: number, data: UpdateRolDto) => {
+  const onEdit = async (id: number, data: UpdateRolDto) => {
     await apiRequest(`/api/roles/${id}`, { method: 'PUT', body: JSON.stringify(data) })
     await fetchAll()
   }
-  const onEliminar = async (id: number) => {
+  const onDelete = async (id: number) => {
     await apiRequest(`/api/roles/${id}`, { method: 'DELETE' })
     await fetchAll()
   }
-  const onToggleEstado = async (id: number) => {
+  const onToggleStatus = async (id: number) => {
     setRoles(prev => prev.map(r => r.id_rol === id ? { ...r, estado: !r.estado } : r))
     try { await apiRequest(`/api/roles/${id}/estado`, { method: 'PATCH' }) }
     catch { setRoles(prev => prev.map(r => r.id_rol === id ? { ...r, estado: !r.estado } : r)) }
   }
 
-  return { roles, isLoading, error, onCrear, onEditar, onEliminar, onToggleEstado }
+  return { roles, isLoading, error, onCreate, onEdit, onDelete, onToggleStatus }
 }

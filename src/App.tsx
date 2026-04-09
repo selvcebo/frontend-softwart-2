@@ -4,7 +4,7 @@
 
 import { useBackendWakeup } from '@/src/shared/hooks/useBackendWakeup'
 import { SplashScreen }     from '@/src/shared/components/SplashScreen'
-import { ClientesPage }     from '@/src/features/clientes/components/ClientesPage'
+import { ClientsPage }      from '@/src/features/clients/components/ClientsPage'
 import { DashboardPage }    from '@/src/features/dashboard/components/DashboardPage'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { checkAuthValidity } from '@/src/shared/lib/checkAuth'
@@ -15,18 +15,18 @@ import { RolesPage }        from '@/src/features/roles/components/RolesPage'
 import { ServicesPage }     from '@/src/features/services/components/ServicesPage'
 import { AppointmentsPage } from '@/src/features/appointments/components/AppointmentsPage'
 import { PaymentsPage }     from '@/src/features/payments/components/PaymentsPage'
-import { CalculadoraPage }  from '@/src/features/calculadora/components/CalculadoraPage'
-import { VentasPage }       from '@/src/features/ventas/components/VentasPage'
-import { PedidosPage }      from '@/src/features/pedidos/components/PedidosPage'
-import { PermisosPage }     from '@/src/features/permisos/components/PermisosPage'
+import { CalculatorPage }   from '@/src/features/calculator/components/CalculatorPage'
+import { SalesPage }        from '@/src/features/sales/components/SalesPage'
+import { OrdersPage }       from '@/src/features/orders/components/OrdersPage'
+import { PermissionsPage }  from '@/src/features/permissions/components/PermissionsPage'
 import { AuthLayout }       from '@/src/features/auth/components/AuthLayout'
 import { NotFoundPage }     from '@/src/features/auth/components/NotFoundPage'
-import { RecuperarPage }    from '@/src/features/auth/components/RecuperarPage'
+import { RecoveryPage }     from '@/src/features/auth/components/RecoveryPage'
 import { ResetPasswordPage } from '@/src/features/auth/components/ResetPasswordPage'
 import { LoginPage }        from '@/src/features/auth/components/LoginPage'
 import { RegisterPage }     from '@/src/features/auth/components/RegisterPage'
 import { LandingPage }      from '@/src/features/dashboard/components/LandingPage'
-import { MiCuentaPage }     from '@/src/features/cuenta/components/MiCuentaPage'
+import { MyAccountPage }    from '@/src/features/account/components/MyAccountPage'
 
 // Lee token de localStorage (recordarme) o sessionStorage (sesión temporal)
 function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
@@ -93,28 +93,28 @@ export default function App() {
         {/* Auth — bajo AuthLayout (header con volver al inicio) */}
         <Route element={<AuthLayout />}>
           <Route path="/login"     element={<LoginPage />} />
-          <Route path="/registro"  element={<RegisterPage />} />
-          <Route path="/recuperar" element={<RecuperarPage />} />
+          <Route path="/register"  element={<RegisterPage />} />
+          <Route path="/recover"   element={<RecoveryPage />} />
           <Route path="/reset"     element={<ResetPasswordPage />} />
         </Route>
 
         {/* Área cliente */}
-        <Route path="/mi-cuenta" element={<RequireCliente><MiCuentaPage /></RequireCliente>} />
+        <Route path="/my-account" element={<RequireCliente><MyAccountPage /></RequireCliente>} />
 
         {/* Panel admin */}
         <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
           <Route index              element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard"   element={<DashboardPage />} />
-          <Route path="clientes"    element={<ClientesPage />} />
-          <Route path="usuarios"    element={<UsersPage />} />
-          <Route path="roles"       element={<RolesPage />} />
-          <Route path="servicios"   element={<ServicesPage />} />
-          <Route path="citas"       element={<AppointmentsPage />} />
-          <Route path="pagos"       element={<PaymentsPage />} />
-          <Route path="calculadora" element={<CalculadoraPage />} />
-          <Route path="ventas"      element={<VentasPage />} />
-          <Route path="pedidos"     element={<PedidosPage />} />
-          <Route path="permisos"    element={<PermisosPage />} />
+          <Route path="clients"      element={<ClientsPage />} />
+          <Route path="users"        element={<UsersPage />} />
+          <Route path="roles"        element={<RolesPage />} />
+          <Route path="services"     element={<ServicesPage />} />
+          <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="payments"     element={<PaymentsPage />} />
+          <Route path="calculator"   element={<CalculatorPage />} />
+          <Route path="sales"        element={<SalesPage />} />
+          <Route path="orders"       element={<OrdersPage />} />
+          <Route path="permissions"  element={<PermissionsPage />} />
           <Route path="*"           element={<Navigate to="dashboard" replace />} />
         </Route>
 

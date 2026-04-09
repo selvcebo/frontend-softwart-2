@@ -2,11 +2,11 @@
 // src/features/payments/hooks/usePayments.ts
 //
 // BUGs corregidos:
-// 1. onCambiarEstado: usaba PUT /api/pagos/:id — INCORRECTO.
-//    Endpoint correcto: PATCH /api/estado-pago/pago/:id/estado
-// 2. onCambiarMetodo: usaba PUT /api/pagos/:id — INCORRECTO.
-//    Endpoint correcto: PATCH /api/metodo-pago/pago/:id/metodo
-// 3. body en onCrear/onEditar sin JSON.stringify.
+// 1. onChangeStatus: usaba PUT /api/payments/:id — INCORRECTO.
+//    Endpoint correcto: PATCH /api/payment-status/pago/:id/estado
+// 2. onChangeMethod: usaba PUT /api/payments/:id — INCORRECTO.
+//    Endpoint correcto: PATCH /api/payment-methods/pago/:id/metodo
+// 3. body en onCreate/onEdit sin JSON.stringify.
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
@@ -54,9 +54,9 @@ export function usePayments() {
     setError(null)
     try {
       const [p, m, e] = await Promise.all([
-        apiRequest<ApiResponse<BackendPago[]>>('/api/pagos?limit=500'),
-        apiRequest<ApiResponse<MetodoPago[]>>('/api/metodo-pago'),
-        apiRequest<ApiResponse<EstadoPago[]>>('/api/estado-pago'),
+        apiRequest<ApiResponse<BackendPago[]>>('/api/payments?limit=500'),
+        apiRequest<ApiResponse<MetodoPago[]>>('/api/payment-methods'),
+        apiRequest<ApiResponse<EstadoPago[]>>('/api/payment-status'),
       ])
 
       const normalized: Pago[] = (p.data ?? []).map((item) => ({
@@ -81,44 +81,44 @@ export function usePayments() {
 
   useEffect(() => { fetchAll() }, [])
 
-  const onCrear = async (data: CreatePagoDto) => {
-    await apiRequest('/api/pagos', {
+  const onCreate = async (data: CreatePagoDto) => {
+    await apiRequest('/api/payments', {
       method: 'POST',
       body: JSON.stringify(data),
     })
     await fetchAll()
   }
 
-  const onEditar = async (id: number, data: UpdatePagoDto) => {
-    await apiRequest(`/api/pagos/${id}`, {
+  const onEdit = async (id: number, data: UpdatePagoDto) => {
+    await apiRequest(`/api/payments/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     })
     await fetchAll()
   }
 
-  const onEliminar = async (id: number) => {
-    await apiRequest(`/api/pagos/${id}`, { method: 'DELETE' })
+  const onDelete = async (id: number) => {
+    await apiRequest(`/api/payments/${id}`, { method: 'DELETE' })
     await fetchAll()
   }
 
-  // PATCH /api/estado-pago/pago/:id/estado  — endpoint específico del backend
-  const onCambiarEstado = async (id: number, id_estado_pago: number) => {
-    await apiRequest(`/api/estado-pago/pago/${id}/estado`, {
+  // PATCH /api/payment-status/pago/:id/estado  — endpoint específico del backend
+  const onChangeStatus = async (id: number, id_estado_pago: number) => {
+    await apiRequest(`/api/payment-status/pago/${id}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({ id_estado_pago }),
     })
     await fetchAll()
   }
 
-  // PATCH /api/metodo-pago/pago/:id/metodo  — endpoint específico del backend
-  const onCambiarMetodo = async (id: number, id_metodo_pago: number) => {
-    await apiRequest(`/api/metodo-pago/pago/${id}/metodo`, {
+  // PATCH /api/payment-methods/pago/:id/metodo  — endpoint específico del backend
+  const onChangeMethod = async (id: number, id_metodo_pago: number) => {
+    await apiRequest(`/api/payment-methods/pago/${id}/metodo`, {
       method: 'PATCH',
       body: JSON.stringify({ id_metodo_pago }),
     })
     await fetchAll()
   }
 
-  return { pagos, metodosPago, estadosPago, isLoading, error, onCrear, onEditar, onEliminar, onCambiarEstado, onCambiarMetodo }
+  return { pagos, metodosPago, estadosPago, isLoading, error, onCreate, onEdit, onDelete, onChangeStatus, onChangeMethod }
 }

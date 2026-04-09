@@ -21,7 +21,7 @@ export function useServices() {
   const fetchAll = async () => {
     setIsLoading(true); setError(null)
     try {
-      const res = await apiRequest<ApiResponse<Servicio[]>>('/api/servicios')
+      const res = await apiRequest<ApiResponse<Servicio[]>>('/api/services')
       setServicios((res.data ?? []).map(s => ({
         ...s,
         duracion: Number(s.duracion ?? 0),
@@ -33,19 +33,19 @@ export function useServices() {
 
   useEffect(() => { fetchAll() }, [])
 
-  const onCrear = async (data: CreateServicioDto) => {
-    await apiRequest('/api/servicios', { method: 'POST', body: JSON.stringify(data) })
+  const onCreate = async (data: CreateServicioDto) => {
+    await apiRequest('/api/services', { method: 'POST', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEditar = async (id: number, data: UpdateServicioDto) => {
-    await apiRequest(`/api/servicios/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  const onEdit = async (id: number, data: UpdateServicioDto) => {
+    await apiRequest(`/api/services/${id}`, { method: 'PUT', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEliminar = async (id: number): Promise<string | null> => {
+  const onDelete = async (id: number): Promise<string | null> => {
     try {
-      await apiRequest(`/api/servicios/${id}`, { method: 'DELETE' })
+      await apiRequest(`/api/services/${id}`, { method: 'DELETE' })
       await fetchAll()
       return null
     } catch (e) {
@@ -58,11 +58,11 @@ export function useServices() {
     }
   }
 
-  const onToggleEstado = async (id: number) => {
+  const onToggleStatus = async (id: number) => {
     setServicios(prev => prev.map(s => s.id_servicio === id ? { ...s, estado: !s.estado } : s))
-    try { await apiRequest(`/api/servicios/${id}/estado`, { method: 'PATCH' }) }
+    try { await apiRequest(`/api/services/${id}/estado`, { method: 'PATCH' }) }
     catch { setServicios(prev => prev.map(s => s.id_servicio === id ? { ...s, estado: !s.estado } : s)) }
   }
 
-  return { servicios, isLoading, error, onCrear, onEditar, onEliminar, onToggleEstado }
+  return { servicios, isLoading, error, onCreate, onEdit, onDelete, onToggleStatus }
 }

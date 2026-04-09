@@ -104,7 +104,7 @@ export function LandingPage() {
   const processInView = useInView(processRef, { once: true, margin: '-60px 0px' })
 
   const handleAgendarCita = () => {
-    if (isCliente)        navigate('/mi-cuenta?nueva-cita=true')
+    if (isCliente)        navigate('/mi-cuenta?new-appointment=true')
     else if (isAdminEmpl) navigate('/admin/dashboard')
   }
 
@@ -172,7 +172,7 @@ export function LandingPage() {
                     Iniciar sesión
                   </Button>
                 </Link>
-                <Link to="/registro">
+                <Link to="/register">
                   <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     Registrarse
                   </Button>
@@ -181,7 +181,7 @@ export function LandingPage() {
             )}
             {isCliente && (
               <>
-                <Link to="/mi-cuenta">
+                <Link to="/my-account">
                   <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                     Mi cuenta
                   </Button>
@@ -279,7 +279,7 @@ export function LandingPage() {
                   </Button>
                 ) : (
                   <>
-                    <Link to="/registro">
+                    <Link to="/register">
                       <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
                         <CalendarPlus className="h-5 w-5" />
                         Quiero agendar una cita
@@ -391,7 +391,7 @@ export function LandingPage() {
               {!token && (
                 <FadeInView className="text-center mt-10 mb-2">
                   <div className="flex flex-col items-center gap-2">
-                    <Link to="/registro">
+                    <Link to="/register">
                       <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
                         <CalendarPlus className="h-5 w-5" />
                         Quiero agendar una cita
@@ -496,7 +496,7 @@ export function LandingPage() {
               </div>
               {!token && (
                 <div className="mt-8">
-                  <Link to="/registro">
+                  <Link to="/register">
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90 w-full gap-2">
                       Agendar una Cita <ArrowRight className="h-4 w-4" />
                     </Button>

@@ -47,8 +47,8 @@ export function useAppointments() {
     setError(null)
     try {
       const [citasRes, estadosRes] = await Promise.all([
-        apiRequest<ApiResponse<BackendCita[]>>('/api/citas?limit=500'),
-        apiRequest<ApiResponse<EstadoCita[]>>('/api/estado-cita'),
+        apiRequest<ApiResponse<BackendCita[]>>('/api/appointments?limit=500'),
+        apiRequest<ApiResponse<EstadoCita[]>>('/api/appointment-status'),
       ])
 
       const normalized: Cita[] = (citasRes.data ?? []).map((item) => ({
@@ -71,29 +71,29 @@ export function useAppointments() {
 
   useEffect(() => { fetchAll() }, [])
 
-  const onCrear = async (data: CreateCitaDto) => {
-    await apiRequest('/api/citas', { method: 'POST', body: JSON.stringify(data) })
+  const onCreate = async (data: CreateCitaDto) => {
+    await apiRequest('/api/appointments', { method: 'POST', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEditar = async (id: number, data: UpdateCitaDto) => {
-    await apiRequest(`/api/citas/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  const onEdit = async (id: number, data: UpdateCitaDto) => {
+    await apiRequest(`/api/appointments/${id}`, { method: 'PUT', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEliminar = async (id: number) => {
-    await apiRequest(`/api/citas/${id}`, { method: 'DELETE' })
+  const onDelete = async (id: number) => {
+    await apiRequest(`/api/appointments/${id}`, { method: 'DELETE' })
     await fetchAll()
   }
 
-  // PATCH /api/estado-cita/cita/:id/estado  (endpoint especial del backend)
-  const onCambiarEstado = async (id: number, id_estado_cita: number) => {
-    await apiRequest(`/api/estado-cita/cita/${id}/estado`, {
+  // PATCH /api/appointment-status/cita/:id/estado  (endpoint especial del backend)
+  const onChangeStatus = async (id: number, id_estado_cita: number) => {
+    await apiRequest(`/api/appointment-status/cita/${id}/estado`, {
       method: 'PATCH',
       body: JSON.stringify({ id_estado_cita }),
     })
     await fetchAll()
   }
 
-  return { citas, estadosCita, isLoading, error, onCrear, onEditar, onEliminar, onCambiarEstado, refresh: fetchAll }
+  return { citas, estadosCita, isLoading, error, onCreate, onEdit, onDelete, onChangeStatus, refresh: fetchAll }
 }

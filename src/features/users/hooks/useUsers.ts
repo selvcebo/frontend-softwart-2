@@ -1,6 +1,6 @@
 // ============================================================
 // src/features/users/hooks/useUsers.ts
-// OPTIMISTIC UPDATE en onToggleEstado — sin skeleton, sin salto
+// OPTIMISTIC UPDATE en onToggleStatus — sin skeleton, sin salto
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
@@ -32,7 +32,7 @@ export function useUsers() {
     setIsLoading(true)
     setError(null)
     try {
-      const res = await apiRequest<ApiResponse<BackendUsuario[]>>('/api/usuarios?limit=500')
+      const res = await apiRequest<ApiResponse<BackendUsuario[]>>('/api/users?limit=500')
       setUsuarios(
         (res.data ?? []).map((u) => ({
           id_usuario: u.id_usuario,
@@ -51,28 +51,28 @@ export function useUsers() {
 
   useEffect(() => { fetchAll() }, [])
 
-  const onCrear = async (data: CreateUsuarioDto) => {
-    await apiRequest('/api/usuarios', { method: 'POST', body: JSON.stringify(data) })
+  const onCreate = async (data: CreateUsuarioDto) => {
+    await apiRequest('/api/users', { method: 'POST', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEditar = async (id: number, data: UpdateUsuarioDto) => {
-    await apiRequest(`/api/usuarios/${id}`, { method: 'PUT', body: JSON.stringify(data) })
+  const onEdit = async (id: number, data: UpdateUsuarioDto) => {
+    await apiRequest(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(data) })
     await fetchAll()
   }
 
-  const onEliminar = async (id: number) => {
-    await apiRequest(`/api/usuarios/${id}`, { method: 'DELETE' })
+  const onDelete = async (id: number) => {
+    await apiRequest(`/api/users/${id}`, { method: 'DELETE' })
     await fetchAll()
   }
 
   // OPTIMISTIC UPDATE — sin fetchAll, sin skeleton
-  const onToggleEstado = async (id: number) => {
+  const onToggleStatus = async (id: number) => {
     setUsuarios((prev) =>
       prev.map((u) => u.id_usuario === id ? { ...u, estado: !u.estado } : u)
     )
     try {
-      await apiRequest(`/api/usuarios/${id}/estado`, { method: 'PATCH' })
+      await apiRequest(`/api/users/${id}/estado`, { method: 'PATCH' })
     } catch {
       // Revertir si falla
       setUsuarios((prev) =>
@@ -81,5 +81,5 @@ export function useUsers() {
     }
   }
 
-  return { usuarios, isLoading, error, onCrear, onEditar, onEliminar, onToggleEstado }
+  return { usuarios, isLoading, error, onCreate, onEdit, onDelete, onToggleStatus }
 }

@@ -1,6 +1,6 @@
 // src/shared/lib/withToast.ts
 // Helper para envolver operaciones de hook con toast automático
-// Uso: await withToast(onCrear(data), 'Cliente registrado', 'Error al registrar')
+// Uso: await withToast(onCreate(data), 'Cliente registrado', 'Error al registrar')
 import { toast } from 'sonner'
 
 export async function withToast<T>(
@@ -24,10 +24,10 @@ export async function withToast<T>(
 //
 // // En handleSubmit:
 // await withToast(
-//   editingId ? onEditar(editingId, data) : onCrear(data),
+//   editingId ? onEdit(editingId, data) : onCreate(data),
 //   editingId ? 'Cliente actualizado' : 'Cliente registrado',
 // )
 // setIsFormOpen(false); resetForm()
 //
-// // En onEliminar:
-// await withToast(onEliminar(id), 'Cliente eliminado')
+// // En onDelete:
+// await withToast(onDelete(id), 'Cliente eliminado')
