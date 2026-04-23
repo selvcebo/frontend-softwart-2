@@ -45,12 +45,14 @@ const PASOS = [
   },
 ]
 
+const CLD = 'https://res.cloudinary.com/dq1etaydx/image/upload'
+const HERO_IMG = `${CLD}/f_auto,q_auto,w_900/v1774138848/landingPagehero_euzx3s.png`
 const CARD_IMGS = [
-  'https://res.cloudinary.com/dq1etaydx/image/upload/v1774138848/landingPage1_assbrk.png',
-  'https://res.cloudinary.com/dq1etaydx/image/upload/v1774138846/landingPage2restauracion_wpcpl8.png',
-  'https://res.cloudinary.com/dq1etaydx/image/upload/v1774138847/landingPage3pinturas_y7uwxs.png',
-  'https://res.cloudinary.com/dq1etaydx/image/upload/v1774138847/landingPage4decoracion_clyg0c.png',
-  'https://res.cloudinary.com/dq1etaydx/image/upload/v1774138846/landingPage2enmarcacion_ubu86c.png',
+  `${CLD}/f_auto,q_auto,w_600/v1774138848/landingPage1_assbrk.png`,
+  `${CLD}/f_auto,q_auto,w_600/v1774138846/landingPage2restauracion_wpcpl8.png`,
+  `${CLD}/f_auto,q_auto,w_600/v1774138847/landingPage3pinturas_y7uwxs.png`,
+  `${CLD}/f_auto,q_auto,w_600/v1774138847/landingPage4decoracion_clyg0c.png`,
+  `${CLD}/f_auto,q_auto,w_600/v1774138846/landingPage2enmarcacion_ubu86c.png`,
 ]
 
 // ─── Helper: fade-in al entrar en viewport ───────────────────────────────────
@@ -298,23 +300,22 @@ export function LandingPage() {
               </m.div>
             </div>
 
-            {/* Columna derecha — imagen */}
-            <m.div
-              className="relative hidden md:block"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
-            >
+            {/* Columna derecha — imagen (LCP: sin animación de entrada para render inmediato) */}
+            <div className="relative hidden md:block">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
                 <img
                   alt="Taller artesanal Arte Café"
                   className="w-full h-full object-cover"
-                  src="https://res.cloudinary.com/dq1etaydx/image/upload/v1774138848/landingPagehero_euzx3s.png"
+                  src={HERO_IMG}
+                  width={900}
+                  height={1125}
+                  fetchPriority="high"
+                  decoding="async"
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 w-44 h-44 bg-primary/25 rounded-2xl -z-10" />
               <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/30 rounded-xl -z-10" />
-            </m.div>
+            </div>
           </div>
         </section>
 
@@ -399,7 +400,7 @@ export function LandingPage() {
                     </Link>
                     <p className="text-sm text-muted-foreground">
                       ¿Ya tienes cuenta?{' '}
-                      <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
+                      <Link to="/login" className="text-primary underline underline-offset-2">Inicia sesión</Link>
                     </p>
                   </div>
                 </FadeInView>
@@ -527,7 +528,7 @@ export function LandingPage() {
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
       <footer className="bg-secondary border-t border-secondary-foreground/10 py-8">
         <div className="max-w-7xl mx-auto px-6 flex flex-col items-center gap-1 text-center">
-          <span className="text-xs text-secondary-foreground/50">
+          <span className="text-xs text-secondary-foreground/75">
             © {new Date().getFullYear()} SoftwArt · Todos los derechos reservados
           </span>
         </div>

@@ -2,35 +2,37 @@
 // src/App.tsx
 // ============================================================
 
+import { lazy, Suspense } from 'react'
 import { useBackendWakeup } from '@/src/shared/hooks/useBackendWakeup'
 import { SplashScreen }     from '@/src/shared/components/SplashScreen'
-import { ClientsPage }      from '@/src/features/clients/components/ClientsPage'
-import { DashboardPage }    from '@/src/features/dashboard/components/DashboardPage'
 import { Routes, Route, Navigate, Outlet, useLocation } from 'react-router-dom'
 import { checkAuthValidity } from '@/src/shared/lib/checkAuth'
 import { Toaster } from 'sonner'
 import { AdminSidebar }     from '@/src/shared/components/AdminSidebar'
-import { UsersPage }        from '@/src/features/users/components/UsersPage'
-import { RolesPage }        from '@/src/features/roles/components/RolesPage'
-import { ServicesPage }     from '@/src/features/services/components/ServicesPage'
-import { AppointmentsPage } from '@/src/features/appointments/components/AppointmentsPage'
-import { PaymentsPage }     from '@/src/features/payments/components/PaymentsPage'
-import { CalculatorPage }   from '@/src/features/calculator/components/CalculatorPage'
-import { SalesPage }        from '@/src/features/sales/components/SalesPage'
-import { OrdersPage }       from '@/src/features/orders/components/OrdersPage'
-import { PermissionsPage }  from '@/src/features/permissions/components/PermissionsPage'
-import { AuthLayout }       from '@/src/features/auth/components/AuthLayout'
-import { NotFoundPage }     from '@/src/features/auth/components/NotFoundPage'
-import { RecoveryPage }     from '@/src/features/auth/components/RecoveryPage'
-import { ResetPasswordPage } from '@/src/features/auth/components/ResetPasswordPage'
-import { LoginPage }        from '@/src/features/auth/components/LoginPage'
-import { RegisterPage }     from '@/src/features/auth/components/RegisterPage'
 import { LandingPage }      from '@/src/features/dashboard/components/LandingPage'
-import { MyAccountPage }    from '@/src/features/account/components/MyAccountPage'
 
-// Lee token de localStorage (recordarme) o sessionStorage (sesión temporal)
-function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
-function getRol()   { return localStorage.getItem('rol')   ?? sessionStorage.getItem('rol') }
+// Rutas bajo lazy loading — reducen el bundle inicial del landing
+const LoginPage         = lazy(() => import('@/src/features/auth/components/LoginPage').then(m => ({ default: m.LoginPage })))
+const RegisterPage      = lazy(() => import('@/src/features/auth/components/RegisterPage').then(m => ({ default: m.RegisterPage })))
+const RecoveryPage      = lazy(() => import('@/src/features/auth/components/RecoveryPage').then(m => ({ default: m.RecoveryPage })))
+const ResetPasswordPage = lazy(() => import('@/src/features/auth/components/ResetPasswordPage').then(m => ({ default: m.ResetPasswordPage })))
+const AuthLayout        = lazy(() => import('@/src/features/auth/components/AuthLayout').then(m => ({ default: m.AuthLayout })))
+const NotFoundPage      = lazy(() => import('@/src/features/auth/components/NotFoundPage').then(m => ({ default: m.NotFoundPage })))
+const MyAccountPage     = lazy(() => import('@/src/features/account/components/MyAccountPage').then(m => ({ default: m.MyAccountPage })))
+const DashboardPage     = lazy(() => import('@/src/features/dashboard/components/DashboardPage').then(m => ({ default: m.DashboardPage })))
+const ClientsPage       = lazy(() => import('@/src/features/clients/components/ClientsPage').then(m => ({ default: m.ClientsPage })))
+const UsersPage         = lazy(() => import('@/src/features/users/components/UsersPage').then(m => ({ default: m.UsersPage })))
+const RolesPage         = lazy(() => import('@/src/features/roles/components/RolesPage').then(m => ({ default: m.RolesPage })))
+const ServicesPage      = lazy(() => import('@/src/features/services/components/ServicesPage').then(m => ({ default: m.ServicesPage })))
+const AppointmentsPage  = lazy(() => import('@/src/features/appointments/components/AppointmentsPage').then(m => ({ default: m.AppointmentsPage })))
+const PaymentsPage      = lazy(() => import('@/src/features/payments/components/PaymentsPage').then(m => ({ default: m.PaymentsPage })))
+const CalculatorPage    = lazy(() => import('@/src/features/calculator/components/CalculatorPage').then(m => ({ default: m.CalculatorPage })))
+const SalesPage         = lazy(() => import('@/src/features/sales/components/SalesPage').then(m => ({ default: m.SalesPage })))
+const OrdersPage        = lazy(() => import('@/src/features/orders/components/OrdersPage').then(m => ({ default: m.OrdersPage })))
+const PermissionsPage   = lazy(() => import('@/src/features/permissions/components/PermissionsPage').then(m => ({ default: m.PermissionsPage })))
+
+// Lee rol desde localStorage (recordarme) o sessionStorage (sesión temporal)
+function getRol() { return localStorage.getItem('rol') ?? sessionStorage.getItem('rol') }
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const location = useLocation()
@@ -80,47 +82,57 @@ function AdminLayout() {
   )
 }
 
+function RouteFallback() {
+  return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="h-6 w-6 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+    </div>
+  )
+}
+
 export default function App() {
   const showSplash = useBackendWakeup()
   if (showSplash) return <SplashScreen />
 
   return (
     <>
-      <Routes>
-        {/* Públicas */}
-        <Route path="/"          element={<LandingPage />} />
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
+          {/* Públicas */}
+          <Route path="/"          element={<LandingPage />} />
 
-        {/* Auth — bajo AuthLayout (header con volver al inicio) */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login"     element={<LoginPage />} />
-          <Route path="/register"  element={<RegisterPage />} />
-          <Route path="/recover"   element={<RecoveryPage />} />
-          <Route path="/reset"     element={<ResetPasswordPage />} />
-        </Route>
+          {/* Auth — bajo AuthLayout (header con volver al inicio) */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login"     element={<LoginPage />} />
+            <Route path="/register"  element={<RegisterPage />} />
+            <Route path="/recover"   element={<RecoveryPage />} />
+            <Route path="/reset"     element={<ResetPasswordPage />} />
+          </Route>
 
-        {/* Área cliente */}
-        <Route path="/my-account" element={<RequireCliente><MyAccountPage /></RequireCliente>} />
+          {/* Área cliente */}
+          <Route path="/my-account" element={<RequireCliente><MyAccountPage /></RequireCliente>} />
 
-        {/* Panel admin */}
-        <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
-          <Route index              element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard"   element={<DashboardPage />} />
-          <Route path="clients"      element={<ClientsPage />} />
-          <Route path="users"        element={<UsersPage />} />
-          <Route path="roles"        element={<RolesPage />} />
-          <Route path="services"     element={<ServicesPage />} />
-          <Route path="appointments" element={<AppointmentsPage />} />
-          <Route path="payments"     element={<PaymentsPage />} />
-          <Route path="calculator"   element={<CalculatorPage />} />
-          <Route path="sales"        element={<SalesPage />} />
-          <Route path="orders"       element={<OrdersPage />} />
-          <Route path="permissions"  element={<PermissionsPage />} />
-          <Route path="*"           element={<Navigate to="dashboard" replace />} />
-        </Route>
+          {/* Panel admin */}
+          <Route path="/admin" element={<RequireAuth><AdminLayout /></RequireAuth>}>
+            <Route index              element={<Navigate to="dashboard" replace />} />
+            <Route path="dashboard"   element={<DashboardPage />} />
+            <Route path="clients"      element={<ClientsPage />} />
+            <Route path="users"        element={<UsersPage />} />
+            <Route path="roles"        element={<RolesPage />} />
+            <Route path="services"     element={<ServicesPage />} />
+            <Route path="appointments" element={<AppointmentsPage />} />
+            <Route path="payments"     element={<PaymentsPage />} />
+            <Route path="calculator"   element={<CalculatorPage />} />
+            <Route path="sales"        element={<SalesPage />} />
+            <Route path="orders"       element={<OrdersPage />} />
+            <Route path="permissions"  element={<PermissionsPage />} />
+            <Route path="*"           element={<Navigate to="dashboard" replace />} />
+          </Route>
 
-{/* Catch-all global → 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+          {/* Catch-all global → 404 */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
 
       <Toaster position="bottom-right" richColors closeButton />
     </>
