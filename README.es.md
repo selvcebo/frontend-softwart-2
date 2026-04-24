@@ -151,8 +151,9 @@ npm run dev
 
 ## Repositorios relacionados
 
-- [softwart-backend](https://github.com/selvcebo/softwart-backend) — Node.js + Express + TypeScript + PostgreSQL
-- [softwart-mobile](https://github.com/selvcebo/softwart-mobile) — Flutter + Clean Architecture
+- [softwart-backend](https://github.com/SoftwArt/softwart-backend) — Node.js + Express + TypeScript + PostgreSQL
+- [softwart-mobile](https://github.com/SoftwArt/softwart-mobile) — Flutter + Clean Architecture
+- [softwart-docs](https://github.com/SoftwArt/softwart-docs) — Diagramas C4, MHU, documentación del proyecto
 
 ---
 
