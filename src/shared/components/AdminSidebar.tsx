@@ -29,7 +29,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
       { label: 'Clientes',    href: '/admin/clients',    icon: UserCircle },
       { label: 'Citas',       href: '/admin/appointments',       icon: Calendar },
       { label: 'Ventas',      href: '/admin/sales',      icon: ShoppingBag },
-      { label: 'Pedidos',       href: '/admin/orders',     icon: ClipboardList },
+      { label: 'Servicios',       href: '/admin/orders',     icon: ClipboardList },
       { label: 'Pagos',       href: '/admin/payments',       icon: CreditCard },
     ],
   },
@@ -67,7 +67,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
 
   return (
     <aside className={cn(
-      'group flex flex-col bg-sidebar border-r border-sidebar-border',
+      'group flex flex-col bg-sidebar-accent border-r border-sidebar-border',
       'h-full min-h-0 shrink-0 transition-all duration-300 ease-in-out',
       collapsed ? 'w-[56px]' : 'w-64',
       className
@@ -137,7 +137,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
                             collapsed ? 'justify-center' : '',
                             isActive
                               ? 'bg-primary/10 text-primary font-medium'
-                              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                              : 'text-sidebar-accent-foreground hover:bg-sidebar hover:text-sidebar-foreground'
                           )}
                         >
                           <Icon className="h-4 w-4 shrink-0" />
