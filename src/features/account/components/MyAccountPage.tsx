@@ -5,7 +5,7 @@ import { useAccount } from '../hooks/useAccount'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { CalendarDays, LogOut, User, Lock, AlertTriangle, Plus, Clock, Home, CalendarPlus } from 'lucide-react'
+import { CalendarDays, LogOut, User, Lock, AlertTriangle, Plus, Clock, Home, CalendarPlus, Wrench } from 'lucide-react'
 import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
@@ -41,6 +41,14 @@ function estadoBadgeClasses(nombre?: string) {
   return 'bg-muted text-muted-foreground'
 }
 
+// ── Color badge estado servicio ───────────────────────────────────────────────
+function estadoServicioBadgeClasses(estado: string) {
+  const s = estado.toLowerCase()
+  if (s.includes('finaliz'))    return 'bg-emerald-100 text-emerald-800'
+  if (s.includes('preparac'))   return 'bg-amber-100 text-amber-800'
+  return 'bg-muted text-muted-foreground'
+}
+
 // ── Clases reutilizables ──────────────────────────────────────────────────────
 const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all'
 const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
@@ -51,7 +59,7 @@ export function MyAccountPage() {
   const [searchParams] = useSearchParams()
   const citaFormRef    = useRef<HTMLDivElement>(null)
 
-  const { perfil, citas, isLoading, error, onUpdateProfile, onChangePassword, onCancelAppointment, onDeleteAccount } = useAccount()
+  const { perfil, citas, servicios, isLoading, error, onUpdateProfile, onChangePassword, onCancelAppointment, onDeleteAccount } = useAccount()
 
   // ── Estado formulario perfil ──────────────────────────────────────────────
   const [nombre,         setNombre]         = useState('')
@@ -405,6 +413,45 @@ export function MyAccountPage() {
                       {isAgendando ? 'Agendando...' : 'Confirmar cita'}
                     </button>
                   </form>
+                </div>
+              )}
+            </section>
+
+            {/* ── Mis Servicios ──────────────────────────────────────────────── */}
+            <section className="bg-card rounded-xl p-6 md:p-8 shadow-sm border border-border">
+              <div className="flex items-center gap-3 mb-6">
+                <Wrench className="h-7 w-7 text-primary" />
+                <h2 className="text-2xl font-serif text-secondary">Mis servicios</h2>
+              </div>
+
+              {isLoading ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-14 w-full rounded-lg" />
+                  <Skeleton className="h-14 w-full rounded-lg" />
+                </div>
+              ) : servicios.length === 0 ? (
+                <div className="text-center py-8">
+                  <Wrench className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+                  <p className="text-muted-foreground">Aún no tienes servicios registrados.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {servicios.map((s) => (
+                    <div
+                      key={s.id_detalle}
+                      className="flex items-center justify-between p-4 rounded-lg bg-muted border border-transparent hover:border-primary/20 transition-all"
+                    >
+                      <div>
+                        <p className="font-semibold text-foreground text-sm">{s.servicio}</p>
+                        {s.observacion && (
+                          <p className="text-xs text-muted-foreground mt-0.5 truncate max-w-[220px]">{s.observacion}</p>
+                        )}
+                      </div>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(s.estado)}`}>
+                        {s.estado}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               )}
             </section>

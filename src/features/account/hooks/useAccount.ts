@@ -23,6 +23,15 @@ type Cita = {
   appointmentStatus?: { id_estado_cita: number; nombre: string } | null
 }
 
+type Servicio = {
+  id_detalle:  number
+  fecha:       string
+  servicio:    string
+  estado:      string
+  precio:      number
+  observacion: string | null
+}
+
 // Tipo para actualizar datos personales (sin contraseña)
 type DatosPerfilPayload = Partial<Pick<PerfilCliente, 'nombre' | 'telefono' | 'correo'>>
 
@@ -32,6 +41,7 @@ type CambioClavePayload = { clave_actual: string; clave: string }
 export function useAccount() {
   const [perfil,    setPerfil]    = useState<PerfilCliente | null>(null)
   const [citas,     setCitas]     = useState<Cita[]>([])
+  const [servicios, setServicios] = useState<Servicio[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error,     setError]     = useState<string | null>(null)
   const navigate = useNavigate()
@@ -46,16 +56,21 @@ export function useAccount() {
     setCitas(res.data ?? [])
   }, [])
 
+  const fetchMyServices = useCallback(async () => {
+    const res = await apiRequest<ApiResponse<Servicio[]>>('/api/account/servicios')
+    setServicios(res.data ?? [])
+  }, [])
+
   const refresh = useCallback(async () => {
     setIsLoading(true); setError(null)
     try {
-      await Promise.all([fetchProfile(), fetchMyAppointments()])
+      await Promise.all([fetchProfile(), fetchMyAppointments(), fetchMyServices()])
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al cargar tu cuenta')
     } finally {
       setIsLoading(false)
     }
-  }, [fetchProfile, fetchMyAppointments])
+  }, [fetchProfile, fetchMyAppointments, fetchMyServices])
 
   useEffect(() => { refresh() }, [refresh])
 
@@ -96,6 +111,7 @@ export function useAccount() {
   return {
     perfil,
     citas,
+    servicios,
     isLoading,
     error,
     refresh,
