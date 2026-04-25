@@ -12,6 +12,7 @@ import { Label } from '@/src/shared/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/shared/components/ui/dialog'
 import { TimePicker } from '@/src/shared/components/TimePicker'
+import { DatePicker } from '@/src/shared/components/DatePicker'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 import { toast } from 'sonner'
 
@@ -133,32 +134,42 @@ export function LandingPage() {
   const [clientForm, setClientForm] = useState({
     tipoDocumento: '', documento: '', nombre: '', correo: '', telefono: '',
   })
-  const [apptForm, setApptForm] = useState({ fecha: '', hora: '', observacion: '' })
+  const tomorrowStr = () => {
+    const d = new Date(); d.setDate(d.getDate() + 1); return d.toISOString().slice(0, 10)
+  }
+
+  const [apptForm, setApptForm] = useState({ fecha: tomorrowStr(), hora: '', observacion: '' })
+  const [apptErrors, setApptErrors] = useState<Record<string, string>>({})
 
   const openAppt = () => {
     setApptStep(1)
     setApptDone(false)
     setClientForm({ tipoDocumento: '', documento: '', nombre: '', correo: '', telefono: '' })
-    setApptForm({ fecha: '', hora: '', observacion: '' })
+    setApptForm({ fecha: tomorrowStr(), hora: '', observacion: '' })
+    setApptErrors({})
     setBookedSlots([])
     setApptOpen(true)
   }
 
-  const fetchAvailability = async (fecha: string) => {
+  const handleDateChange = async (fecha: string) => {
+    setApptForm(f => ({ ...f, fecha, hora: '' }))
+    setApptErrors(p => ({ ...p, fecha: '', hora: '' }))
     try {
       const res  = await fetch(`${BASE}/api/auth/disponibilidad?fecha=${fecha}`)
       const body = await res.json()
-      if (res.ok) setBookedSlots(body.data ?? [])
-    } catch { /* silencioso */ }
-  }
-
-  const handleDateChange = (fecha: string) => {
-    setApptForm(f => ({ ...f, fecha, hora: '' }))
-    if (fecha) fetchAvailability(fecha)
+      setBookedSlots((body.data ?? []).map((d: { id_cita: number; hora: string }) => ({
+        hora: d.hora, id_cita: d.id_cita,
+      })))
+    } catch { setBookedSlots([]) }
   }
 
   const handleApptSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    const errs: Record<string, string> = {}
+    if (!apptForm.fecha) errs.fecha = 'Selecciona una fecha'
+    if (!apptForm.hora)  errs.hora  = 'Selecciona una hora'
+    if (apptForm.fecha < tomorrowStr()) errs.fecha = 'Solo puedes agendar desde mañana'
+    if (Object.keys(errs).length) { setApptErrors(errs); return }
     setApptBusy(true)
     try {
       const res  = await fetch(`${BASE}/api/auth/guest-appointment`, {
@@ -178,8 +189,6 @@ export function LandingPage() {
       setApptBusy(false)
     }
   }
-
-  const todayStr = new Date().toISOString().slice(0, 10)
 
   return (
     <LazyMotion features={domAnimation}>
@@ -744,53 +753,52 @@ export function LandingPage() {
         {/* ── Paso 2: fecha y hora ── */}
         {!apptDone && apptStep === 2 && (
           <form onSubmit={handleApptSubmit} className="flex flex-col gap-4 pt-1">
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="g-fecha">Fecha</Label>
-              <Input
-                id="g-fecha"
-                type="date"
-                min={todayStr}
+            <div>
+              <Label className="mb-1.5 block">
+                Fecha <span className="text-destructive">*</span>
+              </Label>
+              <DatePicker
                 value={apptForm.fecha}
-                onChange={e => handleDateChange(e.target.value)}
-                required
+                min={tomorrowStr()}
+                error={apptErrors.fecha}
+                onChange={handleDateChange}
               />
+              {apptErrors.fecha && <p className="text-xs text-destructive mt-1">{apptErrors.fecha}</p>}
             </div>
 
-            {apptForm.fecha && (
-              <TimePicker
-                value={apptForm.hora}
-                onChange={hora => setApptForm(f => ({ ...f, hora }))}
-                bookedSlots={bookedSlots}
-              />
-            )}
+            <TimePicker
+              value={apptForm.hora}
+              onChange={v => { setApptForm(f => ({ ...f, hora: v })); setApptErrors(p => ({ ...p, hora: '' })) }}
+              error={apptErrors.hora}
+              bookedSlots={bookedSlots}
+            />
 
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="g-obs">
-                Observaciones <span className="text-muted-foreground text-xs">(opcional)</span>
+            <div>
+              <Label className="mb-1.5 block" htmlFor="g-obs">
+                Observaciones{' '}
+                <span className="text-muted-foreground font-normal text-xs">(opcional)</span>
               </Label>
-              <Input
+              <textarea
                 id="g-obs"
-                placeholder="Ej: es un cuadro de 60×80 cm"
                 value={apptForm.observacion}
                 onChange={e => setApptForm(f => ({ ...f, observacion: e.target.value }))}
+                placeholder="Cuéntanos qué necesitas, medidas, tipo de marco, etc."
+                rows={3}
+                className="w-full bg-muted border-0 border-b-2 border-transparent px-4 py-3 rounded-t-lg text-sm resize-none focus:outline-none focus:border-secondary transition-all"
               />
             </div>
 
             <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1"
-                onClick={() => setApptStep(1)}
-              >
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setApptStep(1)}>
                 ← Atrás
               </Button>
               <Button
                 type="submit"
-                disabled={apptBusy || !apptForm.fecha || !apptForm.hora}
-                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90"
+                disabled={apptBusy}
+                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 gap-2"
               >
-                {apptBusy ? 'Agendando…' : 'Agendar cita'}
+                <CalendarPlus className="h-4 w-4" />
+                {apptBusy ? 'Agendando…' : 'Confirmar cita'}
               </Button>
             </div>
           </form>
