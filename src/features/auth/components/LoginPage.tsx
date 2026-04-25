@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { LazyMotion, domAnimation, m } from 'framer-motion'
-import { useLogin } from '../hooks/useLogin'
+import { useLogin, getSavedCredentials } from '../hooks/useLogin'
 import { Button }      from '@/src/shared/components/ui/button'
 import { Input }       from '@/src/shared/components/ui/input'
 import { Checkbox }    from '@/src/shared/components/ui/checkbox'
@@ -21,9 +21,9 @@ export function LoginPage() {
   const redirectCita   = searchParams.get('redirect') === 'cita'
   const { login, error } = useLogin(redirectCita)
 
-  const [correo,   setCorreo]   = useState('')
-  const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(false)
+  const [correo,   setCorreo]   = useState(() => getSavedCredentials()?.correo   ?? '')
+  const [password, setPassword] = useState(() => getSavedCredentials()?.password ?? '')
+  const [remember, setRemember] = useState(() => getSavedCredentials() !== null)
   const [showPass, setShowPass] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -31,11 +31,32 @@ function saveAuth(data: AuthData, remember: boolean) {
 }
 
 export function clearAuth() {
-  // Limpia ambos storages por si acaso
   ;['token', 'rol', 'id_usuario', 'correo', 'id_cliente'].forEach(k => {
     localStorage.removeItem(k)
     sessionStorage.removeItem(k)
   })
+}
+
+// ── Helpers: credenciales guardadas para auto-fill ────────────────────────────
+const CRED_KEY = 'saved_creds'
+
+export function saveCredentials(correo: string, password: string) {
+  localStorage.setItem(CRED_KEY, JSON.stringify({ correo, p: btoa(password) }))
+}
+
+export function clearCredentials() {
+  localStorage.removeItem(CRED_KEY)
+}
+
+export function getSavedCredentials(): { correo: string; password: string } | null {
+  try {
+    const raw = localStorage.getItem(CRED_KEY)
+    if (!raw) return null
+    const { correo, p } = JSON.parse(raw)
+    return { correo, password: atob(p) }
+  } catch {
+    return null
+  }
 }
 
 function getAuthToken(): string | null {
@@ -64,6 +85,9 @@ export function useLogin(redirectCita = false) {
         setError('Credenciales incorrectas')
         return
       }
+
+      if (remember) saveCredentials(correo, password)
+      else          clearCredentials()
 
       saveAuth({
         token:      res.token,
