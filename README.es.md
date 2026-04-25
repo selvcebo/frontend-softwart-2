@@ -61,14 +61,17 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 ### Panel admin (`/admin/*`)
 - Dashboard con KPIs en tiempo real (ventas del mes, citas de hoy, pedidos y pagos pendientes)
+- Alert chips operativos: popovers clicables con lista de ítems (ventas sin pago, citas sin venta, pedidos atrasados), ignorar por ítem y redirección directa a la sección con el buscador pre-llenado
 - CRUD completo para todas las entidades del negocio
 - Agendamiento de citas con disponibilidad de slots en tiempo real
 - Ventas con planes de abono configurables y preview de pagos en vivo
-- Sidebar colapsable entre 56px (solo íconos) y 256px (expandido)
+- Sidebar colapsable (56px/256px), dropdown de usuario en el topbar (correo, rol, cerrar sesión)
+- Tabla de Servicios muestra nombre de cliente con referencia de venta; cliente buscable por nombre
 
 ### Portal cliente (`/my-account`)
 - Agendar citas con verificación de disponibilidad en tiempo real
 - Ver y cancelar citas propias
+- Seguimiento de servicios activos con estado en tiempo real (Sin empezar / En preparación / Finalizado)
 - Actualizar perfil y cambiar contraseña
 - Eliminar cuenta
 
@@ -94,7 +97,7 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 **Paginación client-side**: los hooks fetchean con `?limit=500` y paginan en memoria con `usePagination`. Apropiado para el volumen de datos de una PYME — evita la complejidad de paginación server-side.
 
-**Almacenamiento de auth**: el token va a `localStorage` ("recordarme") o `sessionStorage` (solo sesión). `clearAuth()` limpia ambos. `checkAuthValidity()` decodifica el JWT localmente y verifica `exp` — sin round-trip al backend.
+**Almacenamiento de auth + recordarme**: el token va a `localStorage` ("recordarme") o `sessionStorage` (solo sesión). `clearAuth()` limpia ambos. `checkAuthValidity()` decodifica el JWT localmente y verifica `exp` — sin round-trip al backend. Cuando "recordarme" está marcado, correo y contraseña (codificados con btoa) se guardan en `saved_creds` para que el formulario de login se auto-llene en la próxima visita.
 
 **Wakeup del backend**: la app móvil complementaria hace un ping a `/api/dashboard` al iniciar para pre-calentar el servidor de Render (free tier) antes de que el usuario se autentique.
 

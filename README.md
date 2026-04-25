@@ -61,14 +61,17 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 ### Admin panel (`/admin/*`)
 - Dashboard with live KPIs (monthly sales, today's appointments, pending orders/payments)
+- Operational alert chips: clickable popovers listing items (unpaid sales, appointments without sale, delayed orders) with per-item ignore and one-click redirect to the relevant section with search pre-filled
 - Full CRUD for all business entities
 - Appointment scheduling with real-time slot availability
 - Sales with configurable installment plans and live payment preview
-- Sidebar collapsible between 56px (icon-only) and 256px (expanded)
+- Sidebar collapsible between 56px (icon-only) and 256px (expanded), user dropdown in topbar (email, role, logout)
+- Orders table shows client name with sale reference below; client name searchable
 
 ### Client portal (`/my-account`)
 - Book new appointments with real-time availability check
 - View and cancel own appointments
+- Track active services with live status (Sin empezar / En preparación / Finalizado)
 - Update profile and change password
 - Delete account
 
@@ -94,7 +97,7 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 **Client-side pagination**: hooks fetch with `?limit=500` and paginate in memory via `usePagination`. Appropriate for a PYME's data volume — avoids backend pagination complexity.
 
-**Auth storage**: token goes to `localStorage` ("remember me") or `sessionStorage` (session only). `clearAuth()` clears both. `checkAuthValidity()` decodes JWT locally and checks `exp` — no backend round-trip needed.
+**Auth storage + remember me**: token goes to `localStorage` ("remember me") or `sessionStorage` (session only). `clearAuth()` clears both. `checkAuthValidity()` decodes JWT locally and checks `exp` — no backend round-trip needed. When "remember me" is checked, email and password (btoa-encoded) are also saved under `saved_creds` so the login form auto-fills on the next visit.
 
 **Backend wakeup**: the mobile companion app pings `/api/dashboard` on launch to pre-warm the Render free-tier server before the user authenticates.
 
