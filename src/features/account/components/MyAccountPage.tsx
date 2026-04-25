@@ -369,7 +369,7 @@ export function MyAccountPage() {
                           setCitaErrors(p => ({ ...p, fecha: '', hora: '' }))
                           try {
                             const res = await apiRequest<{ success: boolean; data: { id_cita: number; hora: string }[] }>(
-                              `/api/account/disponibilidad?fecha=${f}`
+                              `/api/account/availability?fecha=${f}`
                             )
                             setDisponibilidad(
                               (res.data ?? []).map(d => ({ hora: d.hora, id_cita: d.id_cita, clienteNombre: 'Ocupado' }))

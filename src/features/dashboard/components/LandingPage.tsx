@@ -153,7 +153,7 @@ export function LandingPage() {
 
   const loadAvailability = async (fecha: string) => {
     try {
-      const res  = await fetch(`${BASE}/api/auth/disponibilidad?fecha=${fecha}`)
+      const res  = await fetch(`${BASE}/api/auth/availability?fecha=${fecha}`)
       const body = await res.json()
       setBookedSlots((body.data ?? []).map((d: { id_cita: number; hora: string }) => ({
         hora: d.hora, id_cita: d.id_cita,
