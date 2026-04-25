@@ -139,9 +139,6 @@ export function DashboardPage() {
           <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground capitalize">{today}</p>
         </div>
-        <button onClick={refetch} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <RefreshCw className="h-4 w-4" />Actualizar
-        </button>
       </div>
 
       {/* Alertas operativas */}
