@@ -319,7 +319,7 @@ export function LandingPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
               >
-                Marquetería · Laureles, Medellín
+                Marquetería · Los Colores, Medellín
               </m.p>
 
               <m.h1
