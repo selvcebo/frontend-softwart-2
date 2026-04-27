@@ -1,11 +1,11 @@
 // src/features/account/components/MyAccountPage.tsx
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAccount } from '../hooks/useAccount'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { CalendarDays, LogOut, User, Lock, AlertTriangle, Plus, Clock, Home, CalendarPlus, Wrench, ChevronDown } from 'lucide-react'
+import { CalendarDays, LogOut, User, Lock, AlertTriangle, Plus, Clock, Home, CalendarPlus, Wrench, ChevronDown, X } from 'lucide-react'
 import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
@@ -57,7 +57,6 @@ const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-
 export function MyAccountPage() {
   const navigate       = useNavigate()
   const [searchParams] = useSearchParams()
-  const citaFormRef    = useRef<HTMLDivElement>(null)
 
   const { perfil, citas, servicios, isLoading, error, onUpdateProfile, onChangePassword, onCancelAppointment, onDeleteAccount } = useAccount()
 
@@ -103,12 +102,11 @@ export function MyAccountPage() {
     setCorreo(perfil.correo ?? '')
   }, [perfil])
 
-  // Abrir form de cita si viene desde landing
+  // Abrir modal de cita si viene desde landing
   useEffect(() => {
     if (searchParams.get('nueva-cita') === 'true') {
       setCitasOpen(true)
       setShowCitaForm(true)
-      setTimeout(() => citaFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 300)
     }
   }, [searchParams])
 
@@ -264,7 +262,6 @@ export function MyAccountPage() {
                       onClick={e => {
                         e.stopPropagation()
                         setShowCitaForm(true)
-                        setTimeout(() => citaFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100)
                       }}
                       className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 hover:bg-primary/90 transition-all active:scale-95 text-xs"
                     >
@@ -355,83 +352,6 @@ export function MyAccountPage() {
                     </div>
                   )}
 
-                  {/* ── Formulario nueva cita ─────────────────────────────────── */}
-                  {showCitaForm && (
-                    <div ref={citaFormRef} className="mt-4 border border-secondary/15 bg-secondary/5 rounded-xl p-5 flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-secondary">Agendar nueva cita</h3>
-                        <button
-                          onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
-                          className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                        >
-                          Cancelar
-                        </button>
-                      </div>
-
-                      {citaMsg && (
-                        <div className={`rounded-lg px-3 py-2 text-sm border ${citaMsgType === 'ok' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-destructive/10 text-destructive border-destructive/30'}`}>
-                          {citaMsg}
-                        </div>
-                      )}
-
-                      <form onSubmit={submitCita} className="flex flex-col gap-4">
-                        <div>
-                          <label className={labelCls} htmlFor="cita-fecha-mc">Fecha <span className="text-destructive">*</span></label>
-                          <DatePicker
-                            id="cita-fecha-mc"
-                            value={citaFecha}
-                            min={tomorrowString()}
-                            error={citaErrors.fecha}
-                            onChange={async (f) => {
-                              setCitaFecha(f)
-                              setCitaHora('')
-                              setCitaErrors(p => ({ ...p, fecha: '', hora: '' }))
-                              try {
-                                const res = await apiRequest<{ success: boolean; data: { id_cita: number; hora: string }[] }>(
-                                  `/api/account/availability?fecha=${f}`
-                                )
-                                setDisponibilidad(
-                                  (res.data ?? []).map(d => ({ hora: d.hora, id_cita: d.id_cita, clienteNombre: 'Ocupado' }))
-                                )
-                              } catch { setDisponibilidad([]) }
-                            }}
-                          />
-                          {citaErrors.fecha && <p className="text-xs text-destructive mt-1">{citaErrors.fecha}</p>}
-                        </div>
-
-                        <TimePicker
-                          value={citaHora}
-                          onChange={v => { setCitaHora(v); setCitaErrors(p => ({ ...p, hora: '' })) }}
-                          error={citaErrors.hora}
-                          bookedSlots={disponibilidad}
-                        />
-
-                        <div>
-                          <label className={labelCls} htmlFor="cita-obs">
-                            Observaciones{' '}
-                            <span className="text-muted-foreground font-normal normal-case tracking-normal">(opcional)</span>
-                          </label>
-                          <textarea
-                            id="cita-obs"
-                            value={citaObs}
-                            onChange={e => setCitaObs(e.target.value)}
-                            placeholder="Cuéntanos qué necesitas, medidas, tipo de marco, etc."
-                            rows={3}
-                            className={`${inputCls} resize-none`}
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          disabled={isAgendando}
-                          className="bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
-                        >
-                          <CalendarPlus className="h-4 w-4" />
-                          {isAgendando ? 'Agendando...' : 'Confirmar cita'}
-                        </button>
-                      </form>
-                    </div>
-                  )}
                 </div>
               )}
             </section>
@@ -598,6 +518,103 @@ export function MyAccountPage() {
 
         </div>
       </main>
+
+      {/* ── Modal nueva cita ───────────────────────────────────────────────── */}
+      {showCitaForm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
+          onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
+        >
+          <div
+            className="bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col gap-4 p-6 relative"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Header modal */}
+            <div className="flex items-center justify-between">
+              <h3 className="font-serif text-xl text-secondary">Agendar nueva cita</h3>
+              <button
+                type="button"
+                onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {citaMsg && (
+              <div className={`rounded-lg px-3 py-2 text-sm border ${citaMsgType === 'ok' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-destructive/10 text-destructive border-destructive/30'}`}>
+                {citaMsg}
+              </div>
+            )}
+
+            <form onSubmit={submitCita} className="flex flex-col gap-4">
+              <div>
+                <label className={labelCls} htmlFor="cita-fecha-mc">Fecha <span className="text-destructive">*</span></label>
+                <DatePicker
+                  id="cita-fecha-mc"
+                  value={citaFecha}
+                  min={tomorrowString()}
+                  error={citaErrors.fecha}
+                  onChange={async (f) => {
+                    setCitaFecha(f)
+                    setCitaHora('')
+                    setCitaErrors(p => ({ ...p, fecha: '', hora: '' }))
+                    try {
+                      const res = await apiRequest<{ success: boolean; data: { id_cita: number; hora: string }[] }>(
+                        `/api/account/availability?fecha=${f}`
+                      )
+                      setDisponibilidad(
+                        (res.data ?? []).map(d => ({ hora: d.hora, id_cita: d.id_cita, clienteNombre: 'Ocupado' }))
+                      )
+                    } catch { setDisponibilidad([]) }
+                  }}
+                />
+                {citaErrors.fecha && <p className="text-xs text-destructive mt-1">{citaErrors.fecha}</p>}
+              </div>
+
+              <TimePicker
+                value={citaHora}
+                onChange={v => { setCitaHora(v); setCitaErrors(p => ({ ...p, hora: '' })) }}
+                error={citaErrors.hora}
+                bookedSlots={disponibilidad}
+              />
+
+              <div>
+                <label className={labelCls} htmlFor="cita-obs">
+                  Observaciones{' '}
+                  <span className="text-muted-foreground font-normal normal-case tracking-normal">(opcional)</span>
+                </label>
+                <textarea
+                  id="cita-obs"
+                  value={citaObs}
+                  onChange={e => setCitaObs(e.target.value)}
+                  placeholder="Cuéntanos qué necesitas, medidas, tipo de marco, etc."
+                  rows={3}
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2 pt-1">
+                <button
+                  type="submit"
+                  disabled={isAgendando}
+                  className="bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  <CalendarPlus className="h-4 w-4" />
+                  {isAgendando ? 'Agendando...' : 'Confirmar cita'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
+                  className="text-muted-foreground text-sm hover:text-foreground transition-colors py-2"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <footer className="bg-secondary border-t border-secondary-foreground/10 py-8">
