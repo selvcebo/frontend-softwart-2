@@ -74,10 +74,10 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Two-row grid: appointments + services (top, `items-start`, collapsible dropdowns) / profile + password (bottom, stretch for equal height)
 - All cards with left accent border (`border-l-4 border-l-primary`)
 - Book new appointments via modal with real-time slot availability (`GET /api/account/availability`)
-- View and cancel own appointments; list sorted by date ascending (soonest first); mobile-friendly row layout
+- View and cancel own appointments; list sorted by date ascending (soonest first); mobile-friendly row layout; AlertDialog confirmation with date and time shown
 - Track active services with live status (Sin empezar / En preparación / Finalizado)
 - Update profile and change password (both forms with labeled fields, no placeholder-only inputs)
-- Delete account
+- Delete account with AlertDialog confirmation
 
 ### Public landing (`/`)
 - Service gallery (only active service types shown, filtered via `?activos=true`)
@@ -103,6 +103,8 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 **Client-side pagination**: hooks fetch with `?limit=500` and paginate in memory via `usePagination`. Appropriate for a PYME's data volume — avoids backend pagination complexity.
 
 **Auth storage + remember me**: token goes to `localStorage` ("remember me") or `sessionStorage` (session only). `clearAuth()` clears both. `checkAuthValidity()` decodes JWT locally and checks `exp` — no backend round-trip needed. When "remember me" is checked, email and password (btoa-encoded) are also saved under `saved_creds` so the login form auto-fills on the next visit.
+
+**Hook/component separation**: components are pure JSX + local UI state (open/close toggles). All server state, API calls, form state, submit handlers, validation, and derived values live in the feature hook. Pure helper functions (formatters, badge class resolvers) live in a co-located `utils.ts`. Destructive actions use `AlertDialog` (shadcn/ui) instead of `window.confirm()`.
 
 **Backend wakeup**: the mobile companion app pings `/api/dashboard` on launch to pre-warm the Render free-tier server before the user authenticates.
 

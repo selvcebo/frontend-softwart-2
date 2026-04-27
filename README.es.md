@@ -74,10 +74,10 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Grid en dos filas: citas + servicios (arriba, `items-start`, dropdowns colapsables) / datos + contraseña (abajo, stretch para igualar alto)
 - Todas las cards con borde izquierdo de acento (`border-l-4 border-l-primary`)
 - Agendar citas mediante modal con verificación de slots en tiempo real (`GET /api/account/availability`)
-- Ver y cancelar citas propias; lista ordenada por fecha ascendente (más próxima arriba); layout responsive en mobile
+- Ver y cancelar citas propias; lista ordenada por fecha ascendente (más próxima arriba); layout responsive en mobile; confirmación vía AlertDialog con fecha y hora de la cita
 - Seguimiento de servicios activos con estado en tiempo real (Sin empezar / En preparación / Finalizado)
 - Actualizar perfil y cambiar contraseña (ambos formularios con labels encima de cada campo)
-- Eliminar cuenta
+- Eliminar cuenta con confirmación vía AlertDialog
 
 ### Landing pública (`/`)
 - Galería de servicios (solo tipos activos, filtrados con `?activos=true`)
@@ -103,6 +103,8 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 **Paginación client-side**: los hooks fetchean con `?limit=500` y paginan en memoria con `usePagination`. Apropiado para el volumen de datos de una PYME — evita la complejidad de paginación server-side.
 
 **Almacenamiento de auth + recordarme**: el token va a `localStorage` ("recordarme") o `sessionStorage` (solo sesión). `clearAuth()` limpia ambos. `checkAuthValidity()` decodifica el JWT localmente y verifica `exp` — sin round-trip al backend. Cuando "recordarme" está marcado, correo y contraseña (codificados con btoa) se guardan en `saved_creds` para que el formulario de login se auto-llene en la próxima visita.
+
+**Separación hook/componente**: los componentes son JSX puro + UI state local (toggles open/close). Todo el estado del servidor, llamadas a API, estado de formularios, handlers de submit, validaciones y valores derivados viven en el hook del feature. Las funciones auxiliares puras (formateadores, resolvedores de clases de badge) viven en un `utils.ts` co-ubicado. Las acciones destructivas usan `AlertDialog` (shadcn/ui) en lugar de `window.confirm()`.
 
 **Wakeup del backend**: la app móvil complementaria hace un ping a `/api/dashboard` al iniciar para pre-calentar el servidor de Render (free tier) antes de que el usuario se autentique.
 
