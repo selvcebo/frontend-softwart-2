@@ -84,15 +84,6 @@ export function MyAccountPage() {
     if (ok) setShowCitaForm(false)
   }
 
-  const handleDeleteAccount = async () => {
-    if (!confirm('¿Estás seguro? Esta acción no se puede deshacer.')) return
-    try {
-      await onDeleteAccount()
-    } catch (e2) {
-      alert(e2 instanceof Error ? e2.message : 'Error al eliminar la cuenta')
-    }
-  }
-
   return (
     <div className="min-h-screen bg-background text-foreground">
 
@@ -466,13 +457,35 @@ export function MyAccountPage() {
                     Esta acción es permanente y eliminará toda tu información de usuario en el sistema.
                     Si tienes historial activo, la cuenta se desactivará en su lugar.
                   </p>
-                  <button
-                    onClick={handleDeleteAccount}
-                    disabled={isDeleting}
-                    className="text-destructive font-bold text-xs uppercase tracking-widest hover:underline transition-all disabled:opacity-50"
-                  >
-                    {isDeleting ? 'Procesando...' : 'Eliminar cuenta'}
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        disabled={isDeleting}
+                        className="text-destructive font-bold text-xs uppercase tracking-widest hover:underline transition-all disabled:opacity-50"
+                      >
+                        {isDeleting ? 'Procesando...' : 'Eliminar cuenta'}
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="bg-card text-card-foreground border-border">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="font-serif text-secondary">
+                          ¿Eliminar tu cuenta?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta acción es permanente y eliminará toda tu información de usuario en el sistema. Si tienes historial activo, la cuenta se desactivará en su lugar.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground"
+                          onClick={onDeleteAccount}
+                        >
+                          Sí, eliminar cuenta
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </div>
