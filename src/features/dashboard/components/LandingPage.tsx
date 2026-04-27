@@ -298,7 +298,7 @@ export function LandingPage() {
         {/* ── Hero ────────────────────────────────────────────────────────── */}
         <section
           id="inicio"
-          className="relative min-h-screen flex items-center bg-secondary text-secondary-foreground overflow-hidden"
+          className="relative h-dvh flex items-center bg-secondary text-secondary-foreground overflow-hidden"
         >
           {/* Grain texture overlay */}
           <div
@@ -309,12 +309,12 @@ export function LandingPage() {
             }}
           />
 
-          <div className="relative max-w-7xl mx-auto px-6 w-full grid md:grid-cols-2 gap-16 items-center py-28 pt-32">
+          <div className="relative w-full h-full max-w-[1600px] mx-auto px-8 xl:px-16 grid md:grid-cols-2 gap-12 xl:gap-20 items-center pt-16 py-8">
 
             {/* Columna izquierda */}
-            <div className="space-y-8">
+            <div className="space-y-6 xl:space-y-8">
               <m.p
-                className="text-xs font-semibold tracking-widest uppercase text-secondary-foreground/60"
+                className="text-xs xl:text-sm font-semibold tracking-widest uppercase text-secondary-foreground/60"
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: EASE }}
@@ -323,7 +323,7 @@ export function LandingPage() {
               </m.p>
 
               <m.h1
-                className="font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] tracking-tight"
+                className="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-6xl 2xl:text-7xl font-bold leading-[1.08] tracking-tight"
                 initial={{ opacity: 0, y: 36 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.75, delay: 0.1, ease: EASE }}
@@ -334,7 +334,7 @@ export function LandingPage() {
               </m.h1>
 
               <m.p
-                className="text-lg text-secondary-foreground/70 max-w-md leading-relaxed"
+                className="text-base xl:text-lg text-secondary-foreground/70 max-w-md xl:max-w-lg leading-relaxed"
                 initial={{ opacity: 0, y: 28 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.65, delay: 0.25, ease: EASE }}
@@ -382,20 +382,22 @@ export function LandingPage() {
             </div>
 
             {/* Columna derecha — imagen (LCP: sin animación de entrada para render inmediato) */}
-            <div className="relative hidden md:block">
-              <div className="aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl">
-                <img
-                  alt="Taller artesanal Arte Café"
-                  className="w-full h-full object-cover"
-                  src={HERO_IMG}
-                  width={900}
-                  height={1125}
-                  fetchPriority="high"
-                  decoding="async"
-                />
+            <div className="relative hidden md:flex md:items-center md:justify-center h-full py-8">
+              <div className="relative h-full w-full max-h-[calc(100dvh-8rem)]">
+                <div className="h-full rounded-2xl overflow-hidden shadow-2xl">
+                  <img
+                    alt="Taller artesanal Arte Café"
+                    className="w-full h-full object-cover"
+                    src={HERO_IMG}
+                    width={900}
+                    height={1125}
+                    fetchPriority="high"
+                    decoding="async"
+                  />
+                </div>
+                <div className="absolute -bottom-4 -left-4 w-36 h-36 bg-primary/25 rounded-2xl -z-10" />
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-accent/30 rounded-xl -z-10" />
               </div>
-              <div className="absolute -bottom-6 -left-6 w-44 h-44 bg-primary/25 rounded-2xl -z-10" />
-              <div className="absolute -top-6 -right-6 w-24 h-24 bg-accent/30 rounded-xl -z-10" />
             </div>
           </div>
         </section>
