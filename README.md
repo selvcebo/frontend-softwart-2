@@ -66,7 +66,9 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Appointment scheduling with real-time slot availability
 - Sales with configurable installment plans and live payment preview
 - Sidebar collapsible between 56px (icon-only) and 256px (expanded), user dropdown in topbar (email, role, logout)
+- Sidebar items filtered by the authenticated user's permissions — an item is hidden if the role lacks the corresponding `MODULE.VER` permission; Dashboard is always visible
 - Orders table shows client name with sale reference below; client name searchable
+- Permission assignment cascade: enabling a non-VIEW permission auto-grants VIEW for that module; removing VIEW removes all other permissions for the same module
 
 ### Client portal (`/my-account`)
 - Sticky topbar with avatar (client name initial), client name, and logout dropdown — no separate navbar
@@ -89,12 +91,13 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 ## Notable components
 
-| Component | Description |
+| Component / Hook | Description |
 |---|---|
 | `TimePicker` | 1-hour slots (13:00–17:00), green/red, popover shows booked client |
 | `SaleInstallmentModal` | Two tabs: register payment + configure plan with live preview |
-| `AdminSidebar` | Collapsible sidebar (56px/256px), grouped by business flow |
+| `AdminSidebar` | Collapsible sidebar (56px/256px), grouped by business flow, filtered by permissions |
 | `withToast(promise, msg)` | Wraps any async op with automatic success/error toast |
+| `useMyPermissions` | Fetches `GET /api/auth/me/permissions`; fail-safe (shows all on error) |
 
 ---
 

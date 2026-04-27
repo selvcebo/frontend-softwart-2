@@ -66,7 +66,9 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Agendamiento de citas con disponibilidad de slots en tiempo real
 - Ventas con planes de abono configurables y preview de pagos en vivo
 - Sidebar colapsable (56px/256px), dropdown de usuario en el topbar (correo, rol, cerrar sesión)
+- Items del sidebar filtrados por permisos del usuario — se ocultan si el rol no tiene `MÓDULO.VER`; Dashboard siempre visible
 - Tabla de Servicios muestra nombre de cliente con referencia de venta; cliente buscable por nombre
+- Cascada al asignar permisos: activar un permiso que no es VER añade automáticamente VER para ese módulo; quitar VER quita todos los permisos del mismo módulo
 
 ### Portal cliente (`/my-account`)
 - Topbar sticky con avatar (inicial del nombre), nombre del cliente y dropdown de sesión — sin navbar separada
@@ -89,12 +91,13 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 
 ## Componentes destacados
 
-| Componente | Descripción |
+| Componente / Hook | Descripción |
 |---|---|
 | `TimePicker` | Slots de 1h (13:00–17:00), verde/rojo, popover muestra el cliente agendado |
 | `SaleInstallmentModal` | Dos tabs: registrar pago + configurar plan con preview en tiempo real |
-| `AdminSidebar` | Sidebar colapsable (56px/256px), agrupado por flujo de negocio |
+| `AdminSidebar` | Sidebar colapsable (56px/256px), agrupado por flujo de negocio, filtrado por permisos |
 | `withToast(promise, msg)` | Envuelve cualquier operación async con toast automático de éxito/error |
+| `useMyPermissions` | Obtiene `GET /api/auth/me/permissions`; fail-safe (muestra todo si falla) |
 
 ---
 
