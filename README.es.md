@@ -69,11 +69,14 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Tabla de Servicios muestra nombre de cliente con referencia de venta; cliente buscable por nombre
 
 ### Portal cliente (`/my-account`)
-- Grid 2×2 responsivo: citas + servicios (arriba, dropdowns colapsables) / datos + contraseña (abajo, siempre visibles)
+- Topbar sticky con avatar (inicial del nombre), nombre del cliente y dropdown de sesión — sin navbar separada
+- Chips de resumen bajo el saludo: próxima cita pendiente (fecha + hora) o "Sin citas próximas"; conteo de servicios activos — ambos clickeables para abrir el dropdown correspondiente
+- Grid en dos filas: citas + servicios (arriba, `items-start`, dropdowns colapsables) / datos + contraseña (abajo, stretch para igualar alto)
+- Todas las cards con borde izquierdo de acento (`border-l-4 border-l-primary`)
 - Agendar citas mediante modal con verificación de slots en tiempo real (`GET /api/account/availability`)
-- Ver y cancelar citas propias
+- Ver y cancelar citas propias; lista ordenada por fecha ascendente (más próxima arriba); layout responsive en mobile
 - Seguimiento de servicios activos con estado en tiempo real (Sin empezar / En preparación / Finalizado)
-- Actualizar perfil y cambiar contraseña
+- Actualizar perfil y cambiar contraseña (ambos formularios con labels encima de cada campo)
 - Eliminar cuenta
 
 ### Landing pública (`/`)

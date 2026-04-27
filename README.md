@@ -69,11 +69,14 @@ const { items, isLoading, onCreate, onEdit, onDelete } = useModulo()
 - Orders table shows client name with sale reference below; client name searchable
 
 ### Client portal (`/my-account`)
-- Responsive 2×2 grid layout: appointments + services (top, collapsible dropdowns) / profile + password (bottom, always visible)
+- Sticky topbar with avatar (client name initial), client name, and logout dropdown — no separate navbar
+- Summary chips below greeting: next upcoming appointment (date + time) or "Sin citas próximas"; active service count — both clickable to open their dropdown
+- Two-row grid: appointments + services (top, `items-start`, collapsible dropdowns) / profile + password (bottom, stretch for equal height)
+- All cards with left accent border (`border-l-4 border-l-primary`)
 - Book new appointments via modal with real-time slot availability (`GET /api/account/availability`)
-- View and cancel own appointments
+- View and cancel own appointments; list sorted by date ascending (soonest first); mobile-friendly row layout
 - Track active services with live status (Sin empezar / En preparación / Finalizado)
-- Update profile and change password
+- Update profile and change password (both forms with labeled fields, no placeholder-only inputs)
 - Delete account
 
 ### Public landing (`/`)
