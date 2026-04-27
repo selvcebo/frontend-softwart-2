@@ -1,12 +1,11 @@
 // src/features/account/components/MyAccountPage.tsx
 import { useEffect, useState } from 'react'
-import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useAccount } from '../hooks/useAccount'
-import { clearAuth } from '@/src/features/auth/hooks/useLogin'
-import { apiRequest } from '@/src/shared/lib/apiClient'
+import { parseFechaBloque, tomorrowString, estadoBadgeClasses, estadoServicioBadgeClasses } from '../utils'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { CalendarDays, LogOut, User, Lock, AlertTriangle, Plus, Clock, Home, CalendarPlus, Wrench, ChevronDown, X } from 'lucide-react'
-import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
+import { TimePicker } from '@/src/shared/components/TimePicker'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -17,96 +16,50 @@ import {
 function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
 function getRol()   { return localStorage.getItem('rol')   ?? sessionStorage.getItem('rol') }
 
-// ── Fecha mínima ──────────────────────────────────────────────────────────────
-function tomorrowString() {
-  const d = new Date()
-  d.setDate(d.getDate() + 1)
-  return d.toISOString().slice(0, 10)
-}
-
-// ── Parse fecha para el bloque de calendario ──────────────────────────────────
-const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
-function parseFechaBloque(fecha: string): { mes: string; dia: string } {
-  const parts = fecha.split(/[-T]/)
-  if (parts.length >= 3) {
-    return { mes: MESES[parseInt(parts[1]) - 1] ?? '', dia: String(parseInt(parts[2])) }
-  }
-  return { mes: '', dia: fecha }
-}
-
-// ── Color badge estado cita ───────────────────────────────────────────────────
-function estadoBadgeClasses(nombre?: string) {
-  if (!nombre) return 'bg-muted text-muted-foreground'
-  const s = nombre.toLowerCase()
-  if (s.includes('pend'))    return 'bg-orange-100 text-orange-800'
-  if (s.includes('complet') || s.includes('conf') || s.includes('val'))
-    return 'bg-emerald-100 text-emerald-800'
-  if (s.includes('cancel'))  return 'bg-destructive/15 text-destructive'
-  return 'bg-muted text-muted-foreground'
-}
-
-// ── Color badge estado servicio ───────────────────────────────────────────────
-function estadoServicioBadgeClasses(estado: string) {
-  const s = estado.toLowerCase()
-  if (s.includes('finaliz'))    return 'bg-emerald-100 text-emerald-800'
-  if (s.includes('preparac'))   return 'bg-amber-100 text-amber-800'
-  return 'bg-muted text-muted-foreground'
-}
-
 // ── Clases reutilizables ──────────────────────────────────────────────────────
 const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all'
 const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function MyAccountPage() {
-  const navigate       = useNavigate()
   const [searchParams] = useSearchParams()
 
-  const { perfil, citas, servicios, isLoading, error, onUpdateProfile, onChangePassword, onCancelAppointment, onDeleteAccount } = useAccount()
+  const {
+    // servidor
+    perfil, citas, servicios, isLoading, error,
+    // derivado
+    primerNombre,
+    // form perfil
+    perfilNombre,   setPerfilNombre,
+    perfilTelefono, setPerfilTelefono,
+    perfilCorreo,   setPerfilCorreo,
+    perfilMsg, perfilMsgType, isSavingPerfil, submitPerfil,
+    // form clave
+    claveActual,  setClaveActual,
+    claveNueva,   setClaveNueva,
+    claveConfirm, setClaveConfirm,
+    claveMsg, claveMsgType, isSavingClave, submitClave,
+    // form cita
+    citaFecha, citaHora, citaObs, setCitaObs,
+    citaErrors, citaMsg, citaMsgType,
+    isAgendando, disponibilidad,
+    onCitaFechaChange, onCitaHoraChange,
+    submitCita, resetCitaForm,
+    // acciones
+    onCancelAppointment,
+    isDeleting, onDeleteAccount,
+    handleLogout,
+  } = useAccount()
 
-  // ── Estado formulario perfil ──────────────────────────────────────────────
-  const [nombre,         setNombre]         = useState('')
-  const [telefono,       setTelefono]       = useState('')
-  const [correo,         setCorreo]         = useState('')
-  const [perfilMsg,      setPerfilMsg]      = useState<string | null>(null)
-  const [perfilMsgType,  setPerfilMsgType]  = useState<'ok' | 'err'>('ok')
-  const [isSavingPerfil, setIsSavingPerfil] = useState(false)
-
-  // ── Estado cambio contraseña ──────────────────────────────────────────────
-  const [claveActual,   setClaveActual]   = useState('')
-  const [claveNueva,    setClaveNueva]    = useState('')
-  const [claveConfirm,  setClaveConfirm]  = useState('')
-  const [claveMsg,      setClaveMsg]      = useState<string | null>(null)
-  const [claveMsgType,  setClaveMsgType]  = useState<'ok' | 'err'>('ok')
-  const [isSavingClave, setIsSavingClave] = useState(false)
-
-  // ── Estado formulario cita ────────────────────────────────────────────────
-  const [citaFecha,      setCitaFecha]      = useState(tomorrowString)
-  const [citaHora,       setCitaHora]       = useState('')
-  const [disponibilidad, setDisponibilidad] = useState<BookedSlot[]>([])
-  const [citaObs,        setCitaObs]        = useState('')
-  const [citaErrors,     setCitaErrors]     = useState<Record<string, string>>({})
-  const [citaMsg,        setCitaMsg]        = useState<string | null>(null)
-  const [citaMsgType,    setCitaMsgType]    = useState<'ok' | 'err'>('ok')
-  const [isAgendando,    setIsAgendando]    = useState(false)
-  const [showCitaForm,   setShowCitaForm]   = useState(false)
-
-  const [isDeleting,  setIsDeleting]  = useState(false)
-  const [cancelingId, setCancelingId] = useState<number | null>(null)
-
-  // ── Estado dropdowns ──────────────────────────────────────────────────────
+  // ── UI state ──────────────────────────────────────────────────────────────
   const [citasOpen,     setCitasOpen]     = useState(false)
   const [serviciosOpen, setServiciosOpen] = useState(false)
+  const [showCitaForm,  setShowCitaForm]  = useState(false)
+  const [cancelingId,   setCancelingId]   = useState<number | null>(null)
 
-  // Precargar perfil en form
-  useEffect(() => {
-    if (!perfil) return
-    setNombre(perfil.nombre ?? '')
-    setTelefono(perfil.telefono ?? '')
-    setCorreo(perfil.correo ?? '')
-  }, [perfil])
+  const closeCitaForm = () => { setShowCitaForm(false); resetCitaForm() }
 
-  // Abrir modal de cita si viene desde landing
+  // Abrir modal si viene desde landing (?nueva-cita=true)
   useEffect(() => {
     if (searchParams.get('nueva-cita') === 'true') {
       setCitasOpen(true)
@@ -120,79 +73,20 @@ export function MyAccountPage() {
   if (!token || !rol) return <Navigate to="/login" replace />
   if (rol !== 'Cliente') return <Navigate to="/" replace />
 
-  // ── Submit perfil ─────────────────────────────────────────────────────────
-  const submitPerfil = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setPerfilMsg(null); setIsSavingPerfil(true)
-    try {
-      await onUpdateProfile({ nombre, telefono: telefono || null, correo })
-      setPerfilMsg('Datos actualizados correctamente')
-      setPerfilMsgType('ok')
-    } catch (e2) {
-      setPerfilMsg(e2 instanceof Error ? e2.message : 'Error al actualizar')
-      setPerfilMsgType('err')
-    } finally { setIsSavingPerfil(false) }
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  const handleSubmitCita = async (e: React.FormEvent) => {
+    const ok = await submitCita(e)
+    if (ok) setShowCitaForm(false)
   }
 
-  // ── Submit cambio contraseña ──────────────────────────────────────────────
-  const submitClave = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setClaveMsg(null)
-    if (!claveActual.trim()) { setClaveMsg('Ingresa tu contraseña actual'); setClaveMsgType('err'); return }
-    if (claveNueva.length < 6) { setClaveMsg('La nueva contraseña debe tener al menos 6 caracteres'); setClaveMsgType('err'); return }
-    if (claveNueva !== claveConfirm) { setClaveMsg('Las contraseñas no coinciden'); setClaveMsgType('err'); return }
-    setIsSavingClave(true)
-    try {
-      await onChangePassword({ clave_actual: claveActual, clave: claveNueva })
-      setClaveMsg('Contraseña actualizada correctamente')
-      setClaveMsgType('ok')
-      setClaveActual(''); setClaveNueva(''); setClaveConfirm('')
-    } catch (e2) {
-      setClaveMsg(e2 instanceof Error ? e2.message : 'Error al cambiar contraseña')
-      setClaveMsgType('err')
-    } finally { setIsSavingClave(false) }
-  }
-
-  // ── Submit nueva cita ─────────────────────────────────────────────────────
-  const submitCita = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const errs: Record<string, string> = {}
-    if (!citaFecha) errs.fecha = 'Selecciona una fecha'
-    if (!citaHora)  errs.hora  = 'Selecciona una hora'
-    if (citaFecha < tomorrowString()) errs.fecha = 'Solo puedes agendar desde mañana'
-    if (Object.keys(errs).length) { setCitaErrors(errs); return }
-    setIsAgendando(true); setCitaMsg(null); setCitaErrors({})
-    try {
-      await apiRequest('/api/account/citas', {
-        method: 'POST',
-        body: JSON.stringify({ fecha: citaFecha, hora: citaHora, observacion: citaObs || undefined }),
-      })
-      setCitaMsg('¡Cita agendada! Te contactaremos para confirmarla.')
-      setCitaMsgType('ok')
-      setCitaFecha(''); setCitaHora(''); setCitaObs('')
-      setShowCitaForm(false)
-      window.location.reload()
-    } catch (e2) {
-      setCitaMsg(e2 instanceof Error ? e2.message : 'Error al agendar la cita')
-      setCitaMsgType('err')
-    } finally { setIsAgendando(false) }
-  }
-
-  // ── Eliminar cuenta ───────────────────────────────────────────────────────
-  const deleteAccount = async () => {
+  const handleDeleteAccount = async () => {
     if (!confirm('¿Estás seguro? Esta acción no se puede deshacer.')) return
-    setIsDeleting(true)
     try {
       await onDeleteAccount()
     } catch (e2) {
-      setIsDeleting(false)
       alert(e2 instanceof Error ? e2.message : 'Error al eliminar la cuenta')
     }
   }
-
-  const handleLogout = () => { clearAuth(); navigate('/', { replace: true }) }
-
-  const primerNombre = perfil?.nombre?.split(' ')[0] ?? ''
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -294,9 +188,8 @@ export function MyAccountPage() {
           {/* ── Grid fila 1: dropdowns ─────────────────────────────────────── */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-start">
 
-            {/* ── Mis Citas (dropdown) ───────────────────────────────────────── */}
+            {/* ── Mis Citas ─────────────────────────────────────────────────── */}
             <section className="bg-card rounded-xl shadow-sm border border-border border-l-4 border-l-primary overflow-hidden">
-              {/* Header colapsable */}
               <button
                 type="button"
                 className="w-full flex items-center justify-between px-6 py-5 hover:bg-accent/40 transition-colors"
@@ -310,10 +203,7 @@ export function MyAccountPage() {
                   {citasOpen && !showCitaForm && (
                     <span
                       role="button"
-                      onClick={e => {
-                        e.stopPropagation()
-                        setShowCitaForm(true)
-                      }}
+                      onClick={e => { e.stopPropagation(); setShowCitaForm(true) }}
                       className="bg-primary text-primary-foreground px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 hover:bg-primary/90 transition-all active:scale-95 text-xs"
                     >
                       <Plus className="h-3.5 w-3.5" />
@@ -324,17 +214,13 @@ export function MyAccountPage() {
                 </div>
               </button>
 
-              {/* Contenido colapsable */}
               {citasOpen && (
                 <div className="px-6 pb-6 border-t border-border bg-background/40 overflow-y-auto max-h-[420px] pt-5">
-
-                  {/* Mensaje post-agendado */}
                   {citaMsg && !showCitaForm && (
                     <div className={`rounded-lg px-4 py-3 text-sm mb-4 border ${citaMsgType === 'ok' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-destructive/10 text-destructive border-destructive/30'}`}>
                       {citaMsg}
                     </div>
                   )}
-
                   {isLoading ? (
                     <div className="space-y-3">
                       <Skeleton className="h-16 w-full rounded-lg" />
@@ -402,14 +288,12 @@ export function MyAccountPage() {
                       })}
                     </div>
                   )}
-
                 </div>
               )}
             </section>
 
-            {/* ── Mis Servicios (dropdown) ───────────────────────────────────── */}
+            {/* ── Mis Servicios ─────────────────────────────────────────────── */}
             <section className="bg-card rounded-xl shadow-sm border border-border border-l-4 border-l-primary overflow-hidden">
-              {/* Header colapsable */}
               <button
                 type="button"
                 className="w-full flex items-center justify-between px-6 py-5 hover:bg-accent/40 transition-colors"
@@ -422,7 +306,6 @@ export function MyAccountPage() {
                 <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform duration-200 ${serviciosOpen ? 'rotate-180' : ''}`} />
               </button>
 
-              {/* Contenido colapsable */}
               {serviciosOpen && (
                 <div className="px-6 pb-6 border-t border-border bg-background/40 overflow-y-auto max-h-[420px] pt-5">
                   {isLoading ? (
@@ -470,7 +353,6 @@ export function MyAccountPage() {
                 <User className="h-6 w-6 text-primary" />
                 <h2 className="text-xl font-serif text-secondary">Mis datos</h2>
               </div>
-
               {isLoading ? (
                 <div className="space-y-5">
                   <Skeleton className="h-12 w-full" />
@@ -481,15 +363,15 @@ export function MyAccountPage() {
                 <form onSubmit={submitPerfil} className="space-y-5">
                   <div>
                     <label className={labelCls} htmlFor="perfil-nombre">Nombre completo</label>
-                    <input id="perfil-nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)} required className={inputCls} />
+                    <input id="perfil-nombre" type="text" value={perfilNombre} onChange={e => setPerfilNombre(e.target.value)} required className={inputCls} />
                   </div>
                   <div>
                     <label className={labelCls} htmlFor="perfil-telefono">Teléfono</label>
-                    <input id="perfil-telefono" type="tel" value={telefono} onChange={e => setTelefono(e.target.value)} className={inputCls} />
+                    <input id="perfil-telefono" type="tel" value={perfilTelefono} onChange={e => setPerfilTelefono(e.target.value)} className={inputCls} />
                   </div>
                   <div>
                     <label className={labelCls} htmlFor="perfil-correo">Correo electrónico</label>
-                    <input id="perfil-correo" type="email" value={correo} onChange={e => setCorreo(e.target.value)} required className={inputCls} />
+                    <input id="perfil-correo" type="email" value={perfilCorreo} onChange={e => setPerfilCorreo(e.target.value)} required className={inputCls} />
                   </div>
                   <div className="pt-2 flex items-center gap-3">
                     <button
@@ -559,7 +441,7 @@ export function MyAccountPage() {
                     Si tienes historial activo, la cuenta se desactivará en su lugar.
                   </p>
                   <button
-                    onClick={deleteAccount}
+                    onClick={handleDeleteAccount}
                     disabled={isDeleting}
                     className="text-destructive font-bold text-xs uppercase tracking-widest hover:underline transition-all disabled:opacity-50"
                   >
@@ -570,7 +452,6 @@ export function MyAccountPage() {
             </div>
           </div>
 
-
         </div>
       </main>
 
@@ -578,20 +459,15 @@ export function MyAccountPage() {
       {showCitaForm && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-          onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
+          onClick={closeCitaForm}
         >
           <div
             className="bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col gap-4 p-6 relative"
             onClick={e => e.stopPropagation()}
           >
-            {/* Header modal */}
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-xl text-secondary">Agendar nueva cita</h3>
-              <button
-                type="button"
-                onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
+              <button type="button" onClick={closeCitaForm} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -602,7 +478,7 @@ export function MyAccountPage() {
               </div>
             )}
 
-            <form onSubmit={submitCita} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmitCita} className="flex flex-col gap-4">
               <div>
                 <label className={labelCls} htmlFor="cita-fecha-mc">Fecha <span className="text-destructive">*</span></label>
                 <DatePicker
@@ -610,26 +486,14 @@ export function MyAccountPage() {
                   value={citaFecha}
                   min={tomorrowString()}
                   error={citaErrors.fecha}
-                  onChange={async (f) => {
-                    setCitaFecha(f)
-                    setCitaHora('')
-                    setCitaErrors(p => ({ ...p, fecha: '', hora: '' }))
-                    try {
-                      const res = await apiRequest<{ success: boolean; data: { id_cita: number; hora: string }[] }>(
-                        `/api/account/availability?fecha=${f}`
-                      )
-                      setDisponibilidad(
-                        (res.data ?? []).map(d => ({ hora: d.hora, id_cita: d.id_cita, clienteNombre: 'Ocupado' }))
-                      )
-                    } catch { setDisponibilidad([]) }
-                  }}
+                  onChange={onCitaFechaChange}
                 />
                 {citaErrors.fecha && <p className="text-xs text-destructive mt-1">{citaErrors.fecha}</p>}
               </div>
 
               <TimePicker
                 value={citaHora}
-                onChange={v => { setCitaHora(v); setCitaErrors(p => ({ ...p, hora: '' })) }}
+                onChange={onCitaHoraChange}
                 error={citaErrors.hora}
                 bookedSlots={disponibilidad}
               />
@@ -660,7 +524,7 @@ export function MyAccountPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setShowCitaForm(false); setCitaErrors({}); setCitaMsg(null) }}
+                  onClick={closeCitaForm}
                   className="text-muted-foreground text-sm hover:text-foreground transition-colors py-2"
                 >
                   Cancelar
