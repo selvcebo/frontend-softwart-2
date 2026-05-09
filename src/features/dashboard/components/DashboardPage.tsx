@@ -1,5 +1,7 @@
 // src/features/dashboard/components/DashboardPage.tsx
-import { useDashboard, AlertaVenta, AlertaCita, AlertaPedido } from '../hooks/useDashboard'
+import { useDashboard } from '../hooks/useDashboard'
+import type { AlertaVenta, AlertaCita, AlertaPedido } from '../types'
+import { PIE_COLORS, getIgnored, persistIgnored } from '../utils'
 import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Badge } from '@/src/shared/components/ui/badge'
@@ -18,11 +20,6 @@ import {
 } from 'recharts'
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-
-const fmt = formatCurrency
-
-// ── Colores para el PieChart ──────────────────────────────────────────────────
-const PIE_COLORS = ['#6366f1', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6']
 
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 function KpiCard({
@@ -64,14 +61,6 @@ function KpiCard({
       </div>
     </div>
   )
-}
-
-// ── Ignore helpers (localStorage) ────────────────────────────────────────────
-function getIgnored(key: string): number[] {
-  try { return JSON.parse(localStorage.getItem(key) ?? '[]') } catch { return [] }
-}
-function persistIgnored(key: string, ids: number[]) {
-  localStorage.setItem(key, JSON.stringify(ids))
 }
 
 // ── Alerta chip con popover ───────────────────────────────────────────────────
@@ -144,7 +133,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   return (
     <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md text-sm">
       <p className="text-muted-foreground">{label}</p>
-      <p className="font-semibold text-foreground">{fmt(payload[0].value)}</p>
+      <p className="font-semibold text-foreground">{formatCurrency(payload[0].value)}</p>
     </div>
   )
 }
@@ -247,9 +236,9 @@ export function DashboardPage() {
           Array.from({ length: 7 }).map((_, i) => <Skeleton key={`sk-${i}`} className="h-28 rounded-xl" />)
         ) : (
           <>
-            <KpiCard label="Ventas del mes"         value={fmt(ventasMes)}                          icon={DollarSign}    trend={ventasTrend}  trendLabel={ventasDiff} color="primary" />
-            <KpiCard label="Ingresos cobrados"      value={fmt(data!.kpis.ingresos_mes)}            icon={Wallet}        color="emerald" sub="Pagos confirmados este mes" />
-            <KpiCard label="Pagos pendientes"       value={fmt(data!.kpis.pagos_pendientes)}        icon={CreditCard}    color="amber"   sub="Pendientes de cobro" />
+            <KpiCard label="Ventas del mes"         value={formatCurrency(ventasMes)}                          icon={DollarSign}    trend={ventasTrend}  trendLabel={ventasDiff} color="primary" />
+            <KpiCard label="Ingresos cobrados"      value={formatCurrency(data!.kpis.ingresos_mes)}            icon={Wallet}        color="emerald" sub="Pagos confirmados este mes" />
+            <KpiCard label="Pagos pendientes"       value={formatCurrency(data!.kpis.pagos_pendientes)}        icon={CreditCard}    color="amber"   sub="Pendientes de cobro" />
             <KpiCard label="Citas hoy"              value={data!.kpis.citas_hoy}                    icon={CalendarClock} color="emerald" sub="Programadas para hoy" />
             <KpiCard label="Citas pendientes"       value={data!.kpis.citas_pendientes}             icon={Clock}         color="amber"   sub="Por confirmar" />
             <KpiCard label="Pedidos sin empezar"    value={data!.kpis.pedidos_sin_empezar}          icon={PackageSearch} color="rose"    sub="Sin iniciar aún" />
@@ -344,7 +333,7 @@ export function DashboardPage() {
                     <span className="text-xs text-muted-foreground">{v.fecha}</span>
                   </div>
                   <span className="text-sm font-semibold text-foreground tabular-nums shrink-0 ml-2">
-                    {fmt(v.total)}
+                    {formatCurrency(v.total)}
                   </span>
                 </li>
               ))}
