@@ -1,6 +1,8 @@
 // src/features/users/components/UsersPage.tsx
 import { useUsers } from '../hooks/useUsers'
 import { useState, useMemo } from 'react'
+import type { Usuario } from '../types'
+import { inputCls, labelCls, selectCls, ROL_LABELS, getRolBadgeClass, filterUsuarios } from '../utils'
 import { Plus, Pencil, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
@@ -17,23 +19,6 @@ import { FilterBar }    from '@/src/shared/components/FilterBar'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { Pagination } from '@/src/shared/components/Pagination'
 
-type Usuario = { id_usuario: number; correo: string; clave: string; estado: boolean; id_rol: number }
-type CreateUsuarioDto = Omit<Usuario, 'id_usuario'>
-type UpdateUsuarioDto = Omit<Partial<CreateUsuarioDto>, 'clave'>
-
-const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
-
-const ROL_LABELS: Record<number, string> = { 1: 'Admin', 2: 'Empleado', 3: 'Cliente' }
-const getRolBadgeClass = (id_rol: number) => {
-  switch (id_rol) {
-    case 1: return 'border-violet-300 bg-violet-100 text-violet-800'
-    case 2: return 'border-blue-300 bg-blue-100 text-blue-800'
-    case 3: return 'border-emerald-300 bg-emerald-100 text-emerald-800'
-    default: return 'border-border bg-muted text-muted-foreground'
-  }
-}
 
 export function UsersPage() {
   const { usuarios, isLoading, onCreate, onEdit, onToggleStatus } = useUsers()
@@ -43,17 +28,7 @@ export function UsersPage() {
   const [filterRol,   setFilterRol]   = useState('')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return usuarios.filter(u => {
-      const matchQ = !s ||
-        u.correo.toLowerCase().includes(s) ||
-        ROL_LABELS[u.id_rol]?.toLowerCase().includes(s)
-      const matchRol    = !filterRol    || String(u.id_rol) === filterRol
-      const matchEstado = !filterEstado || (filterEstado === 'activo' ? u.estado : !u.estado)
-      return matchQ && matchRol && matchEstado
-    })
-  }, [usuarios, q, filterRol, filterEstado])
+  const filtered = useMemo(() => filterUsuarios(usuarios, q, filterRol, filterEstado), [usuarios, q, filterRol, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 

@@ -4,24 +4,9 @@
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Usuario, CreateUsuarioDto, UpdateUsuarioDto, BackendUsuario } from '../types'
 
-type Usuario = {
-  id_usuario: number
-  correo:     string
-  clave:      string
-  estado:     boolean
-  id_rol:     number
-}
-type CreateUsuarioDto = Omit<Usuario, 'id_usuario'>
-type UpdateUsuarioDto = Omit<Partial<CreateUsuarioDto>, 'clave'>
-type ApiResponse<T>   = { success: boolean; message?: string; data: T; meta?: unknown }
-
-type BackendUsuario = {
-  id_usuario: number
-  correo:     string
-  estado:     boolean
-  role?:      { id_rol: number } | null
-}
+type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function useUsers() {
   const [usuarios,  setUsuarios]  = useState<Usuario[]>([])
