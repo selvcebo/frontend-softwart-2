@@ -3,18 +3,7 @@
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
-
-type Cliente = {
-  id_cliente:    number
-  tipoDocumento: string
-  documento:     string
-  nombre:        string
-  correo:        string
-  telefono?:     string
-  estado:        boolean
-}
-type CreateClienteDto = Omit<Cliente, 'id_cliente'>
-type UpdateClienteDto = Partial<Omit<CreateClienteDto, 'estado'>>
+import type { Cliente, CreateClienteDto, UpdateClienteDto } from '../types'
 
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 

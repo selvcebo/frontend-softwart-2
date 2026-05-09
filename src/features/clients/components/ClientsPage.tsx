@@ -1,6 +1,8 @@
 // src/features/clients/components/ClientsPage.tsx
 import { useClients } from '../hooks/useClients'
 import { useState, useMemo } from 'react'
+import type { Cliente } from '../types'
+import { DOCUMENT_TYPES, inputCls, labelCls, selectCls, filterClientes } from '../utils'
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -17,22 +19,6 @@ import { FilterBar }     from '@/src/shared/components/FilterBar'
 import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 
-type Cliente = {
-  id_cliente: number; tipoDocumento: string; documento: string
-  nombre: string; correo: string; telefono?: string; estado: boolean
-}
-
-const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
-
-const DOCUMENT_TYPES = [
-  { value: 'CC', label: 'Cédula de Ciudadanía (CC)' },
-  { value: 'CE', label: 'Cédula de Extranjería (CE)' },
-  { value: 'TI', label: 'Tarjeta de Identidad (TI)' },
-  { value: 'PP', label: 'Pasaporte (PP)' },
-]
-
 export function ClientsPage() {
   const { clientes, isLoading, onCreate, onEdit, onDelete, onToggleStatus } = useClients()
 
@@ -40,18 +26,7 @@ export function ClientsPage() {
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return clientes.filter(c => {
-      const matchQ = !s ||
-        c.nombre.toLowerCase().includes(s) ||
-        c.documento.includes(s) ||
-        c.correo.toLowerCase().includes(s) ||
-        (c.telefono ?? '').includes(s)
-      const matchEstado = !filterEstado || (filterEstado === 'activo' ? c.estado : !c.estado)
-      return matchQ && matchEstado
-    })
-  }, [clientes, q, filterEstado])
+  const filtered = useMemo(() => filterClientes(clientes, q, filterEstado), [clientes, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 
