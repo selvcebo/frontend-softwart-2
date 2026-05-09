@@ -1,17 +1,9 @@
 // src/features/permissions/hooks/usePermissions.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Permiso, PermisoRolRaw } from '../types'
 
-type Permiso = { id_permiso: number; nombre: string; descripcion?: string }
-type Rol     = { id_rol: number; nombre: string }
-
-// Backend devuelve relaciones anidadas: { permiso: { id_permiso, ... }, rol: { id_rol, ... } }
-type PermisoRolRaw = {
-  permission: { id_permiso: number }
-  role:       { id_rol: number }
-}
-
-// Respuesta estándar del backend: { success, data: T[], meta? }
+type Rol = { id_rol: number; nombre: string }
 type ApiRes<T> = { success: boolean; data: T[]; meta?: unknown }
 
 export function usePermissions() {

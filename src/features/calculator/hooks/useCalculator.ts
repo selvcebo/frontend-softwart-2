@@ -1,10 +1,8 @@
 // src/features/calculator/hooks/useCalculator.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Marco, CreateMarcoDto, UpdateMarcoDto } from '../types'
 
-type Marco = { id_marco: number; codigo: string; colilla: number; precio_ensamblado: number; estado: boolean }
-type CreateMarcoDto = Omit<Marco, 'id_marco'>
-type UpdateMarcoDto = Partial<CreateMarcoDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function useCalculator() {

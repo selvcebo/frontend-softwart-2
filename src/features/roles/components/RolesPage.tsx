@@ -15,11 +15,8 @@ import { FilterBar }     from '@/src/shared/components/FilterBar'
 import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { withToast }     from '@/src/shared/lib/withToast'
-
-type Rol = { id_rol: number; nombre: string; descripcion?: string; estado: boolean }
-
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
+import type { Rol } from '../types'
+import { inputCls, labelCls, filterRoles } from '../utils'
 
 export function RolesPage() {
   const { roles, isLoading, onCreate, onEdit, onDelete, onToggleStatus } = useRoles()
@@ -28,14 +25,7 @@ export function RolesPage() {
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return roles.filter(r => {
-      const matchQ      = !s || r.nombre.toLowerCase().includes(s) || (r.descripcion ?? '').toLowerCase().includes(s)
-      const matchEstado = !filterEstado || (filterEstado === 'activo' ? r.estado : !r.estado)
-      return matchQ && matchEstado
-    })
-  }, [roles, q, filterEstado])
+  const filtered = useMemo(() => filterRoles(roles, q, filterEstado), [roles, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 

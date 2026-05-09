@@ -10,40 +10,7 @@ import { Alert, AlertDescription } from '@/src/shared/components/ui/alert'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Button } from '@/src/shared/components/ui/button'
 import { EmptyState } from '@/src/shared/components/EmptyState'
-
-const ADMIN_ROL_ID = 1
-
-// ── Agrupación por módulo: formato "MODULO.ACCION" ───────────────────────────
-// Ej: "CLIENTES.VER" → módulo "CLIENTES", acción "VER"
-// Ej: "CUENTA.VER_PERFIL" → módulo "CUENTA", acción "VER_PERFIL"
-
-const MODULO_LABELS: Record<string, string> = {
-  CUENTA:    '👤 Mi Cuenta (Cliente)',
-  CLIENTES:  '🧑‍💼 Clientes',
-  CITAS:     '📅 Citas',
-  VENTAS:    '💰 Ventas',
-  PEDIDOS:   '📦 Pedidos',
-  PAGOS:     '💳 Pagos',
-  MARCOS:    '🖼️ Marcos / Calculadora',
-  SERVICIOS: '🔧 Tipos de Servicio',
-  USUARIOS:  '👥 Usuarios',
-  ROLES:     '🔑 Roles',
-  PERMISOS:  '🛡️ Permisos',
-}
-
-// Orden fijo de módulos para que siempre salgan igual
-const MODULO_ORDER = ['CUENTA','CLIENTES','CITAS','VENTAS','PEDIDOS','PAGOS','MARCOS','SERVICIOS','USUARIOS','ROLES','PERMISOS']
-
-// "CLIENTES.VER" → "CLIENTES" | "CUENTA.VER_PERFIL" → "CUENTA"
-function getModulo(nombre: string): string {
-  const partes = nombre.split('.')
-  return partes[0] ?? 'GENERAL'
-}
-
-// "CLIENTES.VER" → "VER" | "CUENTA.VER_PERFIL" → "VER_PERFIL"
-function getAccion(nombre: string): string {
-  return nombre.split('.')[1] ?? nombre
-}
+import { ADMIN_ROL_ID, MODULO_LABELS, MODULO_ORDER, getModulo, getAccion } from '../utils'
 
 // ── Card de módulo ────────────────────────────────────────────────────────────
 interface ModuloCardProps {

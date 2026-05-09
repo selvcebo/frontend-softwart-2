@@ -15,13 +15,8 @@ import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { FilterBar }   from '@/src/shared/components/FilterBar'
 import { EmptyState } from '@/src/shared/components/EmptyState'
-
-type Marco = { id_marco: number; codigo: string; colilla: number; precio_ensamblado: number; estado: boolean }
-
-const fmt = (v: number) => v.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })
-
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
+import type { Marco } from '../types'
+import { inputCls, labelCls, fmtCOP as fmt, filterMarcos } from '../utils'
 
 export function CalculatorPage() {
   const { marcos, isLoading, onCreate, onEdit, onDelete, onToggleStatus } = useCalculator()
@@ -30,14 +25,7 @@ export function CalculatorPage() {
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return marcos.filter(m => {
-      const matchQ      = !s || m.codigo.toLowerCase().includes(s)
-      const matchEstado = !filterEstado || (filterEstado === 'activo' ? m.estado : !m.estado)
-      return matchQ && matchEstado
-    })
-  }, [marcos, q, filterEstado])
+  const filtered = useMemo(() => filterMarcos(marcos, q, filterEstado), [marcos, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 

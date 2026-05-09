@@ -1,10 +1,8 @@
 // src/features/roles/hooks/useRoles.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Rol, CreateRolDto, UpdateRolDto } from '../types'
 
-type Rol = { id_rol: number; nombre: string; descripcion?: string; estado: boolean }
-type CreateRolDto = Omit<Rol, 'id_rol'>
-type UpdateRolDto = Partial<CreateRolDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function useRoles() {
