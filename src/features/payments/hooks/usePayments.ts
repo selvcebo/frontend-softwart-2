@@ -10,37 +10,9 @@
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Pago, MetodoPago, EstadoPago, CreatePagoDto, UpdatePagoDto, BackendPago } from '../types'
 
-type Pago = {
-  id_pago: number
-  fecha: string
-  monto: number
-  observacion?: string
-  id_venta: number
-  id_metodo_pago: number
-  id_estado_pago: number
-}
-type MetodoPago = { id_metodo_pago: number; nombre: string }
-type EstadoPago = { id_estado_pago: number; nombre: string }
-type CreatePagoDto = Omit<Pago, 'id_pago'>
-type UpdatePagoDto = Partial<CreatePagoDto>
-
-type ApiResponse<T> = {
-  success: boolean
-  message?: string
-  data: T
-  meta?: unknown
-}
-
-type BackendPago = {
-  id_pago: number
-  fecha: string
-  monto: number
-  observacion?: string
-  sale?:          { id_venta: number } | null
-  paymentMethod?: { id_metodo_pago: number } | null
-  paymentStatus?: { id_estado_pago: number } | null
-}
+type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function usePayments() {
   const [pagos,       setPagos]       = useState<Pago[]>([])

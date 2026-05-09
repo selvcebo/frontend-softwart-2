@@ -3,6 +3,8 @@ import { usePayments } from '../hooks/usePayments'
 import { useSalesOptions } from '@/src/shared/hooks/useOptions'
 import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 import { useState, useMemo, useEffect } from 'react'
+import type { Pago } from '../types'
+import { inputCls, labelCls, selectCls, ESTADO_BADGE, filterPagos } from '../utils'
 import { useSearchParams } from 'react-router-dom'
 import { Plus, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
@@ -23,20 +25,6 @@ import { FilterBar }   from '@/src/shared/components/FilterBar'
 import { formatDate } from '@/src/shared/lib/formatDate'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
-type Pago = { id_pago: number; id_venta: number; monto: number; fecha: string; id_metodo_pago: number; id_estado_pago: number }
-const fmt = formatCurrency
-
-const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
-
-const ESTADO_BADGE: Record<string, string> = {
-  Pendiente:   'border-amber-300 bg-amber-100 text-amber-800',
-  Validado:    'border-emerald-300 bg-emerald-100 text-emerald-800',
-  Pagado:      'border-emerald-300 bg-emerald-100 text-emerald-800',
-  Reembolsado: 'border-blue-300 bg-blue-100 text-blue-800',
-  Anulado:     'border-red-300 bg-red-100 text-red-800',
-}
 
 export function PaymentsPage() {
   const { pagos, metodosPago, estadosPago, isLoading, onCreate, onChangeStatus, onChangeMethod } = usePayments()
@@ -47,16 +35,7 @@ export function PaymentsPage() {
   const [filterMetodo,  setFilterMetodo]  = useState('')
   const [filterEstado,  setFilterEstado]  = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return pagos.filter(p => {
-      const ventaLabel = ventasOpts.find(o => o.value === String(p.id_venta))?.label ?? ''
-      const matchQ       = !s || ventaLabel.toLowerCase().includes(s) || String(p.monto).includes(s) || p.fecha.includes(s)
-      const matchMetodo  = !filterMetodo || String(p.id_metodo_pago) === filterMetodo
-      const matchEstado  = !filterEstado || String(p.id_estado_pago) === filterEstado
-      return matchQ && matchMetodo && matchEstado
-    })
-  }, [pagos, ventasOpts, q, filterMetodo, filterEstado])
+  const filtered = useMemo(() => filterPagos(pagos, ventasOpts, q, filterMetodo, filterEstado), [pagos, ventasOpts, q, filterMetodo, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 
@@ -194,7 +173,7 @@ export function PaymentsPage() {
                   <TableRow key={p.id_pago} className="hover:bg-muted/40 transition-colors border-border">
      
                     <TableCell className="text-foreground text-sm">{ventaLabel}</TableCell>
-                    <TableCell className="text-foreground text-right font-medium tabular-nums">{fmt(p.monto)}</TableCell>
+                    <TableCell className="text-foreground text-right font-medium tabular-nums">{formatCurrency(p.monto)}</TableCell>
                     <TableCell className="text-foreground">{formatDate(p.fecha)}</TableCell>
                     <TableCell>
                       <Select value={String(p.id_metodo_pago)} onValueChange={v => onChangeMethod(p.id_pago, Number(v))}>
@@ -239,7 +218,7 @@ export function PaymentsPage() {
           fields={[
             { label: 'ID',             value: viewingItem.id_pago },
             { label: 'Venta',          value: ventasOpts.find(o => o.value === String(viewingItem.id_venta))?.label ?? `#${viewingItem.id_venta}`, fullWidth: true },
-            { label: 'Monto',          value: fmt(viewingItem.monto) },
+            { label: 'Monto',          value: formatCurrency(viewingItem.monto) },
             { label: 'Fecha',          value: formatDate(viewingItem.fecha) },
             { label: 'Método de pago', value: getMetodoLabel(viewingItem.id_metodo_pago) },
             { label: 'Estado',         value: getEstadoLabel(viewingItem.id_estado_pago) },
@@ -292,7 +271,7 @@ export function PaymentsPage() {
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">$</span>
                 <input id="pago-monto" type="number" step="1" min="0" value={monto} onChange={e => { setMonto(e.target.value); if (errors.monto) setErrors(p => ({...p, monto:''})) }} className={inputCls + ' pl-8'} placeholder="0" />
               </div>
-              {monto && <p className="text-xs text-muted-foreground">{fmt(Number(monto))}</p>}
+              {monto && <p className="text-xs text-muted-foreground">{formatCurrency(Number(monto))}</p>}
               {errors.monto && <p className="mt-1 text-xs text-destructive">{errors.monto}</p>}
             </div>
             <div>
