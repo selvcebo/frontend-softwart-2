@@ -1,34 +1,9 @@
 // src/features/orders/hooks/useOrders.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Pedido, CreatePedidoDto, UpdatePedidoDto, BackendDetalle } from '../types'
 
-type Pedido = {
-  id_detalle:   number
-  id_venta:     number
-  id_servicio:  number
-  id_estado:    number   // FK → estado_servicio.id_estado
-  id_marco:     number | null
-  fecha:        string
-  observacion?: string
-  precio:       number
-  estado:       boolean
-}
-
-type CreatePedidoDto = Omit<Pedido, 'id_detalle'>
-type UpdatePedidoDto = Partial<CreatePedidoDto>
-type ApiResponse<T>  = { success: boolean; message?: string; data: T; meta?: unknown }
-
-type BackendDetalle = {
-  id_detalle:    number
-  fecha:         string
-  precio:        number
-  observacion?:  string
-  estado:        boolean
-  sale?:           { id_venta: number }     | null
-  service?:        { id_servicio: number }  | null
-  serviceStatus?:  { id_estado: number }   | null
-  frame?:          { id_marco: number }     | null
-}
+type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function useOrders() {
   const [pedidos,   setPedidos]   = useState<Pedido[]>([])

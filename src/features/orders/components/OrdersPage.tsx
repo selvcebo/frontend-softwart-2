@@ -1,7 +1,10 @@
 // src/features/orders/components/OrdersPage.tsx
 import { useOrders } from '../hooks/useOrders'
+import { useEstadosServicio } from '../hooks/useEstadosServicio'
 import { useSalesOptions, useServicesOptions, useFrameOptions } from '@/src/shared/hooks/useOptions'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
+import type { Pedido } from '../types'
+import { inputCls, labelCls, badgeClass, filterPedidos } from '../utils'
 import { useSearchParams } from 'react-router-dom'
 import { SearchInput } from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
@@ -10,7 +13,6 @@ import { FilterBar } from '@/src/shared/components/FilterBar'
 import { toast } from 'sonner'
 import { formatDate } from '@/src/shared/lib/formatDate'
 import { Plus, Pencil, Eye } from 'lucide-react'
-import { apiRequest } from '@/src/shared/lib/apiClient'
 import { Button } from '@/src/shared/components/ui/button'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -23,44 +25,6 @@ import { EmptyState } from '@/src/shared/components/EmptyState'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-
-// ── Tipo local ────────────────────────────────────────────────────────────────
-type Pedido = {
-  id_detalle: number; id_venta: number; id_servicio: number
-  id_estado: number; id_marco: number | null
-  fecha: string; observacion?: string; precio: number; estado: boolean
-}
-
-// ── Estado de servicio desde BD ───────────────────────────────────────────────
-type EstadoServicio = { id_estado: number; nombre: string }
-
-// Colores por posición (sin importar el ID de BD)
-const BADGE_COLORS = [
-  'border-amber-300 bg-amber-100 text-amber-800',
-  'border-blue-300 bg-blue-100 text-blue-800',
-  'border-emerald-300 bg-emerald-100 text-emerald-800',
-  'border-slate-300 bg-slate-100 text-slate-600',
-  'border-purple-300 bg-purple-100 text-purple-800',
-]
-
-function badgeClass(index: number) {
-  return BADGE_COLORS[index % BADGE_COLORS.length]
-}
-
-// ── Hook para cargar estados de servicio ──────────────────────────────────────
-function useEstadosServicio() {
-  const [estados, setEstados] = useState<EstadoServicio[]>([])
-  useEffect(() => {
-    apiRequest<{ success: boolean; data: EstadoServicio[] }>('/api/service-status')
-      .then(r => setEstados(r.data ?? []))
-      .catch(() => {})
-  }, [])
-  return estados
-}
-
-// ── Page ──────────────────────────────────────────────────────────────────────
 export function OrdersPage() {
   const { pedidos, isLoading, onCreate, onEdit, onChangeStatus } = useOrders()
   const { options: ventasOpts, rawVentas } = useSalesOptions()
@@ -73,31 +37,10 @@ export function OrdersPage() {
   const [q,            setQ]            = useState(searchParams.get('q') ?? '')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    // Mapa de orden de estado por posición en el array (Sin empezar=0, En preparación=1, Completado=2)
-    const estadoOrder = new Map(estados.map((e, i) => [e.id_estado, i]))
-    return pedidos.filter(p => {
-      const ventaLabel    = ventasOpts.find(o => o.value === String(p.id_venta))?.label ?? ''
-      const servicioLabel = serviciosOpts.find(o => o.value === String(p.id_servicio))?.label ?? ''
-      const marcoLabel    = p.id_marco ? (marcosOpts.find(o => o.value === String(p.id_marco))?.label ?? '') : ''
-      const clienteNombre = rawVentas.find(rv => rv.id_venta === p.id_venta)?.client?.nombre ?? ''
-      const matchQ        = !s ||
-        clienteNombre.toLowerCase().includes(s) ||
-        ventaLabel.toLowerCase().includes(s) ||
-        servicioLabel.toLowerCase().includes(s) ||
-        marcoLabel.toLowerCase().includes(s) ||
-        p.fecha.includes(s)
-      const matchEstado   = !filterEstado || String(p.id_estado) === filterEstado
-      return matchQ && matchEstado
-    }).sort((a, b) => {
-      // 1. Estado: Sin empezar → En preparación → Completado
-      const estCmp = (estadoOrder.get(a.id_estado) ?? 9) - (estadoOrder.get(b.id_estado) ?? 9)
-      if (estCmp !== 0) return estCmp
-      // 2. Fecha: más viejo primero
-      return a.fecha.localeCompare(b.fecha)
-    })
-  }, [pedidos, ventasOpts, serviciosOpts, marcosOpts, q, filterEstado, estados])
+  const filtered = useMemo(
+    () => filterPedidos(pedidos, ventasOpts, serviciosOpts, marcosOpts, rawVentas, estados, q, filterEstado),
+    [pedidos, ventasOpts, serviciosOpts, marcosOpts, rawVentas, estados, q, filterEstado],
+  )
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 
