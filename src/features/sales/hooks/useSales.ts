@@ -1,13 +1,9 @@
 // src/features/sales/hooks/useSales.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Venta, CreateVentaDto, UpdateVentaDto, BackendVenta } from '../types'
 
-type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
-type CreateVentaDto = Omit<Venta, 'id_venta' | 'num_abonos' | 'pagos_realizados'>
-type UpdateVentaDto = Partial<CreateVentaDto>
 type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
-type BackendPayment = { paymentStatus?: { nombre?: string } | null }
-type BackendVenta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; num_abonos?: number; client?: { id_cliente: number } | null; appointment?: { id_cita: number } | null; payments?: BackendPayment[] | null }
 
 export function useSales() {
   const [ventas, setVentas] = useState<Venta[]>([])

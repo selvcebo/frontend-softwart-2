@@ -1,8 +1,9 @@
 // src/features/sales/components/SaleInstallmentModal.tsx
-// Modal para registrar abonos y configurar el plan de pagos de una venta
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
-import { formatCurrency }  from '@/src/shared/lib/formatCurrency'
+import { formatCurrency } from '@/src/shared/lib/formatCurrency'
+import type { AbonoEsperado, EstadoPago, EstadoPagos, MetodoPago, SaleInstallmentModalProps } from '../types'
+import { inputCls, labelCls, selectCls } from '../utils'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Button }  from '@/src/shared/components/ui/button'
 import { Badge }   from '@/src/shared/components/ui/badge'
@@ -11,40 +12,7 @@ import { CheckCircle2, CreditCard, Settings2, ChevronRight } from 'lucide-react'
 import { formatDate } from '@/src/shared/lib/formatDate'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
-const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
-
-// ── Tipos ─────────────────────────────────────────────────────────────────────
-type AbonoEsperado = { number: number; amount: number; percentage: number }
-type EstadoPago = { id_estado_pago: number; nombre: string }
-
-type EstadoPagos = {
-  id_venta:               number
-  total:                  number
-  num_abonos:             number
-  porcentaje_primer_abono: number
-  pagos_realizados:       number
-  total_pagado:           number
-  saldo_pendiente:        number
-  completado:             boolean
-  plan_abonos:            AbonoEsperado[]
-  siguiente_abono:        { number: number; expectedAmount: number; isLast: boolean } | null
-  historial_pagos:        { id_pago: number; monto: number; fecha: string; estado: string }[]
-}
-
-type MetodoPago = { id_metodo_pago: number; nombre: string }
-
-interface Props {
-  open:         boolean
-  onClose:      () => void
-  idVenta:      number
-  labelVenta:   string
-  onSuccess:    () => void   // callback para refrescar la lista
-}
-
-// ── Componente ────────────────────────────────────────────────────────────────
-export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuccess }: Props) {
+export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuccess }: SaleInstallmentModalProps) {
   const [estado,            setEstado]            = useState<EstadoPagos | null>(null)
   const [metodos,           setMetodos]           = useState<MetodoPago[]>([])
   const [idEstadoValidado,  setIdEstadoValidado]  = useState<number | null>(null)
@@ -63,8 +31,6 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
   const [pctPrimero,   setPctPrimero]   = useState('')
   const [configMsg,    setConfigMsg]    = useState<{ tipo: 'ok' | 'err'; texto: string } | null>(null)
   const [isConfigurando, setIsConfigurando] = useState(false)
-
-  const fmt = formatCurrency
 
   // Cargar estado de pagos y métodos
   useEffect(() => {
@@ -143,7 +109,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
             Abonos — {labelVenta}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            {estado ? `Total: ${fmt(estado.total)} · ${estado.pagos_realizados}/${estado.num_abonos} abonos` : 'Cargando...'}
+            {estado ? `Total: ${formatCurrency(estado.total)} · ${estado.pagos_realizados}/${estado.num_abonos} abonos` : 'Cargando...'}
           </DialogDescription>
         </DialogHeader>
 
@@ -155,8 +121,8 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
             {/* ── Barra de progreso ────────────────────────────────────────── */}
             <div className="flex flex-col gap-1.5">
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>Pagado: {fmt(estado.total_pagado)}</span>
-                <span>Saldo: {fmt(estado.saldo_pendiente)}</span>
+                <span>Pagado: {formatCurrency(estado.total_pagado)}</span>
+                <span>Saldo: {formatCurrency(estado.saldo_pendiente)}</span>
               </div>
               <div className="h-2 rounded-full bg-muted overflow-hidden">
                 <div
@@ -187,7 +153,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                       <span className="text-muted-foreground text-xs">({ab.percentage}%)</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-semibold text-foreground">{fmt(ab.amount)}</span>
+                      <span className="font-semibold text-foreground">{formatCurrency(ab.amount)}</span>
                       {pagado && (
                         <span className="ml-2 text-xs text-emerald-600">{formatDate(pagado.fecha)}</span>
                       )}
@@ -219,7 +185,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                   <div className="flex flex-col gap-3">
                     <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm">
                       <span className="text-muted-foreground">Abono {estado.siguiente_abono.number} esperado: </span>
-                      <span className="font-bold text-foreground">{fmt(estado.siguiente_abono.expectedAmount)}</span>
+                      <span className="font-bold text-foreground">{formatCurrency(estado.siguiente_abono.expectedAmount)}</span>
                       {estado.siguiente_abono.isLast && (
                         <Badge variant="outline" className="ml-2 text-[10px] border-amber-300 bg-amber-50 text-amber-700">Último abono</Badge>
                       )}
@@ -234,7 +200,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                           onChange={e => setMonto(e.target.value)}
                           className={inputCls}
                         />
-                        {monto && <p className="text-xs text-muted-foreground mt-1">{fmt(Number(monto))}</p>}
+                        {monto && <p className="text-xs text-muted-foreground mt-1">{formatCurrency(Number(monto))}</p>}
                       </div>
                       <div>
                         <label className={labelCls} htmlFor="abono-fecha">Fecha <span className="text-destructive">*</span></label>
@@ -328,16 +294,16 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                           const p = Number(pctPrimero)
                           const a1 = Math.round(t * p / 100 * 100) / 100
                           const resto = t - a1
-                          if (n === 1) return <p>Abono único: {fmt(t)}</p>
+                          if (n === 1) return <p>Abono único: {formatCurrency(t)}</p>
                           const intermedios = Array.from({ length: n - 2 }, (_, i) =>
                             Math.round(resto / (n - 1) * 100) / 100
                           )
                           const ultimo = Math.round((resto - intermedios.reduce((a,b) => a+b, 0)) * 100) / 100
                           return (
                             <div className="space-y-0.5">
-                              <p>Abono 1: {fmt(a1)} ({p}%)</p>
-                              {intermedios.map((m, i) => <p key={`abono-${i}`}>Abono {i+2}: {fmt(m)}</p>)}
-                              <p>Abono {n} (último): {fmt(ultimo)}</p>
+                              <p>Abono 1: {formatCurrency(a1)} ({p}%)</p>
+                              {intermedios.map((m, i) => <p key={`abono-${i}`}>Abono {i+2}: {formatCurrency(m)}</p>)}
+                              <p>Abono {n} (último): {formatCurrency(ultimo)}</p>
                             </div>
                           )
                         })()}
@@ -377,7 +343,7 @@ export function SaleInstallmentModal({ open, onClose, idVenta, labelVenta, onSuc
                 <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0" />
                 <div>
                   <p className="text-sm font-semibold text-emerald-800">Venta completamente pagada</p>
-                  <p className="text-xs text-emerald-700">{estado.num_abonos} abono(s) · Total: {fmt(estado.total)}</p>
+                  <p className="text-xs text-emerald-700">{estado.num_abonos} abono(s) · Total: {formatCurrency(estado.total)}</p>
                 </div>
               </div>
             )}

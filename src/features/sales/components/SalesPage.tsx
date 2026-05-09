@@ -1,9 +1,11 @@
 // src/features/sales/components/SalesPage.tsx
 import { useSales } from '../hooks/useSales'
 import { useClientsOptions, useAppointmentsOptions } from '@/src/shared/hooks/useOptions'
-import { formatCurrency }        from '@/src/shared/lib/formatCurrency'
+import { formatCurrency } from '@/src/shared/lib/formatCurrency'
 import { SaleInstallmentModal } from './SaleInstallmentModal'
 import { useState, useMemo } from 'react'
+import type { Venta } from '../types'
+import { inputCls, labelCls, filterVentas } from '../utils'
 import { useSearchParams } from 'react-router-dom'
 import { SearchInput } from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
@@ -23,12 +25,6 @@ import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
-type Venta = { id_venta: number; fecha: string; total: number; observacion?: string; estado: boolean; id_cliente: number; id_cita: number | null; num_abonos: number; pagos_realizados: number }
-
-const fmt = formatCurrency
-
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
 export function SalesPage() {
   const { ventas, isLoading, onCreate, onEdit, onDelete, onToggleStatus, refetch } = useSales()
@@ -43,19 +39,7 @@ export function SalesPage() {
   const [q,            setQ]            = useState(searchParams.get('q') ?? '')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return ventas.filter(v => {
-      const clienteLabel = clientesOpts.find(o => o.value === String(v.id_cliente))?.label ?? ''
-      const citaLabel    = v.id_cita ? (citasOpts.find(o => o.value === String(v.id_cita))?.label ?? '') : ''
-      const matchQ       = !s ||
-        clienteLabel.toLowerCase().includes(s) ||
-        citaLabel.toLowerCase().includes(s) ||
-        v.fecha.includes(s)
-      const matchEstado  = !filterEstado || (filterEstado === 'activo' ? v.estado : !v.estado)
-      return matchQ && matchEstado
-    })
-  }, [ventas, clientesOpts, citasOpts, q, filterEstado])
+  const filtered = useMemo(() => filterVentas(ventas, clientesOpts, citasOpts, q, filterEstado), [ventas, clientesOpts, citasOpts, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total: paginationTotal, pageSize, setPageSize } = usePagination(filtered)
 
@@ -164,7 +148,7 @@ export function SalesPage() {
                     <TableCell className="text-foreground">{formatDate(v.fecha)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex flex-col items-end gap-0.5">
-                        <span className="font-medium tabular-nums text-foreground">{fmt(v.total)}</span>
+                        <span className="font-medium tabular-nums text-foreground">{formatCurrency(v.total)}</span>
                         {pagada
                           ? <span className="flex items-center gap-1 text-[11px] text-emerald-600 font-medium"><CheckCircle2 className="h-3 w-3" />Pagada</span>
                           : <span className="flex items-center gap-1 text-[11px] text-muted-foreground"><CircleDashed className="h-3 w-3" />{v.pagos_realizados}/{v.num_abonos} abonos</span>
@@ -219,7 +203,7 @@ export function SalesPage() {
             { label: 'Cliente', value: clientesOpts.find(o => o.value === String(viewingItem.id_cliente))?.label ?? `#${viewingItem.id_cliente}`, fullWidth: true },
             { label: 'Cita',   value: viewingItem.id_cita ? (citasOpts.find(o => o.value === String(viewingItem.id_cita))?.label ?? `#${viewingItem.id_cita}`) : '—' },
             { label: 'Fecha',  value: formatDate(viewingItem.fecha) },
-            { label: 'Total',  value: fmt(viewingItem.total) },
+            { label: 'Total',  value: formatCurrency(viewingItem.total) },
             { label: 'Observación', value: viewingItem.observacion ?? '—', fullWidth: true },
           ]} />
       )}
@@ -267,7 +251,7 @@ export function SalesPage() {
                   onChange={e => { setTotal(e.target.value); if (errors.total) setErrors(p => ({...p, total:''})) }}
                   className={inputCls + ' pl-8'} placeholder="0" />
               </div>
-              {total && <p className="text-xs text-muted-foreground">{fmt(Number(total))}</p>}
+              {total && <p className="text-xs text-muted-foreground">{formatCurrency(Number(total))}</p>}
               {errors.total && <p className="mt-1 text-xs text-destructive">{errors.total}</p>}
             </div>
             <div>
