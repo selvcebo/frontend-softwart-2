@@ -5,36 +5,11 @@ import { apiRequest } from '@/src/shared/lib/apiClient'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
 import { tomorrowString } from '../utils'
 import { BookedSlot } from '@/src/shared/components/TimePicker'
+import type { PerfilCliente, Cita, Servicio } from '../types'
+
+export type { PerfilCliente, Cita, Servicio } from '../types'
 
 type ApiResponse<T> = { success: boolean; message?: string; data: T }
-
-// ── Tipos de dominio ──────────────────────────────────────────────────────────
-
-export type PerfilCliente = {
-  id_cliente:     number
-  tipoDocumento?: string
-  documento?:     string
-  nombre:         string
-  correo:         string
-  telefono:       string | null
-  estado:         boolean
-}
-
-export type Cita = {
-  id_cita: number
-  fecha:   string
-  hora:    string
-  appointmentStatus?: { id_estado_cita: number; nombre: string } | null
-}
-
-export type Servicio = {
-  id_detalle:  number
-  fecha:       string
-  servicio:    string
-  estado:      string
-  precio:      number
-  observacion: string | null
-}
 
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
