@@ -3,38 +3,9 @@
 // ============================================================
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Cita, CreateCitaDto, UpdateCitaDto, EstadoCita, BackendCita } from '../types'
 
-type Cita = {
-  id_cita:        number
-  fecha:          string
-  hora:           string
-  id_estado_cita: number
-  id_cliente:     number
-  clienteNombre?: string   // para el popover del TimePicker
-}
-type CreateCitaDto = Omit<Cita, 'id_cita'>
-type UpdateCitaDto = Partial<CreateCitaDto>
-
-type EstadoCita = {
-  id_estado_cita: number
-  nombre: string
-}
-
-type ApiResponse<T> = {
-  success: boolean
-  message?: string
-  data: T
-  meta?: unknown
-}
-
-// El backend devuelve las relaciones anidadas
-type BackendCita = {
-  id_cita: number
-  fecha: string
-  hora: string
-  client?: { id_cliente: number; nombre?: string } | null
-  appointmentStatus?: { id_estado_cita: number } | null
-}
+type ApiResponse<T> = { success: boolean; message?: string; data: T; meta?: unknown }
 
 export function useAppointments() {
   const [citas, setCitas] = useState<Cita[]>([])

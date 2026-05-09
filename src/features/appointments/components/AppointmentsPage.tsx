@@ -4,6 +4,8 @@ import { useServicesOptions, useFrameOptions } from '@/src/shared/hooks/useOptio
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { useClientsOptions } from '@/src/shared/hooks/useOptions'
 import { useState, useMemo, useCallback } from 'react'
+import type { Cita, VentaLinea, VentaMsg } from '../types'
+import { inputCls, labelCls, selectCls, ESTADO_BADGE, filterCitas, todayStr, validateFecha, fmtCOP } from '../utils'
 import { useSearchParams } from 'react-router-dom'
 import { SearchInput }   from '@/src/shared/components/SearchInput'
 import { Pagination }    from '@/src/shared/components/Pagination'
@@ -25,18 +27,6 @@ import { Combobox } from '@/src/shared/components/Combobox'
 import { EmptyState } from '@/src/shared/components/EmptyState'
 import { DatePicker } from '@/src/shared/components/DatePicker'
 
-type Cita = { id_cita: number; fecha: string; hora: string; id_estado_cita: number; id_cliente: number }
-
-const inputCls  = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls  = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const selectCls = 'w-full bg-muted border-0 border-b-2 border-transparent data-[state=open]:border-secondary !h-auto rounded-t-lg px-4 py-3 text-sm shadow-none focus-visible:ring-0 focus-visible:border-secondary'
-
-const ESTADO_BADGE: Record<number, string> = {
-  1: 'border-amber-300 bg-amber-100 text-amber-800',
-  2: 'border-blue-300 bg-blue-100 text-blue-800',
-  3: 'border-emerald-300 bg-emerald-100 text-emerald-800',
-  4: 'border-slate-300 bg-slate-100 text-slate-600',
-}
 
 export function AppointmentsPage() {
   const { citas, estadosCita, isLoading, onCreate, onEdit, onChangeStatus, refresh } = useAppointments()
@@ -48,27 +38,7 @@ export function AppointmentsPage() {
   const [q,            setQ]            = useState(searchParams.get('q') ?? '')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const ESTADO_ORDER: Record<number, number> = { 1: 0, 2: 1, 3: 2, 4: 3 }
-
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return citas.filter(c => {
-      const clienteLabel = clientesOpts.find(o => o.value === String(c.id_cliente))?.label ?? ''
-      const matchQ       = !s ||
-        String(c.id_cita).includes(s) ||
-        c.fecha.includes(s) ||
-        c.hora.includes(s) ||
-        clienteLabel.toLowerCase().includes(s)
-      const matchEstado  = !filterEstado || String(c.id_estado_cita) === filterEstado
-      return matchQ && matchEstado
-    }).sort((a, b) => {
-      // 1. Fecha (más reciente primero)
-      const fechaCmp = b.fecha.localeCompare(a.fecha)
-      if (fechaCmp !== 0) return fechaCmp
-      // 2. Estado: Pendiente → Completada → No asistió → Cancelada
-      return (ESTADO_ORDER[a.id_estado_cita] ?? 9) - (ESTADO_ORDER[b.id_estado_cita] ?? 9)
-    })
-  }, [citas, clientesOpts, q, filterEstado])
+  const filtered = useMemo(() => filterCitas(citas, clientesOpts, q, filterEstado), [citas, clientesOpts, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 
@@ -85,9 +55,6 @@ export function AppointmentsPage() {
   const [errors,       setErrors]       = useState<Record<string, string>>({})
 
   // ── Modal Crear Venta ──────────────────────────────────────────────────────
-  type VentaLinea = { id: number; id_servicio: string; id_marco: string; precio: string; observacion: string }
-  type VentaMsg   = { tipo: 'ok' | 'err'; texto: string }
-
   const [ventaModalCita, setVentaModalCita] = useState<Cita | null>(null)
   const [ventaLineas,    setVentaLineas]    = useState<VentaLinea[]>([])
   const [ventaObs,       setVentaObs]       = useState('')
@@ -112,7 +79,6 @@ export function AppointmentsPage() {
     setVentaLineas(p => p.map(l => l.id === id ? { ...l, [field]: value } : l))
 
   const totalVenta = ventaLineas.reduce((sum, l) => sum + (Number(l.precio) || 0), 0)
-  const fmt        = (v: number) => v.toLocaleString('es-CO', { style: 'currency', currency: 'COP' })
 
   const handleCrearVenta = async () => {
     const errs: Record<string, string> = {}
@@ -138,7 +104,7 @@ export function AppointmentsPage() {
           })),
         }),
       })
-      setVentaMsg({ tipo: 'ok', texto: `Venta creada por ${fmt(totalVenta)}. La cita pasó a Completada.` })
+      setVentaMsg({ tipo: 'ok', texto: `Venta creada por ${fmtCOP(totalVenta)}. La cita pasó a Completada.` })
       await refresh()
       setTimeout(() => setVentaModalCita(null), 1800)
     } catch (e) {
@@ -149,14 +115,12 @@ export function AppointmentsPage() {
   }
 
   // ── Form helpers ───────────────────────────────────────────────────────────
-  const todayStr   = () => new Date().toISOString().slice(0, 10)
   const resetForm  = () => { setIdCliente(''); setFecha(''); setHora(''); setIdEstado(''); setErrors({}); setEditingId(null) }
   const openCreate = () => { resetForm(); setIdEstado('1'); setFecha(todayStr()); setIsFormOpen(true) }
   const openEdit   = (c: Cita) => { setEditingId(c.id_cita); setIdCliente(String(c.id_cliente)); setFecha(c.fecha); setHora(c.hora); setIdEstado(String(c.id_estado_cita)); setErrors({}); setIsFormOpen(true) }
   const openView   = (c: Cita) => { setViewingItem(c); setIsViewOpen(true) }
 
   const getEstadoLabel = (id: number) => estadosCita.find(e => e.id_estado_cita === id)?.nombre ?? `Estado ${id}`
-  const validateFecha  = (f: string) => { const t = new Date(); t.setHours(0,0,0,0); return new Date(f) >= t }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -476,7 +440,7 @@ export function AppointmentsPage() {
             <div className="flex items-center justify-between pt-2 border-t border-border">
               <div>
                 <p className="text-xs text-muted-foreground">Total</p>
-                <p className="text-xl font-bold text-foreground">{fmt(totalVenta)}</p>
+                <p className="text-xl font-bold text-foreground">{fmtCOP(totalVenta)}</p>
               </div>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setVentaModalCita(null)} disabled={isCreandoVenta} className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition-colors disabled:opacity-50">
