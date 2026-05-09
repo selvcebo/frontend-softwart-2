@@ -1,6 +1,8 @@
 // src/features/services/components/ServicesPage.tsx
 import { useServices } from '../hooks/useServices'
 import { useState, useMemo } from 'react'
+import type { Servicio } from '../types'
+import { inputCls, labelCls, fmtDuracion, filterServicios } from '../utils'
 import { Plus, Pencil, Eye, CalendarDays } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -15,16 +17,6 @@ import { Pagination }    from '@/src/shared/components/Pagination'
 import { usePagination } from '@/src/shared/hooks/usePagination'
 import { withToast }     from '@/src/shared/lib/withToast'
 
-type Servicio = { id_servicio: number; nombre: string; descripcion?: string; duracion: number; estado: boolean }
-
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all text-sm'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-
-// duracion ahora es en días
-const fmtDuracion = (dias: number) => {
-  if (!dias) return '—'
-  return dias === 1 ? '1 día' : `${dias} días`
-}
 
 export function ServicesPage() {
   const { servicios, isLoading, onCreate, onEdit, onToggleStatus } = useServices()
@@ -33,14 +25,7 @@ export function ServicesPage() {
   const [q,            setQ]            = useState('')
   const [filterEstado, setFilterEstado] = useState('')
 
-  const filtered = useMemo(() => {
-    const s = q.toLowerCase()
-    return servicios.filter(sv => {
-      const matchQ      = !s || sv.nombre.toLowerCase().includes(s) || (sv.descripcion ?? '').toLowerCase().includes(s)
-      const matchEstado = !filterEstado || (filterEstado === 'activo' ? sv.estado : !sv.estado)
-      return matchQ && matchEstado
-    })
-  }, [servicios, q, filterEstado])
+  const filtered = useMemo(() => filterServicios(servicios, q, filterEstado), [servicios, q, filterEstado])
 
   const { paginated, page, setPage, totalPages, total, pageSize, setPageSize } = usePagination(filtered)
 

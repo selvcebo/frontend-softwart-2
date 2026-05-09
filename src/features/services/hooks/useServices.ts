@@ -1,16 +1,8 @@
 // src/features/services/hooks/useServices.ts
 import { useState, useEffect } from 'react'
 import { apiRequest } from '@/src/shared/lib/apiClient'
+import type { Servicio, CreateServicioDto, UpdateServicioDto } from '../types'
 
-type Servicio = {
-  id_servicio: number
-  nombre: string
-  descripcion?: string
-  duracion: number        // duración en minutos (para notificaciones APK)
-  estado: boolean
-}
-type CreateServicioDto = Omit<Servicio, 'id_servicio'>
-type UpdateServicioDto = Partial<CreateServicioDto>
 type ApiResponse<T> = { success: boolean; data: T }
 
 export function useServices() {
