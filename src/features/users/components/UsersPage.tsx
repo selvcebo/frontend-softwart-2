@@ -1,7 +1,7 @@
 // src/features/users/components/UsersPage.tsx
 import { useUsers } from '../hooks/useUsers'
 import { useState, useMemo } from 'react'
-import type { Usuario } from '../types'
+import type { Usuario, CreateUsuarioDto, UpdateUsuarioDto } from '../types'
 import { inputCls, labelCls, selectCls, ROL_LABELS, getRolBadgeClass, filterUsuarios } from '../utils'
 import { Plus, Pencil, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
