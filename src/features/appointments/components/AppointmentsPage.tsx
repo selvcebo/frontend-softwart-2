@@ -222,7 +222,7 @@ export function AppointmentsPage() {
                           <Button variant="ghost" size="icon" onClick={() => openEdit(c)}>
                             <Pencil className="h-4 w-4 text-foreground" />
                           </Button>
-                          {c.id_estado_cita !== 4 && (
+                          {c.id_estado_cita === 2 && (
                             <Button variant="ghost" size="icon" title="Crear venta" onClick={() => openVentaModal(c)}>
                               <ShoppingCart className="h-4 w-4 text-emerald-600" />
                             </Button>
