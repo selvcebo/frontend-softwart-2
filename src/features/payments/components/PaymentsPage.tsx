@@ -181,13 +181,13 @@ export function PaymentsPage() {
                       {(() => {
                         const activeIdx = metodosPago.findIndex(m => m.id_metodo_pago === p.id_metodo_pago)
                         return (
-                          <div className="relative inline-flex h-8 rounded-lg border border-border bg-muted/40 p-0.5">
+                          <div className="relative inline-flex h-8 rounded-lg border border-border bg-muted/40 p-0.5 overflow-hidden">
                             {/* Sliding indicator */}
                             <div
                               className="absolute top-0.5 bottom-0.5 rounded-md bg-secondary shadow-sm pointer-events-none"
                               style={{
-                                width: `calc(${100 / metodosPago.length}% - 2px)`,
-                                left: '2px',
+                                width: `calc(${100 / metodosPago.length}% + 2px)`,
+                                left: '0px',
                                 transform: `translateX(calc(${activeIdx} * 100%))`,
                                 transition: 'transform 220ms cubic-bezier(0.22,1,0.36,1)',
                               }}
