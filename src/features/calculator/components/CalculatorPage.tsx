@@ -113,7 +113,7 @@ export function CalculatorPage() {
                 <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[28%]">Código</TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[20%]">Colilla</TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Precio ensamblado</TableHead>
-                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -124,9 +124,9 @@ export function CalculatorPage() {
                   <TableCell className="text-foreground font-medium">{m.codigo}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.colilla)}</TableCell>
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.precio_ensamblado)}</TableCell>
-                  <TableCell className='text-right'>
-                    
-                    <ToggleSwitch value={m.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(m.id_marco), 'Estado actualizado')} options={ACTIVO_OPTIONS} /></TableCell>
+                  <TableCell>
+                    <ToggleSwitch value={m.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(m.id_marco), 'Estado actualizado')} options={ACTIVO_OPTIONS} />
+                  </TableCell>
                  
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">

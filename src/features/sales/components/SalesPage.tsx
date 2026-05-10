@@ -131,7 +131,7 @@ export function SalesPage() {
                 <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[15%]">Cita</TableHead>
                 <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Fecha</TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[17%]">Total</TableHead>
-                <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
+                <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[14%]">Estado</TableHead>
                 <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -156,9 +156,7 @@ export function SalesPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex justify-end">
-                        <ToggleSwitch value={v.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(v.id_venta), 'Estado actualizado')} options={ACTIVO_OPTIONS} disabled={!v.estado} />
-                      </div>
+                      <ToggleSwitch value={v.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(v.id_venta), 'Estado actualizado')} options={ACTIVO_OPTIONS} disabled={!v.estado} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">

@@ -112,7 +112,7 @@ export function ServicesPage() {
                   <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[18%]">Nombre</TableHead>
                   <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[10%]">Duración</TableHead>
                   <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[36%]">Descripción</TableHead>
-                  <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Estado</TableHead>
+                  <TableHead className="text-xs font-semibold tracking-wide text-muted-foreground w-[12%]">Estado</TableHead>
                   <TableHead className="text-right text-xs font-semibold tracking-wide text-muted-foreground w-[24%]">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
@@ -129,9 +129,7 @@ export function ServicesPage() {
                     </TableCell>
                     <TableCell className="text-muted-foreground max-w-xs truncate">{s.descripcion ?? '—'}</TableCell>
                     <TableCell>
-                      <div className='flex justify-end'>
                       <ToggleSwitch value={s.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(s.id_servicio), 'Estado actualizado')} options={ACTIVO_OPTIONS} />
-                      </div>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
