@@ -6,7 +6,8 @@ import { useState, useMemo, useEffect } from 'react'
 import type { Pago } from '../types'
 import { inputCls, labelCls, selectCls, ESTADO_BADGE, filterPagos } from '../utils'
 import { useSearchParams } from 'react-router-dom'
-import { Plus, Eye } from 'lucide-react'
+import { Plus, Eye, Banknote, Landmark } from 'lucide-react'
+import { cn } from '@/src/shared/lib/utils'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -177,10 +178,30 @@ export function PaymentsPage() {
                     <TableCell className="text-foreground text-right font-medium tabular-nums">{formatCurrency(p.monto)}</TableCell>
                     <TableCell className="text-foreground">{formatDate(p.fecha)}</TableCell>
                     <TableCell>
-                      <Select value={String(p.id_metodo_pago)} onValueChange={v => onChangeMethod(p.id_pago, Number(v))}>
-                        <SelectTrigger className="w-32 h-8 text-foreground border-border"><SelectValue /></SelectTrigger>
-                        <SelectContent>{metodosPago.map(m => <SelectItem key={m.id_metodo_pago} value={String(m.id_metodo_pago)}>{m.nombre}</SelectItem>)}</SelectContent>
-                      </Select>
+                      <div className="inline-flex items-center h-8 rounded-lg border border-border bg-muted/40 p-0.5 gap-0.5">
+                        {metodosPago.map(m => {
+                          const isActive    = p.id_metodo_pago === m.id_metodo_pago
+                          const isEfectivo  = m.nombre.toLowerCase().includes('efectivo')
+                          return (
+                            <button
+                              key={m.id_metodo_pago}
+                              onClick={() => !isActive && onChangeMethod(p.id_pago, m.id_metodo_pago)}
+                              title={m.nombre}
+                              className={cn(
+                                'flex items-center gap-1.5 px-2.5 h-full rounded-md text-xs font-medium transition-all',
+                                isActive
+                                  ? 'bg-secondary text-secondary-foreground shadow-sm'
+                                  : 'text-muted-foreground hover:text-foreground cursor-pointer',
+                              )}
+                            >
+                              {isEfectivo
+                                ? <Banknote  className="h-3.5 w-3.5 shrink-0" />
+                                : <Landmark  className="h-3.5 w-3.5 shrink-0" />}
+                              <span>{m.nombre}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {estadoNombre.toLowerCase().includes('anulado') ? (
