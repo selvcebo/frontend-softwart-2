@@ -83,13 +83,19 @@ export function usePayments() {
     await fetchAll()
   }
 
-  // PATCH /api/payment-methods/pago/:id/metodo  — endpoint específico del backend
+  // PATCH /api/payment-methods/pago/:id/metodo  — optimistic update, sin fetchAll
   const onChangeMethod = async (id: number, id_metodo_pago: number) => {
-    await apiRequest(`/api/payment-methods/pago/${id}/metodo`, {
-      method: 'PATCH',
-      body: JSON.stringify({ id_metodo_pago }),
-    })
-    await fetchAll()
+    const prev = pagos.find(p => p.id_pago === id)?.id_metodo_pago
+    setPagos(ps => ps.map(p => p.id_pago === id ? { ...p, id_metodo_pago } : p))
+    try {
+      await apiRequest(`/api/payment-methods/pago/${id}/metodo`, {
+        method: 'PATCH',
+        body: JSON.stringify({ id_metodo_pago }),
+      })
+    } catch {
+      if (prev !== undefined)
+        setPagos(ps => ps.map(p => p.id_pago === id ? { ...p, id_metodo_pago: prev } : p))
+    }
   }
 
   return { pagos, metodosPago, estadosPago, isLoading, error, onCreate, onEdit, onDelete, onChangeStatus, onChangeMethod }
