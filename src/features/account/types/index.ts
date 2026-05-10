@@ -1,3 +1,6 @@
+export type Tab     = 'perfil' | 'citas' | 'servicios'
+export type NavItem = { id: Tab; label: string; Icon: React.ElementType }
+
 export type PerfilCliente = {
   id_cliente:     number
   tipoDocumento?: string

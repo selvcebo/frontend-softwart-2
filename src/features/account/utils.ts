@@ -1,6 +1,31 @@
 // src/features/account/utils.ts
+import type { Cita, Servicio } from './types'
+
+export const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all'
+export const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
 export const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
+
+export function filterCitasCuenta(citas: Cita[], q: string): Cita[] {
+  const s = q.toLowerCase()
+  if (!s) return citas
+  return citas.filter(c =>
+    String(c.id_cita).includes(s) ||
+    c.fecha.includes(s) ||
+    (c.appointmentStatus?.nombre ?? '').toLowerCase().includes(s)
+  )
+}
+
+export function filterServiciosCuenta(servicios: Servicio[], q: string): Servicio[] {
+  const s = q.toLowerCase()
+  if (!s) return servicios
+  return servicios.filter(sv =>
+    sv.servicio.toLowerCase().includes(s) ||
+    sv.fecha.includes(s) ||
+    sv.estado.toLowerCase().includes(s) ||
+    (sv.observacion ?? '').toLowerCase().includes(s)
+  )
+}
 
 export function tomorrowString(): string {
   const d = new Date()

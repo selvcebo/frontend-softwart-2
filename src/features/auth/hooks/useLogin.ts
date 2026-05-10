@@ -41,10 +41,9 @@ export function useLogin(redirectCita = false) {
       if (res.data.rol === 'Admin' || res.data.rol === 'Empleado') {
         navigate('/admin/dashboard', { replace: true })
       } else if (redirectCita) {
-        // Venía desde "Agenda tu cita" → abrir formulario directo
-        navigate('/mi-cuenta?new-appointment=true', { replace: true })
+        navigate('/my-account?new-appointment=true', { replace: true })
       } else {
-        navigate('/', { replace: true })
+        navigate('/my-account', { replace: true })
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error al iniciar sesión')

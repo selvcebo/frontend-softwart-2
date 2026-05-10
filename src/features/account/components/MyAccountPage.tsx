@@ -1,33 +1,33 @@
 // src/features/account/components/MyAccountPage.tsx
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
-import { useAccount } from '../hooks/useAccount'
-import { parseFechaBloque, tomorrowString, estadoBadgeClasses, estadoServicioBadgeClasses } from '../utils'
-import { Skeleton } from '@/src/shared/components/ui/skeleton'
+import { useAccount }      from '../hooks/useAccount'
+import { inputCls, labelCls, parseFechaBloque, tomorrowString, estadoBadgeClasses, estadoServicioBadgeClasses, filterCitasCuenta, filterServiciosCuenta } from '../utils'
+import type { Tab, NavItem } from '../types'
+import { getAuthToken, getAuthRol } from '@/src/features/auth/utils'
+import { formatCurrency }  from '@/src/shared/lib/formatCurrency'
+import { formatDate }      from '@/src/shared/lib/formatDate'
+import { SearchInput }     from '@/src/shared/components/SearchInput'
+import { Pagination }      from '@/src/shared/components/Pagination'
+import { usePagination }   from '@/src/shared/hooks/usePagination'
+import { Skeleton }        from '@/src/shared/components/ui/skeleton'
 import {
-  CalendarDays, LogOut, User, Lock, AlertTriangle,
-  Plus, Clock, Home, CalendarPlus, Wrench, X,
-} from 'lucide-react'
-import { TimePicker } from '@/src/shared/components/TimePicker'
-import { DatePicker }  from '@/src/shared/components/DatePicker'
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem,
+  DropdownMenuSeparator, DropdownMenuTrigger,
+} from '@/src/shared/components/ui/dropdown-menu'
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel,
   AlertDialogContent, AlertDialogDescription, AlertDialogFooter,
   AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/src/shared/components/ui/alert-dialog'
+import {
+  CalendarDays, LogOut, User, Lock, AlertTriangle,
+  Plus, Clock, Home, CalendarPlus, Wrench, X, ChevronDown,
+} from 'lucide-react'
+import { TimePicker } from '@/src/shared/components/TimePicker'
+import { DatePicker }  from '@/src/shared/components/DatePicker'
 
-// ── Types ─────────────────────────────────────────────────────────────────────
-type Tab = 'perfil' | 'citas' | 'servicios'
-type NavItem = { id: Tab; label: string; Icon: React.ElementType }
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function getToken() { return localStorage.getItem('token') ?? sessionStorage.getItem('token') }
-function getRol()   { return localStorage.getItem('rol')   ?? sessionStorage.getItem('rol') }
-
-const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all'
-const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
-const fmtCOP   = (v: number) => v.toLocaleString('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 })
-
+// ── Nav config ────────────────────────────────────────────────────────────────
 const NAV_ITEMS: NavItem[] = [
   { id: 'perfil',    label: 'Mi perfil',     Icon: User },
   { id: 'citas',     label: 'Mis citas',     Icon: CalendarDays },
@@ -37,9 +37,13 @@ const NAV_ITEMS: NavItem[] = [
 // ── Page ──────────────────────────────────────────────────────────────────────
 export function MyAccountPage() {
   const [searchParams] = useSearchParams()
+
+  // UI state
   const [tab,          setTab]          = useState<Tab>('perfil')
   const [showCitaForm, setShowCitaForm] = useState(false)
   const [cancelingId,  setCancelingId]  = useState<number | null>(null)
+  const [qCitas,       setQCitas]       = useState('')
+  const [qServicios,   setQServicios]   = useState('')
 
   const {
     perfil, citas, servicios, isLoading, error, primerNombre,
@@ -53,6 +57,13 @@ export function MyAccountPage() {
     onCancelAppointment, isDeleting, onDeleteAccount, handleLogout,
   } = useAccount()
 
+  // Filtered + paginated lists
+  const filteredCitas     = useMemo(() => filterCitasCuenta([...citas].sort((a, b) => a.fecha.localeCompare(b.fecha)), qCitas), [citas, qCitas])
+  const filteredServicios = useMemo(() => filterServiciosCuenta(servicios, qServicios), [servicios, qServicios])
+
+  const citasPag     = usePagination(filteredCitas)
+  const serviciosPag = usePagination(filteredServicios)
+
   const closeCitaForm = () => { setShowCitaForm(false); resetCitaForm() }
 
   useEffect(() => {
@@ -63,10 +74,8 @@ export function MyAccountPage() {
   }, [searchParams])
 
   // ── Guards ────────────────────────────────────────────────────────────────
-  const token = getToken()
-  const rol   = getRol()
-  if (!token || !rol) return <Navigate to="/login" replace />
-  if (rol !== 'Cliente') return <Navigate to="/" replace />
+  if (!getAuthToken() || !getAuthRol()) return <Navigate to="/login" replace />
+  if (getAuthRol() !== 'Cliente')       return <Navigate to="/"      replace />
 
   const handleSubmitCita = async (e: React.FormEvent) => {
     const ok = await submitCita(e)
@@ -80,12 +89,9 @@ export function MyAccountPage() {
 
       {/* ── Sidebar (desktop) ─────────────────────────────────────────────── */}
       <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 border-r border-border bg-card z-30">
-        {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-border shrink-0">
           <span className="font-serif italic text-xl text-secondary">Arte Café</span>
         </div>
-
-        {/* User info */}
         <div className="px-5 py-5 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-secondary/10 border border-secondary/20 flex items-center justify-center shrink-0">
@@ -100,8 +106,6 @@ export function MyAccountPage() {
             </div>
           </div>
         </div>
-
-        {/* Nav */}
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
@@ -119,17 +123,6 @@ export function MyAccountPage() {
             </button>
           ))}
         </nav>
-
-        {/* Logout */}
-        <div className="p-3 border-t border-border shrink-0">
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-          >
-            <LogOut className="h-4 w-4 shrink-0" />
-            Cerrar sesión
-          </button>
-        </div>
       </aside>
 
       {/* ── Main area ─────────────────────────────────────────────────────── */}
@@ -137,26 +130,41 @@ export function MyAccountPage() {
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className="sticky top-0 z-20 h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 shrink-0">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm"
-          >
+          <Link to="/" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm">
             <Home className="h-4 w-4" />
             <span>Inicio</span>
           </Link>
           <span className="font-serif italic font-bold text-secondary md:hidden">Arte Café</span>
-          <div className="flex items-center gap-3">
-            <div className="h-8 w-8 rounded-full bg-secondary/10 border border-secondary/20 flex items-center justify-center">
-              <span className="text-xs font-bold text-secondary">{initial}</span>
-            </div>
-            <button
-              onClick={handleLogout}
-              aria-label="Cerrar sesión"
-              className="md:hidden p-1.5 text-muted-foreground hover:text-destructive transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+
+          {/* User dropdown — same pattern as AdminLayout */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 rounded-md px-2 py-1.5 hover:bg-accent transition-colors outline-none">
+                <div className="h-7 w-7 rounded-full bg-secondary/10 border border-secondary/20 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-semibold text-secondary">{initial}</span>
+                </div>
+                <div className="text-right hidden sm:block">
+                  <p className="text-xs font-medium text-foreground leading-tight truncate max-w-[160px]">{perfil?.nombre ?? ''}</p>
+                  <p className="text-[10px] text-muted-foreground leading-tight">Cliente</p>
+                </div>
+                <ChevronDown className="h-3.5 w-3.5 text-muted-foreground hidden sm:block shrink-0" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <div className="px-2 py-1.5">
+                <p className="text-xs font-medium text-foreground truncate">{perfil?.nombre ?? ''}</p>
+                <p className="text-[10px] text-muted-foreground">Cliente</p>
+              </div>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="text-rose-500 focus:text-rose-500 focus:bg-rose-500/10 cursor-pointer"
+              >
+                <LogOut className="h-4 w-4 mr-2 shrink-0" />
+                Cerrar sesión
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </header>
 
         {/* ── Content ─────────────────────────────────────────────────────── */}
@@ -179,7 +187,7 @@ export function MyAccountPage() {
                   ].join(' ')}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  <span className="hidden xs:inline">{label}</span>
+                  {label}
                 </button>
               ))}
             </div>
@@ -190,11 +198,10 @@ export function MyAccountPage() {
               </div>
             )}
 
-            {/* ── Tab: Mi perfil ────────────────────────────────────────────── */}
+            {/* ── Tab: Mi perfil ──────────────────────────────────────────── */}
             {tab === 'perfil' && (
               <div className="space-y-6">
 
-                {/* Mis datos */}
                 <section className="bg-card rounded-xl p-6 border border-border shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <User className="h-5 w-5 text-primary" />
@@ -224,11 +231,8 @@ export function MyAccountPage() {
                           onChange={e => setPerfilCorreo(e.target.value)} required className={inputCls} />
                       </div>
                       <div className="pt-1 flex items-center gap-4">
-                        <button
-                          type="submit"
-                          disabled={isSavingPerfil}
-                          className="bg-secondary text-secondary-foreground py-2.5 px-6 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 disabled:opacity-60"
-                        >
+                        <button type="submit" disabled={isSavingPerfil}
+                          className="bg-secondary text-secondary-foreground py-2.5 px-6 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 disabled:opacity-60">
                           {isSavingPerfil ? 'Guardando...' : 'Guardar cambios'}
                         </button>
                         {perfilMsg && (
@@ -241,7 +245,6 @@ export function MyAccountPage() {
                   )}
                 </section>
 
-                {/* Cambiar contraseña */}
                 <section className="bg-card rounded-xl p-6 border border-border shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <Lock className="h-5 w-5 text-primary" />
@@ -264,11 +267,8 @@ export function MyAccountPage() {
                         onChange={e => setClaveConfirm(e.target.value)} className={inputCls} />
                     </div>
                     <div className="pt-1">
-                      <button
-                        type="submit"
-                        disabled={isSavingClave}
-                        className="w-full border-2 border-primary/30 text-primary py-2.5 rounded-lg font-medium hover:bg-primary/5 transition-colors disabled:opacity-60"
-                      >
+                      <button type="submit" disabled={isSavingClave}
+                        className="w-full border-2 border-primary/30 text-primary py-2.5 rounded-lg font-medium hover:bg-primary/5 transition-colors disabled:opacity-60">
                         {isSavingClave ? 'Actualizando...' : 'Actualizar contraseña'}
                       </button>
                     </div>
@@ -280,7 +280,6 @@ export function MyAccountPage() {
                   </form>
                 </section>
 
-                {/* Eliminar cuenta */}
                 <section className="border border-destructive/20 rounded-xl p-6 bg-destructive/5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
@@ -294,10 +293,8 @@ export function MyAccountPage() {
                     </div>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <button
-                          disabled={isDeleting}
-                          className="text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground px-5 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 shrink-0"
-                        >
+                        <button disabled={isDeleting}
+                          className="text-destructive border border-destructive/30 hover:bg-destructive hover:text-destructive-foreground px-5 py-2 rounded-lg text-sm font-semibold transition-all disabled:opacity-50 shrink-0">
                           {isDeleting ? 'Procesando...' : 'Eliminar cuenta'}
                         </button>
                       </AlertDialogTrigger>
@@ -310,10 +307,7 @@ export function MyAccountPage() {
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                           <AlertDialogCancel className="border-border text-foreground">Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            className="bg-destructive text-destructive-foreground"
-                            onClick={onDeleteAccount}
-                          >
+                          <AlertDialogAction className="bg-destructive text-destructive-foreground" onClick={onDeleteAccount}>
                             Sí, eliminar cuenta
                           </AlertDialogAction>
                         </AlertDialogFooter>
@@ -328,13 +322,11 @@ export function MyAccountPage() {
             {/* ── Tab: Mis citas ────────────────────────────────────────────── */}
             {tab === 'citas' && (
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    {!isLoading && `${citas.length} cita${citas.length !== 1 ? 's' : ''} en total`}
-                  </p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <SearchInput value={qCitas} onChange={setQCitas} placeholder="Buscar por ID, fecha o estado..." className="w-full sm:w-72" />
                   <button
                     onClick={() => setShowCitaForm(true)}
-                    className="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-secondary/90 transition-all active:scale-95"
+                    className="bg-secondary text-secondary-foreground px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 hover:bg-secondary/90 transition-all active:scale-95 shrink-0"
                   >
                     <Plus className="h-4 w-4" />
                     Nueva cita
@@ -363,72 +355,75 @@ export function MyAccountPage() {
                       Agendar mi primera cita
                     </button>
                   </div>
+                ) : filteredCitas.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-10">Sin resultados para "{qCitas}".</p>
                 ) : (
-                  <div className="space-y-3">
-                    {[...citas].sort((a, b) => a.fecha.localeCompare(b.fecha)).map(c => {
-                      const { mes, dia } = parseFechaBloque(c.fecha)
-                      const esPendiente  = c.appointmentStatus?.nombre?.toLowerCase().includes('pend') ?? false
-                      return (
-                        <div
-                          key={c.id_cita}
-                          className="bg-card rounded-xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:border-primary/20 transition-colors"
-                        >
-                          <div className="flex items-center gap-4 flex-1 min-w-0">
-                            <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-3 flex flex-col items-center min-w-[56px] shrink-0">
-                              <span className="text-[10px] uppercase font-bold text-secondary/60 tracking-wider">{mes}</span>
-                              <span className="text-2xl font-bold text-secondary leading-none">{dia}</span>
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-semibold text-foreground">Cita #{c.id_cita}</p>
-                              <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
-                                <Clock className="h-3.5 w-3.5 shrink-0" />
-                                {c.hora?.slice(0, 5)}
+                  <>
+                    <div className="space-y-3">
+                      {citasPag.paginated.map(c => {
+                        const { mes, dia } = parseFechaBloque(c.fecha)
+                        const esPendiente  = c.appointmentStatus?.nombre?.toLowerCase().includes('pend') ?? false
+                        return (
+                          <div key={c.id_cita}
+                            className="bg-card rounded-xl border border-border p-5 flex flex-col sm:flex-row sm:items-center gap-4 hover:border-primary/20 transition-colors">
+                            <div className="flex items-center gap-4 flex-1 min-w-0">
+                              <div className="bg-secondary/5 border border-secondary/10 rounded-lg p-3 flex flex-col items-center min-w-[56px] shrink-0">
+                                <span className="text-[10px] uppercase font-bold text-secondary/60 tracking-wider">{mes}</span>
+                                <span className="text-2xl font-bold text-secondary leading-none">{dia}</span>
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-semibold text-foreground">Cita #{c.id_cita}</p>
+                                <div className="flex items-center gap-1.5 text-sm text-muted-foreground mt-0.5">
+                                  <Clock className="h-3.5 w-3.5 shrink-0" />
+                                  {c.hora?.slice(0, 5)}
+                                </div>
                               </div>
                             </div>
+                            <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
+                              <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${estadoBadgeClasses(c.appointmentStatus?.nombre)}`}>
+                                {c.appointmentStatus?.nombre ?? 'Sin estado'}
+                              </span>
+                              {esPendiente && (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <button disabled={cancelingId === c.id_cita}
+                                      className="text-destructive text-xs font-medium hover:underline disabled:opacity-50 transition-all">
+                                      {cancelingId === c.id_cita ? 'Cancelando...' : 'Cancelar'}
+                                    </button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent className="bg-card text-card-foreground border-border">
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle className="font-serif text-secondary">¿Cancelar esta cita?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        La cita del {parseFechaBloque(c.fecha).dia} de {parseFechaBloque(c.fecha).mes} a las {c.hora?.slice(0, 5)} será cancelada. Esta acción no se puede deshacer.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel className="border-border text-foreground">Volver</AlertDialogCancel>
+                                      <AlertDialogAction className="bg-destructive text-destructive-foreground"
+                                        onClick={async () => {
+                                          setCancelingId(c.id_cita)
+                                          try { await onCancelAppointment(c.id_cita) }
+                                          catch (e2) { alert(e2 instanceof Error ? e2.message : 'Error al cancelar') }
+                                          finally { setCancelingId(null) }
+                                        }}>
+                                        Sí, cancelar cita
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              )}
+                            </div>
                           </div>
-                          <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
-                            <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${estadoBadgeClasses(c.appointmentStatus?.nombre)}`}>
-                              {c.appointmentStatus?.nombre ?? 'Sin estado'}
-                            </span>
-                            {esPendiente && (
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <button
-                                    disabled={cancelingId === c.id_cita}
-                                    className="text-destructive text-xs font-medium hover:underline disabled:opacity-50 transition-all"
-                                  >
-                                    {cancelingId === c.id_cita ? 'Cancelando...' : 'Cancelar'}
-                                  </button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent className="bg-card text-card-foreground border-border">
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle className="font-serif text-secondary">¿Cancelar esta cita?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      La cita del {parseFechaBloque(c.fecha).dia} de {parseFechaBloque(c.fecha).mes} a las {c.hora?.slice(0, 5)} será cancelada. Esta acción no se puede deshacer.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel className="border-border text-foreground">Volver</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      className="bg-destructive text-destructive-foreground"
-                                      onClick={async () => {
-                                        setCancelingId(c.id_cita)
-                                        try { await onCancelAppointment(c.id_cita) }
-                                        catch (e2) { alert(e2 instanceof Error ? e2.message : 'Error al cancelar') }
-                                        finally { setCancelingId(null) }
-                                      }}
-                                    >
-                                      Sí, cancelar cita
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
+                        )
+                      })}
+                    </div>
+                    <Pagination
+                      page={citasPag.page} totalPages={citasPag.totalPages}
+                      total={citasPag.total} pageSize={citasPag.pageSize}
+                      onChange={citasPag.setPage} onPageSizeChange={citasPag.setPageSize}
+                    />
+                  </>
                 )}
               </div>
             )}
@@ -436,9 +431,7 @@ export function MyAccountPage() {
             {/* ── Tab: Mis servicios ────────────────────────────────────────── */}
             {tab === 'servicios' && (
               <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {!isLoading && `${servicios.length} servicio${servicios.length !== 1 ? 's' : ''} en total`}
-                </p>
+                <SearchInput value={qServicios} onChange={setQServicios} placeholder="Buscar por servicio o estado..." className="w-full sm:w-72" />
 
                 {isLoading ? (
                   <div className="space-y-3">
@@ -449,29 +442,36 @@ export function MyAccountPage() {
                     <Wrench className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
                     <p className="text-muted-foreground">Aún no tienes servicios registrados.</p>
                   </div>
+                ) : filteredServicios.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-10">Sin resultados para "{qServicios}".</p>
                 ) : (
-                  <div className="space-y-3">
-                    {servicios.map(s => (
-                      <div
-                        key={s.id_detalle}
-                        className="bg-card rounded-xl border border-border p-5 flex flex-col sm:flex-row sm:items-start gap-4 hover:border-primary/20 transition-colors"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-foreground">{s.servicio}</p>
-                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
-                            <span className="text-xs text-muted-foreground">{s.fecha}</span>
-                            <span className="text-xs font-medium text-primary">{fmtCOP(s.precio)}</span>
+                  <>
+                    <div className="space-y-3">
+                      {serviciosPag.paginated.map(s => (
+                        <div key={s.id_detalle}
+                          className="bg-card rounded-xl border border-border p-5 flex flex-col sm:flex-row sm:items-start gap-4 hover:border-primary/20 transition-colors">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-foreground">{s.servicio}</p>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                              <span className="text-xs text-muted-foreground">{formatDate(s.fecha)}</span>
+                              <span className="text-xs font-medium text-primary">{formatCurrency(s.precio)}</span>
+                            </div>
+                            {s.observacion && (
+                              <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.observacion}</p>
+                            )}
                           </div>
-                          {s.observacion && (
-                            <p className="text-xs text-muted-foreground mt-2 line-clamp-2">{s.observacion}</p>
-                          )}
+                          <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(s.estado)}`}>
+                            {s.estado}
+                          </span>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(s.estado)}`}>
-                          {s.estado}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                    <Pagination
+                      page={serviciosPag.page} totalPages={serviciosPag.totalPages}
+                      total={serviciosPag.total} pageSize={serviciosPag.pageSize}
+                      onChange={serviciosPag.setPage} onPageSizeChange={serviciosPag.setPageSize}
+                    />
+                  </>
                 )}
               </div>
             )}
@@ -479,7 +479,6 @@ export function MyAccountPage() {
           </div>
         </main>
 
-        {/* ── Footer ──────────────────────────────────────────────────────── */}
         <footer className="bg-secondary border-t border-secondary-foreground/10 py-6 shrink-0">
           <div className="max-w-3xl mx-auto px-6 flex flex-col items-center gap-1 text-center">
             <span className="font-serif text-base font-bold italic text-secondary-foreground">Arte Café</span>
@@ -492,14 +491,8 @@ export function MyAccountPage() {
 
       {/* ── Modal nueva cita ─────────────────────────────────────────────── */}
       {showCitaForm && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-          onClick={closeCitaForm}
-        >
-          <div
-            className="bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col gap-4 p-6 relative"
-            onClick={e => e.stopPropagation()}
-          >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4" onClick={closeCitaForm}>
+          <div className="bg-card rounded-2xl shadow-2xl w-full max-w-md flex flex-col gap-4 p-6 relative" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h3 className="font-serif text-xl text-secondary">Agendar nueva cita</h3>
               <button type="button" onClick={closeCitaForm} className="text-muted-foreground hover:text-foreground transition-colors">
@@ -516,52 +509,30 @@ export function MyAccountPage() {
             <form onSubmit={handleSubmitCita} className="flex flex-col gap-4">
               <div>
                 <label className={labelCls} htmlFor="cita-fecha-mc">Fecha <span className="text-destructive">*</span></label>
-                <DatePicker
-                  id="cita-fecha-mc"
-                  value={citaFecha}
-                  min={tomorrowString()}
-                  error={citaErrors.fecha}
-                  onChange={onCitaFechaChange}
-                />
+                <DatePicker id="cita-fecha-mc" value={citaFecha} min={tomorrowString()} error={citaErrors.fecha} onChange={onCitaFechaChange} />
                 {citaErrors.fecha && <p className="text-xs text-destructive mt-1">{citaErrors.fecha}</p>}
               </div>
 
-              <TimePicker
-                value={citaHora}
-                onChange={onCitaHoraChange}
-                error={citaErrors.hora}
-                bookedSlots={disponibilidad}
-              />
+              <TimePicker value={citaHora} onChange={onCitaHoraChange} error={citaErrors.hora} bookedSlots={disponibilidad} />
 
               <div>
                 <label className={labelCls} htmlFor="cita-obs">
                   Observaciones{' '}
                   <span className="text-muted-foreground font-normal normal-case tracking-normal">(opcional)</span>
                 </label>
-                <textarea
-                  id="cita-obs"
-                  value={citaObs}
-                  onChange={e => setCitaObs(e.target.value)}
+                <textarea id="cita-obs" value={citaObs} onChange={e => setCitaObs(e.target.value)}
                   placeholder="Cuéntanos qué necesitas, medidas, tipo de marco, etc."
-                  rows={3}
-                  className={`${inputCls} resize-none`}
-                />
+                  rows={3} className={`${inputCls} resize-none`} />
               </div>
 
               <div className="flex flex-col gap-2 pt-1">
-                <button
-                  type="submit"
-                  disabled={isAgendando}
-                  className="bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60"
-                >
+                <button type="submit" disabled={isAgendando}
+                  className="bg-secondary text-secondary-foreground py-3 rounded-lg font-medium hover:bg-secondary/90 transition-colors active:scale-95 flex items-center justify-center gap-2 disabled:opacity-60">
                   <CalendarPlus className="h-4 w-4" />
                   {isAgendando ? 'Agendando...' : 'Confirmar cita'}
                 </button>
-                <button
-                  type="button"
-                  onClick={closeCitaForm}
-                  className="text-muted-foreground text-sm hover:text-foreground transition-colors py-2"
-                >
+                <button type="button" onClick={closeCitaForm}
+                  className="text-muted-foreground text-sm hover:text-foreground transition-colors py-2">
                   Cancelar
                 </button>
               </div>
