@@ -43,8 +43,9 @@ export function useClients() {
   }
 
   const onToggleStatus = async (id: number) => {
-    await apiRequest(`/api/clients/${id}/estado`, { method: 'PATCH' })
-    await fetchAll()
+    setClientes(prev => prev.map(c => c.id_cliente === id ? { ...c, estado: !c.estado } : c))
+    try { await apiRequest(`/api/clients/${id}/estado`, { method: 'PATCH' }) }
+    catch { setClientes(prev => prev.map(c => c.id_cliente === id ? { ...c, estado: !c.estado } : c)) }
   }
 
   return { clientes, isLoading, error, onCreate, onEdit, onDelete, onToggleStatus }
