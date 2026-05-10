@@ -11,6 +11,7 @@ import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
+import { StatusSelect } from '@/src/shared/components/StatusSelect'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/src/shared/components/ui/alert-dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
@@ -185,12 +186,15 @@ export function PaymentsPage() {
                       {estadoNombre.toLowerCase().includes('anulado') ? (
                         <Badge variant="outline" className="border-red-300 bg-red-100 text-red-800 cursor-not-allowed opacity-70">{estadoNombre}</Badge>
                       ) : (
-                        <Select value={String(p.id_estado_pago)} onValueChange={v => handleChangeStatus(p, Number(v))}>
-                          <SelectTrigger className="w-36 h-8">
-                            <Badge variant="outline" className={ESTADO_BADGE[estadoNombre] ?? 'border-slate-300 bg-slate-100 text-slate-600'}>{estadoNombre}</Badge>
-                          </SelectTrigger>
-                          <SelectContent>{estadosPago.map(e => <SelectItem key={e.id_estado_pago} value={String(e.id_estado_pago)}>{e.nombre}</SelectItem>)}</SelectContent>
-                        </Select>
+                        <StatusSelect
+                          value={String(p.id_estado_pago)}
+                          onValueChange={v => handleChangeStatus(p, Number(v))}
+                          options={estadosPago.map(e => ({
+                            value:    String(e.id_estado_pago),
+                            label:    e.nombre,
+                            badgeCls: ESTADO_BADGE[e.nombre] ?? 'border-slate-300 bg-slate-100 text-slate-600',
+                          }))}
+                        />
                       )}
                     </TableCell>
                     <TableCell className="text-right">

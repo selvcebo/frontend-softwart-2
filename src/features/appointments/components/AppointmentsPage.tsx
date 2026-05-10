@@ -19,6 +19,7 @@ import { Input } from '@/src/shared/components/ui/input'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
+import { StatusSelect } from '@/src/shared/components/StatusSelect'
 import { TimePicker, BookedSlot } from '@/src/shared/components/TimePicker'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
@@ -203,18 +204,15 @@ export function AppointmentsPage() {
                       <TableCell className="text-foreground">{formatDate(c.fecha)}</TableCell>
                       <TableCell className="text-foreground">{formatTime(c.hora)}</TableCell>
                       <TableCell>
-                        <Select value={String(c.id_estado_cita)} onValueChange={(v) => onChangeStatus(c.id_cita, Number(v))}>
-                          <SelectTrigger className="w-36 h-8">
-                            <Badge variant="outline" className={ESTADO_BADGE[c.id_estado_cita] ?? ESTADO_BADGE[4]}>
-                              {getEstadoLabel(c.id_estado_cita)}
-                            </Badge>
-                          </SelectTrigger>
-                          <SelectContent>
-                            {estadosCita.map(e => (
-                              <SelectItem key={e.id_estado_cita} value={String(e.id_estado_cita)}>{e.nombre}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <StatusSelect
+                          value={String(c.id_estado_cita)}
+                          onValueChange={(v) => onChangeStatus(c.id_cita, Number(v))}
+                          options={estadosCita.map(e => ({
+                            value:    String(e.id_estado_cita),
+                            label:    e.nombre,
+                            badgeCls: ESTADO_BADGE[e.id_estado_cita] ?? ESTADO_BADGE[4],
+                          }))}
+                        />
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">

@@ -16,7 +16,7 @@ import { Plus, Pencil, Eye } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Badge } from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/src/shared/components/ui/select'
+import { StatusSelect } from '@/src/shared/components/StatusSelect'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { ViewDialog } from '@/src/shared/components/ViewDialog'
@@ -190,24 +190,15 @@ export function OrdersPage() {
                     <TableCell className="text-foreground">{formatDate(p.fecha)}</TableCell>
                     <TableCell className="text-foreground">{formatCurrency(p.precio)}</TableCell>
                     <TableCell>
-                      {/* ── Dropdown dinámico con estados reales de BD ── */}
-                      <Select
+                      <StatusSelect
                         value={String(p.id_estado)}
                         onValueChange={(v) => handleCambiarEstado(p.id_detalle, Number(v))}
-                      >
-                        <SelectTrigger className="w-36 h-8 border-0 bg-transparent p-0 shadow-none focus:ring-0">
-                          <Badge variant="outline" className={estadoColor(p.id_estado)}>
-                            {estadoNombre(p.id_estado)}
-                          </Badge>
-                        </SelectTrigger>
-                        <SelectContent>
-                          {estados.map((e, i) => (
-                            <SelectItem key={e.id_estado} value={String(e.id_estado)}>
-                              <Badge variant="outline" className={badgeClass(i)}>{e.nombre}</Badge>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        options={estados.map((e, i) => ({
+                          value: String(e.id_estado),
+                          label: e.nombre,
+                          badgeCls: badgeClass(i),
+                        }))}
+                      />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
