@@ -233,9 +233,12 @@ export function MyAccountPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                   {/* Próxima cita */}
-                  <button
+                  <m.button
                     onClick={() => setTab('citas')}
                     className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -255,12 +258,15 @@ export function MyAccountPage() {
                         <p className="text-sm text-muted-foreground">Sin citas próximas</p>
                       )}
                     </div>
-                  </button>
+                  </m.button>
 
                   {/* Servicios activos */}
-                  <button
+                  <m.button
                     onClick={() => setTab('servicios')}
                     className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.07, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
@@ -278,13 +284,18 @@ export function MyAccountPage() {
                         </p>
                       )}
                     </div>
-                  </button>
+                  </m.button>
 
                 </div>
 
                 {/* Último servicio registrado */}
                 {(isLoading || ultimoServicio) && (
-                  <section className="bg-card border border-border rounded-xl p-5">
+                  <m.section
+                    className="bg-card border border-border rounded-xl p-5"
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
+                  >
                     <div className="flex items-center gap-2 mb-4">
                       <Sparkles className="h-4 w-4 text-primary" />
                       <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Último servicio</h2>
@@ -307,11 +318,16 @@ export function MyAccountPage() {
                         </span>
                       </div>
                     )}
-                  </section>
+                  </m.section>
                 )}
 
                 {/* Resumen rápido */}
-                <section className="bg-card border border-border rounded-xl p-5">
+                <m.section
+                  className="bg-card border border-border rounded-xl p-5"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.21, ease: [0.22, 1, 0.36, 1] }}
+                >
                   <div className="flex items-center gap-2 mb-4">
                     <User className="h-4 w-4 text-primary" />
                     <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Mi cuenta</h2>
@@ -333,7 +349,7 @@ export function MyAccountPage() {
                       </button>
                     </div>
                   )}
-                </section>
+                </m.section>
 
               </div>
             )}
