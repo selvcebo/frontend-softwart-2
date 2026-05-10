@@ -1,5 +1,5 @@
-export type Tab     = 'perfil' | 'citas' | 'servicios'
-export type NavItem = { id: Tab; label: string; Icon: React.ElementType }
+export type Tab     = 'inicio' | 'perfil' | 'citas' | 'servicios'
+export type NavItem = { id: Exclude<Tab, 'inicio'>; label: string; Icon: React.ElementType }
 
 export type PerfilCliente = {
   id_cliente:     number

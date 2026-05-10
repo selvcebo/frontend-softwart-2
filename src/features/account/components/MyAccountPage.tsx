@@ -23,6 +23,7 @@ import {
 import {
   CalendarDays, LogOut, User, Lock, AlertTriangle,
   Plus, Clock, Home, CalendarPlus, Wrench, X, ChevronDown,
+  Sparkles, ArrowRight,
 } from 'lucide-react'
 import { TimePicker } from '@/src/shared/components/TimePicker'
 import { DatePicker }  from '@/src/shared/components/DatePicker'
@@ -39,7 +40,7 @@ export function MyAccountPage() {
   const [searchParams] = useSearchParams()
 
   // UI state
-  const [tab,          setTab]          = useState<Tab>('perfil')
+  const [tab,          setTab]          = useState<Tab>('inicio')
   const [showCitaForm, setShowCitaForm] = useState(false)
   const [cancelingId,  setCancelingId]  = useState<number | null>(null)
   const [qCitas,       setQCitas]       = useState('')
@@ -72,6 +73,11 @@ export function MyAccountPage() {
       setShowCitaForm(true)
     }
   }, [searchParams])
+
+  // Derived values for welcome tab
+  const proximaCita   = [...citas].filter(c => c.appointmentStatus?.nombre?.toLowerCase().includes('pend')).sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
+  const serviciosActivos = servicios.filter(s => !s.estado.toLowerCase().includes('finaliz')).length
+  const ultimoServicio   = [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha))[0] ?? null
 
   // ── Guards ────────────────────────────────────────────────────────────────
   if (!getAuthToken() || !getAuthRol()) return <Navigate to="/login" replace />
@@ -172,7 +178,9 @@ export function MyAccountPage() {
           <div className="max-w-3xl mx-auto">
 
             <h1 className="font-serif text-3xl text-secondary mb-6">
-              {NAV_ITEMS.find(n => n.id === tab)?.label}
+              {tab === 'inicio'
+                ? (isLoading ? <Skeleton className="h-9 w-56" /> : `Hola, ${primerNombre} 👋`)
+                : NAV_ITEMS.find(n => n.id === tab)?.label}
             </h1>
 
             {/* Mobile tab bar */}
@@ -195,6 +203,119 @@ export function MyAccountPage() {
             {error && (
               <div className="mb-6 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive p-4 text-sm">
                 {error}
+              </div>
+            )}
+
+            {/* ── Tab: Inicio / Bienvenida ─────────────────────────────────── */}
+            {tab === 'inicio' && (
+              <div className="space-y-6">
+
+                {/* Chips de acceso rápido */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                  {/* Próxima cita */}
+                  <button
+                    onClick={() => setTab('citas')}
+                    className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <CalendarDays className="h-5 w-5 text-primary" />
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-1" />
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Próxima cita</p>
+                      {isLoading ? (
+                        <Skeleton className="h-5 w-36" />
+                      ) : proximaCita ? (
+                        <p className="font-semibold text-foreground">
+                          {formatDate(proximaCita.fecha)} · {proximaCita.hora?.slice(0, 5)}
+                        </p>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">Sin citas próximas</p>
+                      )}
+                    </div>
+                  </button>
+
+                  {/* Servicios activos */}
+                  <button
+                    onClick={() => setTab('servicios')}
+                    className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="h-10 w-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
+                        <Wrench className="h-5 w-5 text-secondary" />
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-1" />
+                    </div>
+                    <div className="mt-4">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Servicios activos</p>
+                      {isLoading ? (
+                        <Skeleton className="h-5 w-24" />
+                      ) : (
+                        <p className="font-semibold text-foreground">
+                          {serviciosActivos} {serviciosActivos === 1 ? 'servicio' : 'servicios'} en curso
+                        </p>
+                      )}
+                    </div>
+                  </button>
+
+                </div>
+
+                {/* Último servicio registrado */}
+                {(isLoading || ultimoServicio) && (
+                  <section className="bg-card border border-border rounded-xl p-5">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Último servicio</h2>
+                    </div>
+                    {isLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-5 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    ) : ultimoServicio && (
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-foreground truncate">{ultimoServicio.servicio}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(ultimoServicio.fecha)} · {formatCurrency(ultimoServicio.precio)}
+                          </p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(ultimoServicio.estado)}`}>
+                          {ultimoServicio.estado}
+                        </span>
+                      </div>
+                    )}
+                  </section>
+                )}
+
+                {/* Resumen rápido */}
+                <section className="bg-card border border-border rounded-xl p-5">
+                  <div className="flex items-center gap-2 mb-4">
+                    <User className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Mi cuenta</h2>
+                  </div>
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-52" />
+                      <Skeleton className="h-4 w-36" />
+                    </div>
+                  ) : (
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <p><span className="text-foreground font-medium">{perfil?.correo}</span></p>
+                      {perfil?.telefono && <p>{perfil.telefono}</p>}
+                      <button
+                        onClick={() => setTab('perfil')}
+                        className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1"
+                      >
+                        Editar datos <ArrowRight className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                </section>
+
               </div>
             )}
 
