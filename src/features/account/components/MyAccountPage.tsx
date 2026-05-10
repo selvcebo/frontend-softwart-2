@@ -24,7 +24,7 @@ import {
 import {
   CalendarDays, LogOut, User, Lock, AlertTriangle,
   Plus, Clock, Home, CalendarPlus, Wrench, X, ChevronDown,
-  Sparkles, ArrowRight,
+  ChevronLeft, ChevronRight, Sparkles, ArrowRight,
 } from 'lucide-react'
 import { TimePicker } from '@/src/shared/components/TimePicker'
 import { DatePicker }  from '@/src/shared/components/DatePicker'
@@ -42,6 +42,7 @@ export function MyAccountPage() {
 
   // UI state
   const [tab,          setTab]          = useState<Tab>('inicio')
+  const [collapsed,    setCollapsed]    = useState(false)
   const [showCitaForm, setShowCitaForm] = useState(false)
   const [cancelingId,  setCancelingId]  = useState<number | null>(null)
   const [qCitas,       setQCitas]       = useState('')
@@ -95,31 +96,52 @@ export function MyAccountPage() {
     <div className="flex min-h-screen bg-background">
 
       {/* ── Sidebar (desktop) ─────────────────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 border-r border-sidebar-border bg-sidebar-accent z-30">
-        <div className="h-16 flex items-center px-6 border-b border-sidebar-border shrink-0">
-          <span className="font-serif italic text-xl text-sidebar-foreground">Arte Café</span>
+      <aside className={[
+        'hidden md:flex flex-col fixed inset-y-0 border-r border-sidebar-border bg-sidebar-accent z-30',
+        'transition-all duration-300 ease-in-out',
+        collapsed ? 'w-[56px]' : 'w-64',
+      ].join(' ')}>
+        <div className={[
+          'h-16 flex items-center border-b border-sidebar-border shrink-0 px-3 gap-2',
+          collapsed ? 'justify-center' : 'justify-between',
+        ].join(' ')}>
+          {!collapsed && (
+            <span className="font-serif italic text-xl text-sidebar-foreground pl-3 truncate">Arte Café</span>
+          )}
+          <button
+            onClick={() => setCollapsed(v => !v)}
+            className="shrink-0 rounded-md p-1.5 text-sidebar-foreground hover:bg-sidebar transition-colors"
+            title={collapsed ? 'Expandir' : 'Colapsar'}
+          >
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          </button>
         </div>
-        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto pt-4">
+        <nav className="flex-1 p-1.5 space-y-0.5 overflow-y-auto pt-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
+              title={collapsed ? label : undefined}
               className={[
-                'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors text-left',
+                'w-full flex items-center gap-3 px-2 py-2.5 rounded-lg text-sm transition-colors',
+                collapsed ? 'justify-center' : 'text-left',
                 tab === id
                   ? 'bg-sidebar-primary/15 text-sidebar-primary font-semibold'
                   : 'text-sidebar-accent-foreground hover:bg-sidebar hover:text-sidebar-foreground font-medium',
               ].join(' ')}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              {label}
+              {!collapsed && <span className="truncate">{label}</span>}
             </button>
           ))}
         </nav>
       </aside>
 
       {/* ── Main area ─────────────────────────────────────────────────────── */}
-      <div className="flex-1 md:pl-64 flex flex-col min-h-screen">
+      <div className={[
+        'flex-1 flex flex-col min-h-screen transition-all duration-300 ease-in-out',
+        collapsed ? 'md:pl-[56px]' : 'md:pl-64',
+      ].join(' ')}>
 
         {/* ── Header ──────────────────────────────────────────────────────── */}
         <header className="sticky top-0 z-20 h-16 bg-card/80 backdrop-blur-md border-b border-border flex items-center justify-between px-6 shrink-0">
