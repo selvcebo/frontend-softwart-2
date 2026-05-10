@@ -16,7 +16,7 @@ import { formatDate } from '@/src/shared/lib/formatDate'
 import { Plus, Pencil, Trash2, Eye, CreditCard, CheckCircle2, CircleDashed } from 'lucide-react'
 import { Button } from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch } from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
@@ -157,7 +157,7 @@ export function SalesPage() {
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end">
-                        <Switch checked={v.estado} disabled={!v.estado} onCheckedChange={async () => { await withToast(onToggleStatus(v.id_venta), 'Estado actualizado') }} />
+                        <ToggleSwitch value={v.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(v.id_venta), 'Estado actualizado')} options={ACTIVO_OPTIONS} disabled={!v.estado} />
                       </div>
                     </TableCell>
                     <TableCell className="text-right">

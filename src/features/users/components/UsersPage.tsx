@@ -7,7 +7,7 @@ import { Plus, Pencil, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch }   from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
@@ -121,7 +121,7 @@ export function UsersPage() {
                       {ROL_LABELS[u.id_rol] ?? `Rol ${u.id_rol}`}
                     </Badge>
                   </TableCell>
-                  <TableCell><Switch checked={u.estado} onCheckedChange={async () => { await withToast(onToggleStatus(u.id_usuario), 'Estado actualizado') }} /></TableCell>
+                  <TableCell><ToggleSwitch value={u.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(u.id_usuario), 'Estado actualizado')} options={ACTIVO_OPTIONS} /></TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" onClick={() => openView(u)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>

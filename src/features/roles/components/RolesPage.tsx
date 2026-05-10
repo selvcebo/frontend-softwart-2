@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch }   from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
@@ -104,7 +104,7 @@ export function RolesPage() {
           
                     <TableCell className="text-foreground font-medium">{r.nombre}</TableCell>
                     <TableCell className="text-muted-foreground">{r.descripcion ?? '—'}</TableCell>
-                    <TableCell><Switch checked={r.estado} onCheckedChange={async () => { await withToast(onToggleStatus(r.id_rol), 'Estado actualizado') }} /></TableCell>
+                    <TableCell><ToggleSwitch value={r.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(r.id_rol), 'Estado actualizado')} options={ACTIVO_OPTIONS} /></TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         <Button variant="ghost" size="icon" onClick={() => openView(r)}><Eye className="h-4 w-4 text-muted-foreground" /></Button>

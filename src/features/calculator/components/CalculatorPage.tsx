@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react'
 import { Plus, Pencil, Trash2, Eye, Calculator } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch }   from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/src/shared/components/ui/alert-dialog'
@@ -126,7 +126,7 @@ export function CalculatorPage() {
                   <TableCell className="text-foreground text-right tabular-nums">{fmt(m.precio_ensamblado)}</TableCell>
                   <TableCell className='text-right'>
                     
-                    <Switch checked={m.estado} onCheckedChange={async () => { await withToast(onToggleStatus(m.id_marco), 'Estado actualizado') }} /></TableCell>
+                    <ToggleSwitch value={m.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(m.id_marco), 'Estado actualizado')} options={ACTIVO_OPTIONS} /></TableCell>
                  
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">

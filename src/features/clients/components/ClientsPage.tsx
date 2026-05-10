@@ -6,7 +6,7 @@ import { DOCUMENT_TYPES, inputCls, labelCls, selectCls, filterClientes } from '.
 import { Plus, Pencil, Trash2, Eye } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch }   from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/shared/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
@@ -138,7 +138,7 @@ export function ClientsPage() {
                     <TableCell className="text-foreground">{c.correo}</TableCell>
                     <TableCell className="text-foreground">{c.telefono ?? '—'}</TableCell>
                     <TableCell>
-                      <Switch checked={c.estado} onCheckedChange={async () => { await withToast(onToggleStatus(c.id_cliente), 'Estado actualizado') }} />
+                      <ToggleSwitch value={c.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(c.id_cliente), 'Estado actualizado')} options={ACTIVO_OPTIONS} />
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">

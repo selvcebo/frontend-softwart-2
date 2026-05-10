@@ -21,6 +21,12 @@ interface ToggleSwitchProps<T extends string | number> {
   defaultTextActiveCls?: string
 }
 
+// Opciones pre-construidas para el patrón Activo / Inactivo
+export const ACTIVO_OPTIONS: ToggleOption<number>[] = [
+  { value: 1, label: 'Activo',   indicatorCls: 'bg-secondary',    textActiveCls: 'text-secondary-foreground' },
+  { value: 0, label: 'Inactivo', indicatorCls: 'bg-destructive',   textActiveCls: 'text-destructive-foreground' },
+]
+
 export function ToggleSwitch<T extends string | number>({
   value,
   onChange,

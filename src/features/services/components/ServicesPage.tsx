@@ -6,7 +6,7 @@ import { inputCls, labelCls, fmtDuracion, filterServicios } from '../utils'
 import { Plus, Pencil, Eye, CalendarDays } from 'lucide-react'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
-import { Switch }   from '@/src/shared/components/ui/switch'
+import { ToggleSwitch, ACTIVO_OPTIONS } from '@/src/shared/components/ToggleSwitch'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/src/shared/components/ui/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/shared/components/ui/table'
 import { ViewDialog, EstadoBadge } from '@/src/shared/components/ViewDialog'
@@ -130,7 +130,7 @@ export function ServicesPage() {
                     <TableCell className="text-muted-foreground max-w-xs truncate">{s.descripcion ?? '—'}</TableCell>
                     <TableCell>
                       <div className='flex justify-end'>
-                      <Switch checked={s.estado === true} onCheckedChange={async () => { await withToast(onToggleStatus(s.id_servicio), 'Estado actualizado') }} />
+                      <ToggleSwitch value={s.estado ? 1 : 0} onChange={() => withToast(onToggleStatus(s.id_servicio), 'Estado actualizado')} options={ACTIVO_OPTIONS} />
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
