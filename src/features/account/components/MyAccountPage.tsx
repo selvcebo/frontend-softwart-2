@@ -1,5 +1,6 @@
 // src/features/account/components/MyAccountPage.tsx
 import { useEffect, useMemo, useState } from 'react'
+import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
 import { useAccount }      from '../hooks/useAccount'
 import { inputCls, labelCls, parseFechaBloque, tomorrowString, estadoBadgeClasses, estadoServicioBadgeClasses, filterCitasCuenta, filterServiciosCuenta } from '../utils'
@@ -94,34 +95,20 @@ export function MyAccountPage() {
     <div className="flex min-h-screen bg-background">
 
       {/* ── Sidebar (desktop) ─────────────────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 border-r border-border bg-card z-30">
-        <div className="h-16 flex items-center px-6 border-b border-border shrink-0">
-          <span className="font-serif italic text-xl text-secondary">Arte Café</span>
+      <aside className="hidden md:flex flex-col w-64 fixed inset-y-0 border-r border-sidebar-border bg-sidebar-accent z-30">
+        <div className="h-16 flex items-center px-6 border-b border-sidebar-border shrink-0">
+          <span className="font-serif italic text-xl text-sidebar-foreground">Arte Café</span>
         </div>
-        <div className="px-5 py-5 border-b border-border shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-secondary/10 border border-secondary/20 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-secondary">{initial}</span>
-            </div>
-            <div className="min-w-0">
-              {isLoading
-                ? <Skeleton className="h-4 w-28" />
-                : <p className="text-sm font-semibold text-foreground truncate">{perfil?.nombre ?? ''}</p>
-              }
-              <p className="text-xs text-muted-foreground mt-0.5">Cliente</p>
-            </div>
-          </div>
-        </div>
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto pt-4">
           {NAV_ITEMS.map(({ id, label, Icon }) => (
             <button
               key={id}
               onClick={() => setTab(id)}
               className={[
-                'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors text-left',
+                'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors text-left',
                 tab === id
-                  ? 'bg-secondary/10 text-secondary font-semibold'
-                  : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                  ? 'bg-sidebar-primary/15 text-sidebar-primary font-semibold'
+                  : 'text-sidebar-accent-foreground hover:bg-sidebar hover:text-sidebar-foreground font-medium',
               ].join(' ')}
             >
               <Icon className="h-4 w-4 shrink-0" />
@@ -205,6 +192,16 @@ export function MyAccountPage() {
                 {error}
               </div>
             )}
+
+            <LazyMotion features={domAnimation}>
+              <AnimatePresence mode="wait">
+                <m.div
+                  key={tab}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+                >
 
             {/* ── Tab: Inicio / Bienvenida ─────────────────────────────────── */}
             {tab === 'inicio' && (
@@ -371,7 +368,7 @@ export function MyAccountPage() {
                     <Lock className="h-5 w-5 text-primary" />
                     <h2 className="text-xl font-serif text-secondary">Cambiar contraseña</h2>
                   </div>
-                  <form onSubmit={submitClave} className="space-y-5 max-w-sm">
+                  <form onSubmit={submitClave} className="space-y-5">
                     <div>
                       <label className={labelCls} htmlFor="clave-actual">Contraseña actual</label>
                       <input id="clave-actual" type="password" value={claveActual}
@@ -596,6 +593,10 @@ export function MyAccountPage() {
                 )}
               </div>
             )}
+
+                </m.div>
+              </AnimatePresence>
+            </LazyMotion>
 
           </div>
         </main>
