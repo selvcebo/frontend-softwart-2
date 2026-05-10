@@ -7,7 +7,7 @@ import type { Pago } from '../types'
 import { inputCls, labelCls, selectCls, ESTADO_BADGE, filterPagos } from '../utils'
 import { useSearchParams } from 'react-router-dom'
 import { Plus, Eye, Banknote, Landmark } from 'lucide-react'
-import { cn } from '@/src/shared/lib/utils'
+import { ToggleSwitch } from '@/src/shared/components/ToggleSwitch'
 import { Button }   from '@/src/shared/components/ui/button'
 import { Badge }    from '@/src/shared/components/ui/badge'
 import { Skeleton } from '@/src/shared/components/ui/skeleton'
@@ -178,42 +178,15 @@ export function PaymentsPage() {
                     <TableCell className="text-foreground text-right font-medium tabular-nums">{formatCurrency(p.monto)}</TableCell>
                     <TableCell className="text-foreground">{formatDate(p.fecha)}</TableCell>
                     <TableCell>
-                      {(() => {
-                        const activeIdx = metodosPago.findIndex(m => m.id_metodo_pago === p.id_metodo_pago)
-                        return (
-                          <div className="relative inline-flex h-8 rounded-lg border border-border bg-muted/40 p-0.5 overflow-hidden">
-                            {/* Sliding indicator */}
-                            <div
-                              className="absolute top-0.5 bottom-0.5 rounded-md bg-secondary shadow-sm pointer-events-none"
-                              style={{
-                                width: `calc(${100 / metodosPago.length}% + 2px)`,
-                                left: '0px',
-                                transform: `translateX(calc(${activeIdx} * 100%))`,
-                                transition: 'transform 220ms cubic-bezier(0.22,1,0.36,1)',
-                              }}
-                            />
-                            {metodosPago.map(m => {
-                              const isActive   = p.id_metodo_pago === m.id_metodo_pago
-                              const isEfectivo = m.nombre.toLowerCase().includes('efectivo')
-                              return (
-                                <button
-                                  key={m.id_metodo_pago}
-                                  onClick={() => !isActive && onChangeMethod(p.id_pago, m.id_metodo_pago)}
-                                  className={cn(
-                                    'relative z-10 flex items-center justify-center gap-1.5 px-2.5 h-7 rounded-md text-xs font-medium transition-colors flex-1 min-w-[80px]',
-                                    isActive ? 'text-secondary-foreground' : 'text-muted-foreground hover:text-foreground cursor-pointer',
-                                  )}
-                                >
-                                  {isEfectivo
-                                    ? <Banknote className="h-3.5 w-3.5 shrink-0" />
-                                    : <Landmark className="h-3.5 w-3.5 shrink-0" />}
-                                  <span>{m.nombre}</span>
-                                </button>
-                              )
-                            })}
-                          </div>
-                        )
-                      })()}
+                      <ToggleSwitch
+                        value={p.id_metodo_pago}
+                        onChange={v => onChangeMethod(p.id_pago, v)}
+                        options={metodosPago.map(m => ({
+                          value: m.id_metodo_pago,
+                          label: m.nombre,
+                          icon:  m.nombre.toLowerCase().includes('efectivo') ? Banknote : Landmark,
+                        }))}
+                      />
                     </TableCell>
                     <TableCell>
                       {estadoNombre.toLowerCase().includes('anulado') ? (
