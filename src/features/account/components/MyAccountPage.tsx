@@ -47,7 +47,7 @@ export function MyAccountPage() {
 
   const {
     perfil, citas, servicios, isLoading, error,
-    primerNombre, proximaCita, serviciosActivos, ultimoServicio,
+    primerNombre, proximaCita, serviciosActivos, serviciosRecientes,
     perfilNombre, setPerfilNombre, perfilTelefono, setPerfilTelefono,
     perfilCorreo, setPerfilCorreo, perfilMsg, perfilMsgType, isSavingPerfil, submitPerfil,
     claveActual, setClaveActual, claveNueva, setClaveNueva, claveConfirm, setClaveConfirm,
@@ -60,9 +60,6 @@ export function MyAccountPage() {
 
   const filteredCitas     = useMemo(() => filterCitasCuenta([...citas].sort((a, b) => a.fecha.localeCompare(b.fecha)), qCitas), [citas, qCitas])
   const filteredServicios = useMemo(() => filterServiciosCuenta(servicios, qServicios), [servicios, qServicios])
-  const serviciosRecientes = useMemo(() =>
-    [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3)
-  , [servicios])
 
   const citasPag     = usePagination(filteredCitas)
   const serviciosPag = usePagination(filteredServicios)

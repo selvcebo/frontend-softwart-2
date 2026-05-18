@@ -40,6 +40,10 @@ export function useAccount() {
     [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha))[0] ?? null
   , [servicios])
 
+  const serviciosRecientes = useMemo(() =>
+    [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3)
+  , [servicios])
+
   // ── Fetch ───────────────────────────────────────────────────────────────────
   const fetchProfile = useCallback(async () => {
     const res = await apiRequest<ApiResponse<PerfilCliente>>('/api/account/perfil')
@@ -217,7 +221,7 @@ export function useAccount() {
     // servidor
     perfil, citas, servicios, isLoading, error, refresh,
     // derivado
-    primerNombre, proximaCita, serviciosActivos, ultimoServicio,
+    primerNombre, proximaCita, serviciosActivos, ultimoServicio, serviciosRecientes,
     // form perfil
     perfilNombre,   setPerfilNombre,
     perfilTelefono, setPerfilTelefono,
