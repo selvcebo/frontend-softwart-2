@@ -142,7 +142,7 @@ export function MyAccountPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               <m.button
-                onClick={() => setShowCitasModal(true)}
+                onClick={() => proximaCita || isLoading ? setShowCitasModal(true) : setShowCitaForm(true)}
                 className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -163,7 +163,12 @@ export function MyAccountPage() {
                       {formatDate(proximaCita.fecha)} · {proximaCita.hora?.slice(0, 5)}
                     </p>
                   ) : (
-                    <p className="text-sm text-muted-foreground">Sin citas próximas</p>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Sin citas próximas</p>
+                      <p className="text-xs text-primary mt-1 inline-flex items-center gap-1">
+                        Agendar cita <ArrowRight className="h-3 w-3" />
+                      </p>
+                    </div>
                   )}
                 </div>
               </m.button>
@@ -185,10 +190,12 @@ export function MyAccountPage() {
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Servicios activos</p>
                   {isLoading ? (
                     <Skeleton className="h-5 w-24" />
-                  ) : (
+                  ) : serviciosActivos > 0 ? (
                     <p className="font-semibold text-foreground">
                       {serviciosActivos} {serviciosActivos === 1 ? 'servicio' : 'servicios'} en curso
                     </p>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sin servicios activos</p>
                   )}
                 </div>
               </m.button>
