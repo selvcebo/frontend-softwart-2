@@ -28,7 +28,7 @@ import {
 import {
   CalendarDays, LogOut, User, Lock, AlertTriangle,
   Plus, Clock, CalendarPlus, Wrench, X, ChevronDown,
-  Sparkles, ArrowRight,
+  Sparkles, ArrowRight, MapPin, MessageCircle,
 } from 'lucide-react'
 import { TimePicker } from '@/src/shared/components/TimePicker'
 import { DatePicker }  from '@/src/shared/components/DatePicker'
@@ -273,6 +273,38 @@ export function MyAccountPage() {
                       </button>
                     </div>
                   )}
+                </m.section>
+                <m.section
+                  className="bg-card border border-border rounded-xl p-5"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground mb-4">Contacto</h2>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex gap-3 items-start">
+                      <MapPin className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <span className="text-muted-foreground">Cra. 74 #50, Laureles – Estadio, Medellín</span>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                      <Clock className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <div className="text-muted-foreground">
+                        <p>Lun – Vie: 09:00 – 18:00</p>
+                        <p>Sábado: 10:00 – 14:00</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                      <MessageCircle className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                      <a
+                        href="https://wa.me/573005414130"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        +57 300 5414130
+                      </a>
+                    </div>
+                  </div>
                 </m.section>
               </div>
 
