@@ -60,6 +60,9 @@ export function MyAccountPage() {
 
   const filteredCitas     = useMemo(() => filterCitasCuenta([...citas].sort((a, b) => a.fecha.localeCompare(b.fecha)), qCitas), [citas, qCitas])
   const filteredServicios = useMemo(() => filterServiciosCuenta(servicios, qServicios), [servicios, qServicios])
+  const serviciosRecientes = useMemo(() =>
+    [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha)).slice(0, 3)
+  , [servicios])
 
   const citasPag     = usePagination(filteredCitas)
   const serviciosPag = usePagination(filteredServicios)
@@ -202,29 +205,42 @@ export function MyAccountPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="flex items-center gap-2 mb-4">
-                  <Sparkles className="h-4 w-4 text-primary" />
-                  <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Último servicio</h2>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Servicios recientes</h2>
+                  </div>
+                  {servicios.length > 0 && (
+                    <button
+                      onClick={() => setShowServiciosModal(true)}
+                      className="text-xs text-primary hover:underline inline-flex items-center gap-1"
+                    >
+                      Ver todos <ArrowRight className="h-3 w-3" />
+                    </button>
+                  )}
                 </div>
                 {isLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-48" />
-                    <Skeleton className="h-4 w-32" />
+                  <div className="space-y-3">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-12 w-full rounded-lg" />)}
                   </div>
-                ) : ultimoServicio ? (
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-foreground truncate">{ultimoServicio.servicio}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {formatDate(ultimoServicio.fecha)} · {formatCurrency(ultimoServicio.precio)}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(ultimoServicio.estado)}`}>
-                      {ultimoServicio.estado}
-                    </span>
-                  </div>
-                ) : (
+                ) : serviciosRecientes.length === 0 ? (
                   <p className="text-sm text-muted-foreground">Aún no tienes servicios registrados.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {serviciosRecientes.map(s => (
+                      <div key={s.id_detalle} className="flex items-center justify-between gap-4 py-2 border-b border-border last:border-0">
+                        <div className="min-w-0">
+                          <p className="font-medium text-foreground text-sm truncate">{s.servicio}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">
+                            {formatDate(s.fecha)} · {formatCurrency(s.precio)}
+                          </p>
+                        </div>
+                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${estadoServicioBadgeClasses(s.estado)}`}>
+                          {s.estado}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 )}
               </m.section>
 
