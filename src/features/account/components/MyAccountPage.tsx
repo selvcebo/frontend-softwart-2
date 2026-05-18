@@ -121,7 +121,7 @@ export function MyAccountPage() {
 
       {/* ── Content ─────────────────────────────────────────────────────────── */}
       <main className="flex-1 p-6 md:p-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-5xl mx-auto">
 
           <h1 className="font-serif text-3xl text-secondary mb-6">
             {isLoading ? <Skeleton className="h-9 w-56" /> : `Hola, ${primerNombre} 👋`}
@@ -192,10 +192,12 @@ export function MyAccountPage() {
 
             </div>
 
-            {/* Último servicio */}
-            {(isLoading || ultimoServicio) && (
+            {/* Asymmetric grid: left 2/3 · right 1/3 */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+              {/* LEFT col-span-2: services area (historial) */}
               <m.section
-                className="bg-card border border-border rounded-xl p-5"
+                className="md:col-span-2 bg-card border border-border rounded-xl p-5"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.14, ease: [0.22, 1, 0.36, 1] }}
@@ -209,7 +211,7 @@ export function MyAccountPage() {
                     <Skeleton className="h-5 w-48" />
                     <Skeleton className="h-4 w-32" />
                   </div>
-                ) : ultimoServicio && (
+                ) : ultimoServicio ? (
                   <div className="flex items-center justify-between gap-4">
                     <div className="min-w-0">
                       <p className="font-semibold text-foreground truncate">{ultimoServicio.servicio}</p>
@@ -221,39 +223,44 @@ export function MyAccountPage() {
                       {ultimoServicio.estado}
                     </span>
                   </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">Aún no tienes servicios registrados.</p>
                 )}
               </m.section>
-            )}
 
-            {/* Resumen mi cuenta */}
-            <m.section
-              className="bg-card border border-border rounded-xl p-5"
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.21, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <User className="h-4 w-4 text-primary" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Mi cuenta</h2>
+              {/* RIGHT col: account info */}
+              <div className="flex flex-col gap-6">
+                <m.section
+                  className="bg-card border border-border rounded-xl p-5"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.21, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    <User className="h-4 w-4 text-primary" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Mi cuenta</h2>
+                  </div>
+                  {isLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-52" />
+                      <Skeleton className="h-4 w-36" />
+                    </div>
+                  ) : (
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <p><span className="text-foreground font-medium">{perfil?.correo}</span></p>
+                      {perfil?.telefono && <p>{perfil.telefono}</p>}
+                      <button
+                        onClick={() => setShowPerfilModal(true)}
+                        className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1"
+                      >
+                        Editar datos <ArrowRight className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                </m.section>
               </div>
-              {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-52" />
-                  <Skeleton className="h-4 w-36" />
-                </div>
-              ) : (
-                <div className="space-y-1 text-sm text-muted-foreground">
-                  <p><span className="text-foreground font-medium">{perfil?.correo}</span></p>
-                  {perfil?.telefono && <p>{perfil.telefono}</p>}
-                  <button
-                    onClick={() => setShowPerfilModal(true)}
-                    className="text-xs text-primary hover:underline mt-2 inline-flex items-center gap-1"
-                  >
-                    Editar datos <ArrowRight className="h-3 w-3" />
-                  </button>
-                </div>
-              )}
-            </m.section>
+
+            </div>
 
           </div>
         </div>
