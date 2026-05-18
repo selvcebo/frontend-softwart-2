@@ -1,5 +1,5 @@
 // src/features/account/hooks/useAccount.ts
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { apiRequest } from '@/src/shared/lib/apiClient'
 import { clearAuth } from '@/src/features/auth/hooks/useLogin'
@@ -25,6 +25,20 @@ export function useAccount() {
 
   // ── Derived ─────────────────────────────────────────────────────────────────
   const primerNombre = perfil?.nombre?.split(' ')[0] ?? ''
+
+  const proximaCita = useMemo(() =>
+    [...citas]
+      .filter(c => c.appointmentStatus?.nombre?.toLowerCase().includes('pend'))
+      .sort((a, b) => a.fecha.localeCompare(b.fecha))[0] ?? null
+  , [citas])
+
+  const serviciosActivos = useMemo(() =>
+    servicios.filter(s => !s.estado.toLowerCase().includes('finaliz')).length
+  , [servicios])
+
+  const ultimoServicio = useMemo(() =>
+    [...servicios].sort((a, b) => b.fecha.localeCompare(a.fecha))[0] ?? null
+  , [servicios])
 
   // ── Fetch ───────────────────────────────────────────────────────────────────
   const fetchProfile = useCallback(async () => {
@@ -203,7 +217,7 @@ export function useAccount() {
     // servidor
     perfil, citas, servicios, isLoading, error, refresh,
     // derivado
-    primerNombre,
+    primerNombre, proximaCita, serviciosActivos, ultimoServicio,
     // form perfil
     perfilNombre,   setPerfilNombre,
     perfilTelefono, setPerfilTelefono,

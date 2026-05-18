@@ -4,6 +4,18 @@ import type { Cita, Servicio } from './types'
 export const inputCls = 'w-full bg-muted border-0 border-b-2 border-transparent focus:border-secondary focus:ring-0 focus:outline-none px-4 py-3 rounded-t-lg transition-all'
 export const labelCls = 'block text-xs font-bold capitalize tracking-widest text-muted-foreground mb-2'
 
+export const modalBackdropVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.2 } },
+  exit:    { opacity: 0, transition: { duration: 0.15 } },
+} as const
+
+export const modalPanelVariants = {
+  initial: { opacity: 0, y: 24, scale: 0.97 },
+  animate: { opacity: 1, y: 0,  scale: 1,    transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } },
+  exit:    { opacity: 0, y: 12, scale: 0.97, transition: { duration: 0.16, ease: [0.22, 1, 0.36, 1] } },
+} as const
+
 export const MESES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic']
 
 export function filterCitasCuenta(citas: Cita[], q: string): Cita[] {
