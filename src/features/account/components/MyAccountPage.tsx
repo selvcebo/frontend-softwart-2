@@ -141,9 +141,9 @@ export function MyAccountPage() {
             {/* Chips de acceso rápido */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-              <m.button
+              <m.div
                 onClick={() => proximaCita || isLoading ? setShowCitasModal(true) : setShowCitaForm(true)}
-                className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all group"
+                className="bg-card border border-border rounded-xl p-5 text-left hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0, ease: [0.22, 1, 0.36, 1] }}
@@ -152,7 +152,12 @@ export function MyAccountPage() {
                   <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                     <CalendarDays className="h-5 w-5 text-primary" />
                   </div>
-                  <ArrowRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0 mt-1" />
+                  <button
+                    onClick={e => { e.stopPropagation(); setShowCitasModal(true) }}
+                    className="text-xs text-primary hover:underline inline-flex items-center gap-1 shrink-0 mt-1"
+                  >
+                    Ver todos <ArrowRight className="h-3 w-3" />
+                  </button>
                 </div>
                 <div className="mt-4">
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Próxima cita</p>
@@ -171,7 +176,7 @@ export function MyAccountPage() {
                     </div>
                   )}
                 </div>
-              </m.button>
+              </m.div>
 
               <m.button
                 onClick={() => setShowServiciosModal(true)}
